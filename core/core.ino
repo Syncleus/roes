@@ -49,8 +49,9 @@ void loop() {
 #define SCREEN_WIDTH SSD1306_LCDWIDTH
 #define PERCENT_BAR_TITLE_WIDTH 20
 #define PERCENT_BAR_WIDTH (SCREEN_WIDTH-PERCENT_BAR_TITLE_WIDTH)
-void percentBar(int8_t y_offset, float percent) {
+int8_t percentBar(int8_t y_offset, float percent) {
   display.fillRect(PERCENT_BAR_TITLE_WIDTH, y_offset, PERCENT_BAR_WIDTH * percent, 15, 1);
+  return PERCENT_BAR_TITLE_WIDTH + (PERCENT_BAR_WIDTH * percent);
 }
 
 float logBased(float value, float base) {
@@ -58,6 +59,8 @@ float logBased(float value, float base) {
 }
 
 float scaleToPercent(float value, float middle, float scale) {
+  if( value == 0 )
+    return 0.0;
   float p = logBased(value / middle, scale);
   float pabs = fabs(p);
   float z = (pow(2.0, pabs) - 1.0) / pow(2.0, pabs);
@@ -91,11 +94,20 @@ float swrFromPower(float power_fwd, float power_rvr) {
 void renderCompleteBar(int8_t y_offset, String label, float value, String units, float value_min, float value_mid, float scale) {
   display.setCursor(0, y_offset + 4);
   display.println(label);
-  percentBar(y_offset, scaleToPercent(value, value_min, value_mid, scale));
-  display.setTextColor(WHITE);
-  display.setCursor(40, y_offset + 4);
-  display.println(makeValueLabel(value, units));
-  display.setTextColor(WHITE);
+  float barPercent = scaleToPercent(value, value_min, value_mid, scale);
+  int8_t barEnd = percentBar(y_offset, barPercent);
+  String valueLabel = makeValueLabel(value, units);
+  int8_t valueLabelWidth = valueLabel.length() * 6 + 2;
+  if( barEnd < PERCENT_BAR_TITLE_WIDTH + valueLabelWidth) { 
+    display.setCursor(barEnd + 2, y_offset + 4);
+    display.println(valueLabel);
+  }
+  else {
+    display.setTextColor(BLACK);
+    display.setCursor(barEnd - valueLabelWidth, y_offset + 4);
+    display.println(valueLabel);
+    display.setTextColor(WHITE);
+  }
 }
 
 void render(float power_fwd, float power_rvr) {

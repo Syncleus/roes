@@ -40,6 +40,16 @@ static const unsigned char PROGMEM gamma16_glcd_bmp[] =
   B00111100, B00000000,
   B01111110, B00000000 };
 
+static const unsigned char PROGMEM angle8_glcd_bmp[] =
+{ B00000000,
+  B00000010,
+  B00000100,
+  B00001000,
+  B00010000,
+  B00100000,
+  B01111110,
+  B00000000 };
+
 float power_fwd_test = 100.0;
 boolean power_fwd_increasing = true;
 float power_rvr_test = 100.0;
@@ -185,6 +195,7 @@ void render(float power_fwd, float power_rvr) {
   renderCompleteBar(SCREEN_ROW_3_Y, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
 
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
+  display.drawBitmap(100, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
   display.setTextColor(WHITE);
   display.setCursor(20, SCREEN_ROW_4_Y);
   display.println("3.6 Phase 132");

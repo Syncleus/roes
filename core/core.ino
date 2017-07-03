@@ -22,6 +22,24 @@ Adafruit_SSD1306 display(OLED_RESET);
 #define SCREEN_ROW_4_Y 49
 #define SCREEN_ROW_5_Y 57
 
+static const unsigned char PROGMEM gamma16_glcd_bmp[] =
+{ B01111111, B11111110,
+  B00111111, B11111110,
+  B00011000, B00000110,
+  B00011000, B00000010,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00011000, B00000000,
+  B00111100, B00000000,
+  B01111110, B00000000 };
+
 float power_fwd_test = 100.0;
 boolean power_fwd_increasing = true;
 float power_rvr_test = 100.0;
@@ -166,9 +184,10 @@ void render(float power_fwd, float power_rvr) {
   renderCompleteBar(SCREEN_ROW_2_Y, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
   renderCompleteBar(SCREEN_ROW_3_Y, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
 
+  display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
   display.setTextColor(WHITE);
-  display.setCursor(0, SCREEN_ROW_4_Y);
-  display.println("Refl 3.6 Phase 132");
+  display.setCursor(20, SCREEN_ROW_4_Y);
+  display.println("3.6 Phase 132");
   display.drawCircle(110, SCREEN_ROW_4_Y, 1, WHITE);
 
   display.setCursor(32, SCREEN_ROW_5_Y);

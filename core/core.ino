@@ -11,18 +11,38 @@ Adafruit_SSD1306 display(OLED_RESET);
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
+float power_fwd_test = 0.0;
+float power_rvr_test = 0.0;
+
 void setup()   {                
   Serial.begin(9600);
 
   // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
   // init done
-
-  render(1.5, 200.0);
 }
 
 void loop() {
+  render(power_fwd_test, power_rvr_test);
+  delay(25);
   
+  if( power_fwd_test < 10.0 )
+    power_fwd_test += 0.1;
+  else if(power_fwd_test >= 100)
+    power_fwd_test += 10;
+  else
+    power_fwd_test += 1.0;
+  if(power_fwd_test > 1000.0)
+    power_fwd_test = 0.0;
+
+  if( power_rvr_test < 10.0 )
+    power_rvr_test += 0.2;
+  else if(power_rvr_test >= 100)
+    power_rvr_test += 20;
+  else
+    power_rvr_test += 2.0;
+  if(power_rvr_test > power_fwd_test)
+    power_rvr_test = 0.0;
 }
 
 #define SCREEN_HEIGHT SSD1306_LCDHEIGHT
@@ -46,7 +66,11 @@ float scaleToPercent(float value, float middle, float scale) {
   return (z + 1.0) / 2.0;
 }
 
-String makeLabel(float value, String units) {
+float scaleToPercent(float value, float value_min, float value_mid, float scale) {
+  return scaleToPercent(value - value_min, value_mid - value_min, scale);
+}
+
+String makeValueLabel(float value, String units) {
   String label = String(value);
   int8_t decimalIndex = label.indexOf(".");
   if( decimalIndex > 1 )
@@ -57,35 +81,22 @@ String makeLabel(float value, String units) {
   return label;
 }
 
+void renderCompleteBar(int8_t y_offset, String label, float value, String units, float value_min, float value_mid, float scale) {
+  display.setCursor(0, y_offset + 4);
+  display.println(label);
+  percentBar(y_offset, scaleToPercent(value, value_min, value_mid, scale));
+  display.setTextColor(WHITE);
+  display.setCursor(40, y_offset + 4);
+  display.println(makeValueLabel(value, units));
+  display.setTextColor(WHITE);
+}
+
 void render(float power_fwd, float power_rvr) {
-    // Clear the buffer.
   display.clearDisplay();
 
-  // draw the first ~12 characters in the font
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0,4);
-  display.println("SWR");
-  //display.fillRect(20, 1, 30, 15, 1);
-  percentBar(1, 0.5);
-  display.setCursor(52,4);
-  display.println("2.0");
-
-  display.setCursor(0, 20);
-  display.println("Fwd");
-  //display.fillRect(20, 16, 90, 15, 1);
-  percentBar(16, scaleToPercent(power_fwd, 100.0, 2.0));
-  display.setTextColor(WHITE);
-  display.setCursor(40, 20);
-  display.println(makeLabel(power_fwd, "w"));
-  display.setTextColor(WHITE);
-
-  display.setCursor(0, 37);
-  display.println("Rvr");
-  //display.fillRect(20, 33, 40, 15, 1);
-  percentBar(33, scaleToPercent(power_rvr, 100.0, 2.0));
-  display.setCursor(62, 37);
-  display.println("50w");
+  renderCompleteBar(0, "SWR", 2.0, "", 1.0, 2.0, 2.0);
+  renderCompleteBar(16, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
+  renderCompleteBar(33, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
 
   display.setTextColor(WHITE);
   display.setCursor(0, 49);

@@ -11,8 +11,10 @@ Adafruit_SSD1306 display(OLED_RESET);
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
-float power_fwd_test = 0.0;
-float power_rvr_test = 0.0;
+float power_fwd_test = 100.0;
+boolean power_fwd_increasing = true;
+float power_rvr_test = 100.0;
+boolean power_rvr_increasing = true;
 
 void setup()   {                
   Serial.begin(9600);
@@ -25,31 +27,65 @@ void setup()   {
 void loop() {
   render(power_fwd_test, power_rvr_test);
   delay(25);
-  
+  adjustTestValues();
+}
+
+void adjustTestValues() {
   if( power_fwd_test < 10.0 )
-    power_fwd_test += 0.1;
+    if( power_fwd_increasing )
+      power_fwd_test += 0.1;
+    else
+      power_fwd_test -= 0.1;
   else if(power_fwd_test >= 100)
-    power_fwd_test += 10;
+    if( power_fwd_increasing )
+      power_fwd_test += 10.0;
+    else
+      power_fwd_test -= 10.0;
   else
-    power_fwd_test += 1.0;
-  if(power_fwd_test > 1000.0)
+    if( power_fwd_increasing )
+      power_fwd_test += 1.0;
+    else
+      power_fwd_test -= 1.0;
+      
+  if(power_fwd_test > 1000.0) {
+    power_fwd_test = 1000.0;
+    power_fwd_increasing = false;
+  }
+  else if(power_fwd_test < 0.0 ) {
     power_fwd_test = 0.0;
+    power_fwd_increasing = true;
+  }
 
   if( power_rvr_test < 10.0 )
-    power_rvr_test += 0.2;
+    if( power_rvr_increasing )
+      power_rvr_test += 0.2;
+    else
+      power_rvr_test -= 0.2;
   else if(power_rvr_test >= 100)
-    power_rvr_test += 20;
+    if( power_rvr_increasing )
+      power_rvr_test += 20.0;
+    else
+      power_rvr_test -= 20.0;
   else
-    power_rvr_test += 2.0;
-  if(power_rvr_test > power_fwd_test)
+    if( power_rvr_increasing )
+      power_rvr_test += 2.0;
+    else
+      power_rvr_test -= 2.0;
+  if(power_rvr_test > power_fwd_test) {
+    power_rvr_test = power_fwd_test;
+    power_rvr_increasing = false;
+  }
+  else if( power_rvr_test < 0.0 ) {
     power_rvr_test = 0.0;
+    power_rvr_increasing = true;
+  }
 }
 
 #define SCREEN_HEIGHT SSD1306_LCDHEIGHT
 #define SCREEN_WIDTH SSD1306_LCDWIDTH
 #define PERCENT_BAR_TITLE_WIDTH 20
 #define PERCENT_BAR_WIDTH (SCREEN_WIDTH-PERCENT_BAR_TITLE_WIDTH)
-int8_t percentBar(int8_t y_offset, float percent) {
+uint8_t percentBar(uint8_t y_offset, float percent) {
   display.fillRect(PERCENT_BAR_TITLE_WIDTH, y_offset, PERCENT_BAR_WIDTH * percent, 15, 1);
   return PERCENT_BAR_TITLE_WIDTH + (PERCENT_BAR_WIDTH * percent);
 }
@@ -61,6 +97,8 @@ float logBased(float value, float base) {
 float scaleToPercent(float value, float middle, float scale) {
   if( value == 0 )
     return 0.0;
+  else if(isinf(value))
+    return 1.0;
   float p = logBased(value / middle, scale);
   float pabs = fabs(p);
   float z = (pow(2.0, pabs) - 1.0) / pow(2.0, pabs);
@@ -70,11 +108,15 @@ float scaleToPercent(float value, float middle, float scale) {
 }
 
 float scaleToPercent(float value, float value_min, float value_mid, float scale) {
+  if(isinf(value))
+    return 1.0;
   return scaleToPercent(value - value_min, value_mid - value_min, scale);
 }
 
 String makeValueLabel(float value, String units) {
   String label = String(value);
+  if( isinf(value) )
+    return "***";
   int8_t decimalIndex = label.indexOf(".");
   if( decimalIndex > 1 )
     label = label.substring(0,decimalIndex);
@@ -95,9 +137,9 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
   display.setCursor(0, y_offset + 4);
   display.println(label);
   float barPercent = scaleToPercent(value, value_min, value_mid, scale);
-  int8_t barEnd = percentBar(y_offset, barPercent);
+  uint8_t barEnd = percentBar(y_offset, barPercent);
   String valueLabel = makeValueLabel(value, units);
-  int8_t valueLabelWidth = valueLabel.length() * 6 + 2;
+  uint8_t valueLabelWidth = valueLabel.length() * 6 + 2;
   if( barEnd < PERCENT_BAR_TITLE_WIDTH + valueLabelWidth) { 
     display.setCursor(barEnd + 2, y_offset + 4);
     display.println(valueLabel);

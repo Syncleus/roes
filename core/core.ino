@@ -81,6 +81,13 @@ String makeValueLabel(float value, String units) {
   return label;
 }
 
+float swrFromPower(float power_fwd, float power_rvr) {
+  if( power_rvr <= 0 )
+    return 1.0;
+  float pwrs = sqrt(power_rvr / power_fwd);
+  return (1.0 + pwrs)/(1.0 - pwrs);
+}
+
 void renderCompleteBar(int8_t y_offset, String label, float value, String units, float value_min, float value_mid, float scale) {
   display.setCursor(0, y_offset + 4);
   display.println(label);
@@ -94,7 +101,7 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
 void render(float power_fwd, float power_rvr) {
   display.clearDisplay();
 
-  renderCompleteBar(0, "SWR", 2.0, "", 1.0, 2.0, 2.0);
+  renderCompleteBar(0, "SWR", swrFromPower(power_fwd, power_rvr), "", 1.0, 2.0, 2.0);
   renderCompleteBar(16, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
   renderCompleteBar(33, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
 

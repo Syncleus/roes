@@ -195,14 +195,14 @@ void render(float power_fwd, float power_rvr) {
   renderCompleteBar(SCREEN_ROW_3_Y, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
 
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
-  display.drawBitmap(100, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
   display.setTextColor(WHITE);
-  display.setCursor(20, SCREEN_ROW_4_Y);
-  display.println("3.6 Phase 132");
-  display.drawCircle(110, SCREEN_ROW_4_Y, 1, WHITE);
+  display.setCursor(44, SCREEN_ROW_4_Y);
+  display.println("39   152");
+  display.drawBitmap(60, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
+  display.drawCircle(93, SCREEN_ROW_4_Y, 1, WHITE);
 
-  display.setCursor(32, SCREEN_ROW_5_Y);
-  display.println("9i + 34");
+  display.setCursor(44, SCREEN_ROW_5_Y);
+  display.println("34 + 9i");
   
   display.display();
 }

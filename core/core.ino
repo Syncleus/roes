@@ -11,6 +11,17 @@ Adafruit_SSD1306 display(OLED_RESET);
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
+#define SCREEN_HEIGHT SSD1306_LCDHEIGHT
+#define SCREEN_WIDTH SSD1306_LCDWIDTH
+#define PERCENT_BAR_TITLE_WIDTH 20
+#define PERCENT_BAR_WIDTH (SCREEN_WIDTH-PERCENT_BAR_TITLE_WIDTH)
+#define CHARACTER_WIDTH 6
+#define SCREEN_ROW_1_Y 0
+#define SCREEN_ROW_2_Y 16
+#define SCREEN_ROW_3_Y 33
+#define SCREEN_ROW_4_Y 49
+#define SCREEN_ROW_5_Y 57
+
 float power_fwd_test = 100.0;
 boolean power_fwd_increasing = true;
 float power_rvr_test = 100.0;
@@ -81,10 +92,6 @@ void adjustTestValues() {
   }
 }
 
-#define SCREEN_HEIGHT SSD1306_LCDHEIGHT
-#define SCREEN_WIDTH SSD1306_LCDWIDTH
-#define PERCENT_BAR_TITLE_WIDTH 20
-#define PERCENT_BAR_WIDTH (SCREEN_WIDTH-PERCENT_BAR_TITLE_WIDTH)
 uint8_t percentBar(uint8_t y_offset, float percent) {
   display.fillRect(PERCENT_BAR_TITLE_WIDTH, y_offset, PERCENT_BAR_WIDTH * percent, 15, 1);
   return PERCENT_BAR_TITLE_WIDTH + (PERCENT_BAR_WIDTH * percent);
@@ -139,7 +146,7 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
   float barPercent = scaleToPercent(value, value_min, value_mid, scale);
   uint8_t barEnd = percentBar(y_offset, barPercent);
   String valueLabel = makeValueLabel(value, units);
-  uint8_t valueLabelWidth = valueLabel.length() * 6 + 2;
+  uint8_t valueLabelWidth = valueLabel.length() * CHARACTER_WIDTH + 2;
   if( barEnd < PERCENT_BAR_TITLE_WIDTH + valueLabelWidth) { 
     display.setCursor(barEnd + 2, y_offset + 4);
     display.println(valueLabel);
@@ -155,16 +162,16 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
 void render(float power_fwd, float power_rvr) {
   display.clearDisplay();
 
-  renderCompleteBar(0, "SWR", swrFromPower(power_fwd, power_rvr), "", 1.0, 2.0, 2.0);
-  renderCompleteBar(16, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
-  renderCompleteBar(33, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_1_Y, "SWR", swrFromPower(power_fwd, power_rvr), "", 1.0, 2.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_2_Y, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_3_Y, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
 
   display.setTextColor(WHITE);
-  display.setCursor(0, 49);
+  display.setCursor(0, SCREEN_ROW_4_Y);
   display.println("Refl 3.6 Phase 132");
-  display.drawCircle(110, 49, 1, WHITE);
+  display.drawCircle(110, SCREEN_ROW_4_Y, 1, WHITE);
 
-  display.setCursor(32, 57);
+  display.setCursor(32, SCREEN_ROW_5_Y);
   display.println("9i + 34");
   
   display.display();

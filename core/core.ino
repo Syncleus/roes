@@ -29,6 +29,8 @@ void setup()   {
     uint32_t eepromCrc = eepromCrc32();
     errorMsgLine3 = String(dataCrc);
     errorMsgLine4 = String(eepromCrc);
+
+    renderError(errorMsgLine1, errorMsgLine2, errorMsgLine3, errorMsgLine4);
   }
 
   Serial.begin(9600);
@@ -44,18 +46,13 @@ void loop() {
   
   commandLine.update();
 
-  if( time%25 == 0 ) {
-    if(error == false) {
-      if(demoMode())
-        updatePowerDemo(power_fwd, power_rvr);
-      else
-        updatePower(power_fwd, power_rvr);
-      
-      renderSwr(power_fwd, power_rvr);
-    }
-    else {
-      renderError(errorMsgLine1, errorMsgLine2, errorMsgLine3, errorMsgLine4);
-    }
+  if( time%25 == 0 && error == false) {
+    if(demoMode())
+      updatePowerDemo(power_fwd, power_rvr);
+    else
+      updatePower(power_fwd, power_rvr);
+    
+    renderSwr(power_fwd, power_rvr);
   }
 }
 

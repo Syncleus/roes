@@ -34,6 +34,7 @@ void setup()   {
 
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
+  commandLine.add("demo", handleDemo);
 }
 
 void loop() {
@@ -52,9 +53,30 @@ void handlePing(char* tokens)
   Serial.println("Pong!");
 }
 
+void handleDemo(char* tokens)
+{
+  char* argument = strtok(NULL, " ");
+  if( argument == NULL )
+    Serial.println("demo command must have an argument of either 'on' or 'off'");
+  else {
+    String argumentStr = String(argument);
+    if( argumentStr.equals("on") ) {
+      demo_active = true;
+      Serial.println("Activating demo.");
+    }
+    else if( argumentStr.equals("off") ) {
+      demo_active = false;
+      Serial.println("Deactivating demo.");
+    }
+    else {
+      Serial.println("Invalid argument, argument to demo command must be either 'on' or 'off'");
+    }
+  }
+}
+
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help' or 'ping'.");
+  Serial.println("Use the commands 'help', 'demo', or 'ping'.");
 }
 
 float calculateCalibrationSlope(float lowVoltage, uint16_t lowAdc, float highVoltage, uint16_t highAdc) {

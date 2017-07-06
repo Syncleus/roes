@@ -1,4 +1,5 @@
 #include <math.h>
+#include <CommandLine.h>
 
 #include "swr_display.h"
 
@@ -21,21 +22,39 @@ float calibrate_fwd_intercept = 0.0;
 float calibrate_rvr_slope = 0.0;
 float calibrate_rvr_intercept = 0.0;
 
+CommandLine commandLine(Serial, "> ");
+
 void setup()   {                
   displaySetup();
 
   calibrateFwd(5, CALIBRATE_FWD_5W, 200, CALIBRATE_FWD_200W);
   calibrateRvr(5, CALIBRATE_RVR_5W, 200, CALIBRATE_RVR_200W);
-  // init done
+
+  Serial.begin(9600);
+
+  commandLine.add("help", handleHelp);
+  commandLine.add("ping", handlePing);
 }
 
 void loop() {
+  commandLine.update();
+  
   if( !demo_active )
     updateInputs();
   render(power_fwd, power_rvr);
   delay(25);
   if(demo_active)
     adjustDemoValues();
+}
+
+void handlePing(char* tokens)
+{
+  Serial.println("Pong!");
+}
+
+void handleHelp(char* tokens)
+{
+  Serial.println("Use the commands 'help' or 'ping'.");
 }
 
 float calculateCalibrationSlope(float lowVoltage, uint16_t lowAdc, float highVoltage, uint16_t highAdc) {

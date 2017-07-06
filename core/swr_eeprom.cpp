@@ -10,6 +10,7 @@
 
 struct SwrPersistedData {
   boolean calibrateOnBoot;
+  boolean demoMode;
 };
 
 SwrPersistedData persistedData;
@@ -81,11 +82,31 @@ void activateCalibrateOnBoot() {
   storeData();
 }
 
-void resetCalibrateOnBoot() {
+void deactivateCalibrateOnBoot() {
   if( persistedData.calibrateOnBoot == false )
     return;
 
   persistedData.calibrateOnBoot = false;
+  storeData();
+}
+
+boolean demoMode() {
+  return persistedData.demoMode;
+}
+
+void activateDemoMode() {
+  if( persistedData.demoMode == true )
+    return;
+
+  persistedData.demoMode = true;
+  storeData();
+}
+
+void deactivateDemoMode() {
+  if( persistedData.demoMode == false )
+    return;
+
+  persistedData.demoMode = false;
   storeData();
 }
 

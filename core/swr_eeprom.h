@@ -5,7 +5,10 @@
 
 boolean calibrateOnBoot();
 void activateCalibrateOnBoot();
-void resetCalibrateOnBoot();
+void deactivateCalibrateOnBoot();
+void activateDemoMode();
+void deactivateDemoMode();
+boolean demoMode();
 void eepromSetup();
 boolean checkEepromCrc();
 uint32_t eepromCrc32();

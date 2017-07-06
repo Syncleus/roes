@@ -9,7 +9,6 @@ String errorMsgLine1 = "";
 String errorMsgLine2 = "";
 String errorMsgLine3 = "";
 String errorMsgLine4 = "";
-boolean demo_active = false;
 
 float power_fwd = 0.0;
 float power_rvr = 0.0;
@@ -47,7 +46,7 @@ void loop() {
 
   if( time%25 == 0 ) {
     if(error == false) {
-      if(demo_active)
+      if(demoMode())
         updatePowerDemo(power_fwd, power_rvr);
       else
         updatePower(power_fwd, power_rvr);
@@ -74,7 +73,7 @@ void handleCalibrateOnBoot(char* tokens)
       Serial.println("Activating calibrateonboot.");
     }
     else if( argumentStr.equals("off") ) {
-      resetCalibrateOnBoot();
+      deactivateCalibrateOnBoot();
       Serial.println("Deactivating calibrateonboot.");
     }
     else {
@@ -96,11 +95,11 @@ void handleDemo(char* tokens)
   else {
     String argumentStr = String(argument);
     if( argumentStr.equals("on") ) {
-      demo_active = true;
+      activateDemoMode();
       Serial.println("Activating demo.");
     }
     else if( argumentStr.equals("off") ) {
-      demo_active = false;
+      deactivateDemoMode();
       Serial.println("Deactivating demo.");
     }
     else {

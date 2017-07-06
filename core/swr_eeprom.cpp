@@ -4,14 +4,15 @@
 
 #define EEPROM_CRC_ADDR 0
 #define EEPROM_CRC_LENGTH 4
+#define EEPROM_SIZE_ADDR (EEPROM_CRC_ADDR + EEPROM_CRC_LENGTH)
+#define EEPROM_SIZE_LENGTH 4
+#define EEPROM_DATA_ADDR (EEPROM_SIZE_ADDR + EEPROM_SIZE_LENGTH)
 
 struct SwrPersistedData {
   boolean calibrateOnBoot;
 };
 
-SwrPersistedData persistedData = {
-  false
-};
+SwrPersistedData* persistedData = NULL;
 
 uint32_t crc32(byte *data, int len) {
   const uint32_t crc_table[16] = {
@@ -34,9 +35,15 @@ uint32_t crc32(byte *data, int len) {
 }
 
 uint32_t eepromCrc32() {
-  byte *eepromData = new byte[EEPROM.length() - EEPROM_CRC_LENGTH];
-  EEPROM.get(EEPROM_CRC_ADDR + EEPROM_CRC_LENGTH, eepromData);
-  return crc32(eepromData, EEPROM.length() - EEPROM_CRC_LENGTH);
+  SwrPersistedData eepromData;
+  EEPROM.get(EEPROM_DATA_ADDR, eepromData);
+  return crc32((byte*) &eepromData, sizeof(eepromData));
+}
+
+uint32_t persistedDataCrc32() {
+  byte *dataAsArray = (byte*) persistedData;
+  int dataSize = sizeof(*persistedData);
+  return crc32(dataAsArray, dataSize);
 }
 
 boolean checkEepromCrc() {
@@ -50,39 +57,46 @@ boolean checkEepromCrc() {
 }
 
 boolean storeData() {
-  byte *dataAsArray = (byte*) &persistedData;
-  int dataSize = sizeof(persistedData);
-  uint32_t crc = crc32(dataAsArray, dataSize);
+  uint32_t crc = persistedDataCrc32();
   EEPROM.put(EEPROM_CRC_ADDR, crc);
-  EEPROM.put(EEPROM_CRC_ADDR + EEPROM_CRC_LENGTH, persistedData);
+  EEPROM.put(EEPROM_SIZE_ADDR, sizeof(*persistedData));
+  EEPROM.put(EEPROM_DATA_ADDR, *persistedData);
 
-  return checkEepromCrc();
+  return crc == eepromCrc32();
 }
 
 boolean recallData() {
-  EEPROM.get(EEPROM_CRC_ADDR + EEPROM_CRC_LENGTH, persistedData);
+  if( persistedData != NULL ) {
+    free(persistedData);
+    persistedData = NULL;
+  }
+
+  uint32_t dataSize;
+  EEPROM.get(EEPROM_SIZE_ADDR, dataSize);
+  persistedData = malloc(dataSize);
+  EEPROM.get(EEPROM_DATA_ADDR, *persistedData);
 
   return checkEepromCrc();
 }
 
 
 boolean calibrateOnBoot() {
-  return persistedData.calibrateOnBoot;
+  return persistedData->calibrateOnBoot;
 }
 
 void activateCalibrateOnBoot() {
-  if( persistedData.calibrateOnBoot == true )
+  if( persistedData->calibrateOnBoot == true )
     return;
 
-  persistedData.calibrateOnBoot = true;
+  persistedData->calibrateOnBoot = true;
   storeData();
 }
 
 void resetCalibrateOnBoot() {
-  if( persistedData.calibrateOnBoot == false )
+  if( persistedData->calibrateOnBoot == false )
     return;
 
-  persistedData.calibrateOnBoot = false;
+  persistedData->calibrateOnBoot = false;
   storeData();
 }
 

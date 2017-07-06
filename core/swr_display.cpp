@@ -136,7 +136,7 @@ void renderSwr(float power_fwd, float power_rvr) {
   display.display();
 }
 
-void renderError(String message) {
+void renderError(String message1, String message2, String message3, String message4) {
   display.clearDisplay();
   display.setTextColor(WHITE);
 
@@ -146,7 +146,12 @@ void renderError(String message) {
 
   display.setTextSize(1);
   display.setCursor(0, SCREEN_ROW_2_Y);
-  display.println(message);
+  display.println(message1);
+  display.println();
+  display.println(message2);
+  display.println();
+  display.println(message3);
+  display.println(message4);
 
   display.display();
 }

@@ -5,7 +5,10 @@
 #include "swr_eeprom.h"
 
 boolean error = false;
-String errorMsg = "";
+String errorMsgLine1 = "";
+String errorMsgLine2 = "";
+String errorMsgLine3 = "";
+String errorMsgLine4 = "";
 boolean demo_active = false;
 
 float power_fwd = 0.0;
@@ -21,7 +24,12 @@ void setup()   {
   //make sure eeprom isn't corrupt
   if( checkEepromCrc() == false ) {
     error = true;
-    errorMsg = String("EEPROM corrupted.");
+    errorMsgLine1 = "EEPROM is corrupt";
+    errorMsgLine2 = "CRC check failed";
+    uint32_t dataCrc = persistedDataCrc32();
+    uint32_t eepromCrc = eepromCrc32();
+    errorMsgLine3 = String(dataCrc);
+    errorMsgLine4 = String(eepromCrc);
   }
 
   Serial.begin(9600);
@@ -37,16 +45,18 @@ void loop() {
   
   commandLine.update();
 
-  if( time%25 == 0 && error == false ) {
-    if(demo_active)
-      updatePowerDemo(power_fwd, power_rvr);
-    else
-      updatePower(power_fwd, power_rvr);
-    
-    renderSwr(power_fwd, power_rvr);
-  }
-  else if(error) {
-    renderError(errorMsg);
+  if( time%25 == 0 ) {
+    if(error == false) {
+      if(demo_active)
+        updatePowerDemo(power_fwd, power_rvr);
+      else
+        updatePower(power_fwd, power_rvr);
+      
+      renderSwr(power_fwd, power_rvr);
+    }
+    else {
+      renderError(errorMsgLine1, errorMsgLine2, errorMsgLine3, errorMsgLine4);
+    }
   }
 }
 

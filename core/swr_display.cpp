@@ -115,7 +115,7 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
   }
 }
 
-void render(float power_fwd, float power_rvr) {
+void renderSwr(float power_fwd, float power_rvr) {
   display.clearDisplay();
 
   //make sure power_rvr isnt higher than power_fwd

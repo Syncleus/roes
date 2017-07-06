@@ -32,7 +32,7 @@ void loop() {
     else
       updatePower(power_fwd, power_rvr);
     
-    render(power_fwd, power_rvr);
+    renderSwr(power_fwd, power_rvr);
   }
 }
 

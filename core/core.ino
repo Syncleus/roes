@@ -4,8 +4,6 @@
 #include "swr_power.h"
 
 boolean demo_active = false;
-boolean demo_power_fwd_increasing = true;
-boolean demo_power_rvr_increasing = true;
 
 float power_fwd = 0.0;
 float power_rvr = 0.0;
@@ -30,7 +28,7 @@ void loop() {
 
   if( time%25 == 0 ) {
     if(demo_active)
-      adjustDemoValues();
+      updatePowerDemo(power_fwd, power_rvr);
     else
       updatePower(power_fwd, power_rvr);
     
@@ -67,56 +65,5 @@ void handleDemo(char* tokens)
 void handleHelp(char* tokens)
 {
   Serial.println("Use the commands 'help', 'demo', or 'ping'.");
-}
-
-void adjustDemoValues() {
-  if( power_fwd < 10.0 )
-    if( demo_power_fwd_increasing )
-      power_fwd += 0.1;
-    else
-      power_fwd -= 0.1;
-  else if(power_fwd >= 100)
-    if( demo_power_fwd_increasing )
-      power_fwd += 10.0;
-    else
-      power_fwd -= 10.0;
-  else
-    if( demo_power_fwd_increasing )
-      power_fwd += 1.0;
-    else
-      power_fwd -= 1.0;
-      
-  if(power_fwd > 1000.0) {
-    power_fwd = 1000.0;
-    demo_power_fwd_increasing = false;
-  }
-  else if(power_fwd < 0.0 ) {
-    power_fwd = 0.0;
-    demo_power_fwd_increasing = true;
-  }
-
-  if( power_rvr < 10.0 )
-    if( demo_power_rvr_increasing )
-      power_rvr += 0.2;
-    else
-      power_rvr -= 0.2;
-  else if(power_rvr >= 100)
-    if( demo_power_rvr_increasing )
-      power_rvr += 20.0;
-    else
-      power_rvr -= 20.0;
-  else
-    if( demo_power_rvr_increasing )
-      power_rvr += 2.0;
-    else
-      power_rvr -= 2.0;
-  if(power_rvr > power_fwd) {
-    power_rvr = power_fwd;
-    demo_power_rvr_increasing = false;
-  }
-  else if( power_rvr < 0.0 ) {
-    power_rvr = 0.0;
-    demo_power_rvr_increasing = true;
-  }
 }
 

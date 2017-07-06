@@ -12,6 +12,9 @@
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
 
+boolean demo_power_fwd_increasing = true;
+boolean demo_power_rvr_increasing = true;
+
 static const unsigned char PROGMEM gamma16_glcd_bmp[] =
 { B01111111, B11111110,
   B00111111, B11111110,
@@ -131,4 +134,56 @@ void render(float power_fwd, float power_rvr) {
   display.println("34 + 9i");
   
   display.display();
+}
+
+
+void updatePowerDemo(float &power_fwd, float &power_rvr) {
+  if( power_fwd < 10.0 )
+    if( demo_power_fwd_increasing )
+      power_fwd += 0.1;
+    else
+      power_fwd -= 0.1;
+  else if(power_fwd >= 100)
+    if( demo_power_fwd_increasing )
+      power_fwd += 10.0;
+    else
+      power_fwd -= 10.0;
+  else
+    if( demo_power_fwd_increasing )
+      power_fwd += 1.0;
+    else
+      power_fwd -= 1.0;
+      
+  if(power_fwd > 1000.0) {
+    power_fwd = 1000.0;
+    demo_power_fwd_increasing = false;
+  }
+  else if(power_fwd < 0.0 ) {
+    power_fwd = 0.0;
+    demo_power_fwd_increasing = true;
+  }
+
+  if( power_rvr < 10.0 )
+    if( demo_power_rvr_increasing )
+      power_rvr += 0.2;
+    else
+      power_rvr -= 0.2;
+  else if(power_rvr >= 100)
+    if( demo_power_rvr_increasing )
+      power_rvr += 20.0;
+    else
+      power_rvr -= 20.0;
+  else
+    if( demo_power_rvr_increasing )
+      power_rvr += 2.0;
+    else
+      power_rvr -= 2.0;
+  if(power_rvr > power_fwd) {
+    power_rvr = power_fwd;
+    demo_power_rvr_increasing = false;
+  }
+  else if( power_rvr < 0.0 ) {
+    power_rvr = 0.0;
+    demo_power_rvr_increasing = true;
+  }
 }

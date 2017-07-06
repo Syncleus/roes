@@ -1,5 +1,5 @@
-#ifndef _swr_display_H_
-#define _swr_display_H_
+#ifndef _SWR_DISPLAY_H_
+#define _SWR_DISPLAY_H_
 
 #include <Arduino.h>
 
@@ -13,4 +13,4 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
 void render(float power_fwd, float power_rvr);
 float swrFromPower(float power_fwd, float power_rvr);
 
-#endif /* _swr_display_H_ */
+#endif /* _SWR_DISPLAY_H_ */

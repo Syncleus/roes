@@ -4,6 +4,8 @@
 #include "swr_power.h"
 #include "swr_eeprom.h"
 
+boolean error = false;
+String errorMsg = "";
 boolean demo_active = false;
 
 float power_fwd = 0.0;
@@ -15,6 +17,12 @@ void setup()   {
   displaySetup();
   powerSetup();
   eepromSetup();
+
+  //make sure eeprom isn't corrupt
+  if( checkEepromCrc() == false ) {
+    error = true;
+    errorMsg = String("EEPROM corrupted.");
+  }
 
   Serial.begin(9600);
 
@@ -29,13 +37,16 @@ void loop() {
   
   commandLine.update();
 
-  if( time%25 == 0 ) {
+  if( time%25 == 0 && error == false ) {
     if(demo_active)
       updatePowerDemo(power_fwd, power_rvr);
     else
       updatePower(power_fwd, power_rvr);
     
     renderSwr(power_fwd, power_rvr);
+  }
+  else if(error) {
+    renderError(errorMsg);
   }
 }
 

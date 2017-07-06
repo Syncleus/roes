@@ -13,5 +13,6 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
 void renderSwr(float power_fwd, float power_rvr);
 float swrFromPower(float power_fwd, float power_rvr);
 void updatePowerDemo(float &power_fwd, float &power_rvr);
+void renderError(String message);
 
 #endif /* _SWR_DISPLAY_H_ */

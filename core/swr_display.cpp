@@ -136,6 +136,21 @@ void renderSwr(float power_fwd, float power_rvr) {
   display.display();
 }
 
+void renderError(String message) {
+  display.clearDisplay();
+  display.setTextColor(WHITE);
+
+  display.setTextSize(2);
+  display.setCursor(32, SCREEN_ROW_1_Y);
+  display.println("ERROR!");
+
+  display.setTextSize(1);
+  display.setCursor(0, SCREEN_ROW_2_Y);
+  display.println(message);
+
+  display.display();
+}
+
 
 void updatePowerDemo(float &power_fwd, float &power_rvr) {
   if( power_fwd < 10.0 )

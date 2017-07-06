@@ -2,6 +2,7 @@
 
 #include "swr_display.h"
 #include "swr_power.h"
+#include "swr_eeprom.h"
 
 boolean demo_active = false;
 
@@ -13,12 +14,14 @@ CommandLine commandLine(Serial, "> ");
 void setup()   {                
   displaySetup();
   powerSetup();
+  eepromSetup();
 
   Serial.begin(9600);
 
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);
+  commandLine.add("calibrateonboot", handleCalibrateOnBoot);
 }
 
 void loop() {
@@ -33,6 +36,29 @@ void loop() {
       updatePower(power_fwd, power_rvr);
     
     renderSwr(power_fwd, power_rvr);
+  }
+}
+
+void handleCalibrateOnBoot(char* tokens)
+{
+  char* argument = strtok(NULL, " ");
+  if( argument == NULL ) {
+    Serial.print("calibrateonboot: ");
+    Serial.println((calibrateOnBoot() == true ? "on" : "off"));
+  }
+  else {
+    String argumentStr = String(argument);
+    if( argumentStr.equals("on") ) {
+      activateCalibrateOnBoot();
+      Serial.println("Activating calibrateonboot.");
+    }
+    else if( argumentStr.equals("off") ) {
+      resetCalibrateOnBoot();
+      Serial.println("Deactivating calibrateonboot.");
+    }
+    else {
+      Serial.println("Invalid argument, argument to calibrateonboot command must be either 'on' or 'off'");
+    }
   }
 }
 
@@ -64,6 +90,6 @@ void handleDemo(char* tokens)
 
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help', 'demo', or 'ping'.");
+  Serial.println("Use the commands 'help', 'calibrateonboot', 'demo', or 'ping'.");
 }
 

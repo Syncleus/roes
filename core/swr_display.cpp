@@ -3,24 +3,14 @@
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "swr_constants.h"
 
-#if (SSD1306_LCDHEIGHT != 64)
+#if (SSD1306_LCDHEIGHT != SCREEN_HEIGHT)
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
-
-#define SCREEN_HEIGHT SSD1306_LCDHEIGHT
-#define SCREEN_WIDTH SSD1306_LCDWIDTH
-#define PERCENT_BAR_TITLE_WIDTH 20
-#define PERCENT_BAR_WIDTH (SCREEN_WIDTH-PERCENT_BAR_TITLE_WIDTH)
-#define CHARACTER_WIDTH 6
-#define SCREEN_ROW_1_Y 0
-#define SCREEN_ROW_2_Y 16
-#define SCREEN_ROW_3_Y 33
-#define SCREEN_ROW_4_Y 49
-#define SCREEN_ROW_5_Y 57
 
 static const unsigned char PROGMEM gamma16_glcd_bmp[] =
 { B01111111, B11111110,

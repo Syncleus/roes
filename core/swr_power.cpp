@@ -1,12 +1,5 @@
 #include "swr_power.h"
-
-#define POWER_FWD_PIN A15
-#define POWER_RVR_PIN A14
-
-#define CALIBRATE_FWD_5W 73
-#define CALIBRATE_FWD_200W 689
-#define CALIBRATE_RVR_5W 102
-#define CALIBRATE_RVR_200W 720
+#include "swr_constants.h"
 
 float calibrate_fwd_slope = 0.0;
 float calibrate_fwd_intercept = 0.0;

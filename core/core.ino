@@ -1,4 +1,3 @@
-#include <math.h>
 #include <CommandLine.h>
 
 #include "swr_display.h"

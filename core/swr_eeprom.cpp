@@ -12,7 +12,7 @@ struct SwrPersistedData {
   boolean calibrateOnBoot;
 };
 
-SwrPersistedData* persistedData = NULL;
+SwrPersistedData persistedData;
 
 uint32_t crc32(byte *data, int len) {
   const uint32_t crc_table[16] = {
@@ -41,11 +41,10 @@ uint32_t eepromCrc32() {
 }
 
 uint32_t persistedDataCrc32() {
-  byte *dataAsArray = (byte*) persistedData;
-  int dataSize = sizeof(*persistedData);
-  return crc32(dataAsArray, dataSize);
+  return crc32((byte*) &persistedData, sizeof(persistedData));
 }
 
+//false
 boolean checkEepromCrc() {
   uint32_t storedCrc;
   EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
@@ -59,44 +58,34 @@ boolean checkEepromCrc() {
 boolean storeData() {
   uint32_t crc = persistedDataCrc32();
   EEPROM.put(EEPROM_CRC_ADDR, crc);
-  EEPROM.put(EEPROM_SIZE_ADDR, sizeof(*persistedData));
-  EEPROM.put(EEPROM_DATA_ADDR, *persistedData);
+  EEPROM.put(EEPROM_DATA_ADDR, persistedData);
 
   return crc == eepromCrc32();
 }
 
 boolean recallData() {
-  if( persistedData != NULL ) {
-    free(persistedData);
-    persistedData = NULL;
-  }
-
-  uint32_t dataSize;
-  EEPROM.get(EEPROM_SIZE_ADDR, dataSize);
-  persistedData = malloc(dataSize);
-  EEPROM.get(EEPROM_DATA_ADDR, *persistedData);
-
+  EEPROM.get(EEPROM_DATA_ADDR, persistedData);
   return checkEepromCrc();
 }
 
 
 boolean calibrateOnBoot() {
-  return persistedData->calibrateOnBoot;
+  return persistedData.calibrateOnBoot;
 }
 
 void activateCalibrateOnBoot() {
-  if( persistedData->calibrateOnBoot == true )
+  if( persistedData.calibrateOnBoot == true )
     return;
 
-  persistedData->calibrateOnBoot = true;
+  persistedData.calibrateOnBoot = true;
   storeData();
 }
 
 void resetCalibrateOnBoot() {
-  if( persistedData->calibrateOnBoot == false )
+  if( persistedData.calibrateOnBoot == false )
     return;
 
-  persistedData->calibrateOnBoot = false;
+  persistedData.calibrateOnBoot = false;
   storeData();
 }
 

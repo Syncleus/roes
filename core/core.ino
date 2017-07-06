@@ -87,8 +87,10 @@ void handlePing(char* tokens)
 void handleDemo(char* tokens)
 {
   char* argument = strtok(NULL, " ");
-  if( argument == NULL )
-    Serial.println("demo command must have an argument of either 'on' or 'off'");
+  if( argument == NULL ) {
+    Serial.print("demoMode: ");
+    Serial.println((demoMode() == true ? "on" : "off"));
+  }
   else {
     String argumentStr = String(argument);
     if( argumentStr.equals("on") ) {

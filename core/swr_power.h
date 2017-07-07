@@ -12,8 +12,9 @@ float calculateFwdPower(uint16_t adcValue);
 float calculateRvrPower(uint16_t adcValue);
 float voltageToPower(float voltage);
 float powerToVoltage(float power);
-float readPowerFwd();
-float readPowerRvr();
 void updatePower(float &power_fwd, float &power_rvr);
+float calculateCalibrationSlope(float lowVoltage, float lowValue, float highVoltage, float highValue);
+float calculateCalibrationIntercept(float slope, float voltage, float value);
+void calibrateRatio(float lowPower, float lowRatio, float highPower, float highRatio);
 
 #endif /* _SWR_POWER_H_ */

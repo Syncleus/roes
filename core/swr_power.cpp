@@ -6,10 +6,13 @@ float calibrate_fwd_slope = 0.0;
 float calibrate_fwd_intercept = 0.0;
 float calibrate_rvr_slope = 0.0;
 float calibrate_rvr_intercept = 0.0;
+float calibrate_ratio_slope = 0.0;
+float calibrate_ratio_intercept = 0.0;
 
 void powerSetup() {
   calibrateFwd(LOW_POWER, calibrationLowFwd(), HIGH_POWER, calibrationHighFwd());
   calibrateRvr(LOW_POWER, calibrationLowRvr(), HIGH_POWER, calibrationHighRvr());
+  calibrateRatio(LOW_POWER, calibrationLowRatio(), HIGH_POWER, calibrationHighRatio());
 }
 
 float calculateCalibrationSlope(float lowVoltage, uint16_t lowAdc, float highVoltage, uint16_t highAdc) {
@@ -18,6 +21,19 @@ float calculateCalibrationSlope(float lowVoltage, uint16_t lowAdc, float highVol
 
 float calculateCalibrationIntercept(float slope, float voltage, uint16_t adc) {
   return voltage - slope * ((float)adc);
+}
+
+float calculateCalibrationRatioSlope(float lowPower, float lowValue, float highPower, float highValue) {
+  return ((float) (highValue - lowValue)) / (highPower - lowPower);
+}
+
+float calculateCalibrationRatioIntercept(float slope, float power, float value) {
+  return ((float)value) - slope * power;
+}
+
+void calibrateRatio(float lowPower, float lowRatio, float highPower, float highRatio) {
+  calibrate_ratio_slope = calculateCalibrationRatioSlope(lowPower, lowRatio, highPower, highRatio);
+  calibrate_ratio_intercept = calculateCalibrationRatioIntercept(calibrate_ratio_slope, highPower, highRatio);
 }
 
 void calibrateFwd(float lowPower, uint16_t lowAdc, float highPower, uint16_t highAdc) {
@@ -52,17 +68,15 @@ float powerToVoltage(float power) {
   return sqrt(power * 50.0);
 }
 
-float readPowerFwd() {
-  uint16_t adcValue = analogRead(POWER_FWD_PIN);
-  return calculateFwdPower(adcValue);
-}
-
-float readPowerRvr() {
-  uint16_t adcValue = analogRead(POWER_RVR_PIN);
-  return calculateRvrPower(adcValue);
-}
 
 void updatePower(float &power_fwd, float &power_rvr) {
-  power_fwd = readPowerFwd();
-  power_rvr = readPowerRvr();
+  uint16_t adcFwdValue = analogRead(POWER_FWD_PIN);
+  power_fwd = calculateFwdPower(adcFwdValue);
+
+  float reverseRatio = power_fwd * calibrate_ratio_slope + calibrate_ratio_intercept;
+
+  float reverseBaseline = ((float)adcFwdValue) / reverseRatio;
+  int32_t adcRvrValue = analogRead(POWER_RVR_PIN);
+  int32_t adjustedAdcRvrValue = ((float)adcRvrValue) - reverseBaseline;
+  power_rvr = calculateRvrPower(adjustedAdcRvrValue >= 0 ? adjustedAdcRvrValue : 0);
 }

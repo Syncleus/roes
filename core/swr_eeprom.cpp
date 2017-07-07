@@ -15,6 +15,8 @@ struct SwrPersistedData {
   uint16_t calibrationLowRvr;
   uint16_t calibrationHighFwd;
   uint16_t calibrationHighRvr;
+  float calibrationLowRatio;
+  float calibrationHighRatio;
 };
 
 SwrPersistedData persistedData;
@@ -162,6 +164,30 @@ void setCalibrationHighRvr(uint16_t adcValue) {
     return;
 
   persistedData.calibrationHighRvr = adcValue;
+  storeData();
+}
+
+float calibrationHighRatio() {
+  return persistedData.calibrationHighRatio;
+}
+
+void setCalibrationHighRatio(float ratio) {
+  if( persistedData.calibrationHighRatio == ratio )
+    return;
+
+  persistedData.calibrationHighRatio = ratio;
+  storeData();
+}
+
+float calibrationLowRatio() {
+  return persistedData.calibrationLowRatio;
+}
+
+void setCalibrationLowRatio(float ratio) {
+  if( persistedData.calibrationLowRatio == ratio )
+    return;
+
+  persistedData.calibrationLowRatio = ratio;
   storeData();
 }
 

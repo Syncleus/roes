@@ -22,5 +22,9 @@ uint16_t calibrationHighFwd();
 void setCalibrationHighFwd(uint16_t adcValue);
 uint16_t calibrationHighRvr();
 void setCalibrationHighRvr(uint16_t adcValue);
+float calibrationHighRatio();
+void setCalibrationHighRatio(float ratio);
+float calibrationLowRatio();
+void setCalibrationLowRatio(float ratio);
 
 #endif /* _SWR_EEPROM_H_ */

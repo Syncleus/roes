@@ -6,8 +6,10 @@
 struct Calibration {
   uint16_t lowFwd;
   uint16_t lowRvr;
+  float lowRatio;
   uint16_t highFwd;
   uint16_t highRvr;
+  float highRatio;
 };
 
 boolean calibrateLowFwd();

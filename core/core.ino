@@ -60,6 +60,7 @@ void setup()   {
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);
   commandLine.add("calibrateonboot", handleCalibrateOnBoot);
+  commandLine.add("calibrationdata", handleCalibrationData);
 }
 
 void loop() {
@@ -123,8 +124,10 @@ void loop() {
           Calibration calibration = getCalibration();
           setCalibrationLowFwd(calibration.lowFwd);
           setCalibrationLowRvr(calibration.lowRvr);
+          setCalibrationLowRatio(calibration.lowRatio);
           setCalibrationHighFwd(calibration.highFwd);
           setCalibrationHighRvr(calibration.highRvr);
+          setCalibrationHighRatio(calibration.highRatio);
           powerSetup();
           calibrationStage = NOT_CALIBRATING;
           calibrationPause = false;
@@ -141,6 +144,22 @@ void loop() {
       errorMsgLine1 = "Unexpected behavior";
     }
   }
+}
+
+void handleCalibrationData(char* tokens)
+{
+  Serial.print("calibrationLowFwd: ");
+  Serial.println(String(calibrationLowFwd()));
+  Serial.print("calibrationLowRvr: ");
+  Serial.println(String(calibrationLowRvr()));
+  Serial.print("calibrationLowRatior: ");
+  Serial.println(String(calibrationLowRatio()));
+  Serial.print("calibrationHighFwd: ");
+  Serial.println(String(calibrationHighFwd()));
+  Serial.print("calibrationHighRvr: ");
+  Serial.println(String(calibrationHighRvr()));
+  Serial.print("calibrationHighRatio: ");
+  Serial.println(String(calibrationHighRatio()));
 }
 
 void handleCalibrateOnBoot(char* tokens)
@@ -196,6 +215,6 @@ void handleDemo(char* tokens)
 
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help', 'calibrateonboot', 'demo', or 'ping'.");
+  Serial.println("Use the commands 'help', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
 }
 

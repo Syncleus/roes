@@ -1,5 +1,6 @@
 #include "swr_power.h"
 #include "swr_constants.h"
+#include "swr_eeprom.h"
 
 float calibrate_fwd_slope = 0.0;
 float calibrate_fwd_intercept = 0.0;
@@ -7,8 +8,8 @@ float calibrate_rvr_slope = 0.0;
 float calibrate_rvr_intercept = 0.0;
 
 void powerSetup() {
-  calibrateFwd(5, CALIBRATE_FWD_5W, 200, CALIBRATE_FWD_200W);
-  calibrateRvr(5, CALIBRATE_RVR_5W, 200, CALIBRATE_RVR_200W);
+  calibrateFwd(LOW_POWER, calibrationLowFwd(), HIGH_POWER, calibrationHighFwd());
+  calibrateRvr(LOW_POWER, calibrationLowRvr(), HIGH_POWER, calibrationHighRvr());
 }
 
 float calculateCalibrationSlope(float lowVoltage, uint16_t lowAdc, float highVoltage, uint16_t highAdc) {

@@ -15,9 +15,7 @@
 #define SCREEN_ROW_4_Y 49
 #define SCREEN_ROW_5_Y 57
 
-#define CALIBRATE_FWD_5W 73
-#define CALIBRATE_FWD_200W 689
-#define CALIBRATE_RVR_5W 102
-#define CALIBRATE_RVR_200W 720
+#define LOW_POWER 5.0
+#define HIGH_POWER 200.0
 
 #endif /* _SWR_CONSTANTS_H_ */

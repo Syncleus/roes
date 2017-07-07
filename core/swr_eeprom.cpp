@@ -11,6 +11,10 @@
 struct SwrPersistedData {
   boolean calibrateOnBoot;
   boolean demoMode;
+  uint16_t calibrationLowFwd;
+  uint16_t calibrationLowRvr;
+  uint16_t calibrationHighFwd;
+  uint16_t calibrationHighRvr;
 };
 
 SwrPersistedData persistedData;
@@ -69,6 +73,9 @@ boolean recallData() {
   return checkEepromCrc();
 }
 
+void eepromSetup() {
+  recallData();
+}
 
 boolean calibrateOnBoot() {
   return persistedData.calibrateOnBoot;
@@ -110,7 +117,51 @@ void deactivateDemoMode() {
   storeData();
 }
 
-void eepromSetup() {
-  recallData();
+uint16_t calibrationLowFwd() {
+  return persistedData.calibrationLowFwd;
+}
+
+void setCalibrationLowFwd(uint16_t adcValue) {
+  if( persistedData.calibrationLowFwd == adcValue )
+    return;
+
+  persistedData.calibrationLowFwd = adcValue;
+  storeData();
+}
+
+uint16_t calibrationLowRvr() {
+  return persistedData.calibrationLowRvr;
+}
+
+void setCalibrationLowRvr(uint16_t adcValue) {
+  if( persistedData.calibrationLowRvr == adcValue )
+    return;
+
+  persistedData.calibrationLowRvr = adcValue;
+  storeData();
+}
+
+uint16_t calibrationHighFwd() {
+  return persistedData.calibrationHighFwd;
+}
+
+void setCalibrationHighFwd(uint16_t adcValue) {
+  if( persistedData.calibrationHighFwd == adcValue )
+    return;
+
+  persistedData.calibrationHighFwd = adcValue;
+  storeData();
+}
+
+uint16_t calibrationHighRvr() {
+  return persistedData.calibrationHighRvr;
+}
+
+void setCalibrationHighRvr(uint16_t adcValue) {
+  if( persistedData.calibrationHighRvr == adcValue )
+    return;
+
+  persistedData.calibrationHighRvr = adcValue;
+  storeData();
 }
 

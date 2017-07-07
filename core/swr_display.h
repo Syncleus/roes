@@ -14,5 +14,7 @@ void renderSwr(float power_fwd, float power_rvr);
 float swrFromPower(float power_fwd, float power_rvr);
 void updatePowerDemo(float &power_fwd, float &power_rvr);
 void renderError(String message1, String message2, String message3, String message4);
+void renderCalibration(float power, boolean forward);
+void renderStopTransmitting();
 
 #endif /* _SWR_DISPLAY_H_ */

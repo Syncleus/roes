@@ -3,12 +3,25 @@
 #include "swr_display.h"
 #include "swr_power.h"
 #include "swr_eeprom.h"
+#include "swr_calibrate.h"
+#include "swr_constants.h"
 
 boolean error = false;
 String errorMsgLine1 = "";
 String errorMsgLine2 = "";
 String errorMsgLine3 = "";
 String errorMsgLine4 = "";
+
+enum CalibratingStage {
+  NOT_CALIBRATING,
+  LOW_RVR,
+  HIGH_RVR,
+  LOW_FWD,
+  HIGH_FWD
+};
+boolean calibrationPause = false;
+
+CalibratingStage calibrationStage = NOT_CALIBRATING;
 
 float power_fwd = 0.0;
 float power_rvr = 0.0;
@@ -17,7 +30,6 @@ CommandLine commandLine(Serial, "> ");
 
 void setup()   {                
   displaySetup();
-  powerSetup();
   eepromSetup();
 
   //make sure eeprom isn't corrupt
@@ -31,6 +43,15 @@ void setup()   {
     errorMsgLine4 = String(eepromCrc);
 
     renderError(errorMsgLine1, errorMsgLine2, errorMsgLine3, errorMsgLine4);
+  }
+  else {
+    if( calibrateOnBoot() == true )
+    {
+      calibrationStage = LOW_RVR;
+      renderCalibration(LOW_POWER, false);
+    }
+    else
+      powerSetup();
   }
 
   Serial.begin(9600);
@@ -46,13 +67,79 @@ void loop() {
   
   commandLine.update();
 
-  if( time%25 == 0 && error == false) {
+  if( time%25 == 0 && error == false && calibrationStage == NOT_CALIBRATING) {
     if(demoMode())
       updatePowerDemo(power_fwd, power_rvr);
     else
       updatePower(power_fwd, power_rvr);
     
     renderSwr(power_fwd, power_rvr);
+  }
+  
+  if(calibrationStage != NOT_CALIBRATING) {
+    switch(calibrationStage) {
+    case LOW_RVR:
+      if( calibrationPause ) {
+        if(waitForStop(false)) {
+          calibrationStage = HIGH_RVR;
+          renderCalibration(HIGH_POWER, false);
+          calibrationPause = false;
+        }
+      }
+      else if( calibrateLowRvr() ) {
+        calibrationPause = true;
+        renderStopTransmitting();
+      }
+      break;
+    case HIGH_RVR:
+      if( calibrationPause ) {
+        if(waitForStop(false)) {
+          calibrationStage = LOW_FWD;
+          renderCalibration(LOW_POWER, true);
+          calibrationPause = false;
+        }
+      }
+      else if( calibrateHighRvr() ) {
+        calibrationPause = true;
+        renderStopTransmitting();
+      }
+      break;
+    case LOW_FWD:
+      if( calibrationPause ) {
+        if(waitForStop(true)) {
+          calibrationStage = HIGH_FWD;
+          renderCalibration(HIGH_POWER, true);
+          calibrationPause = false;
+        }
+      }
+      else if( calibrateLowFwd() ) {
+        calibrationPause = true;
+        renderStopTransmitting();
+      }
+      break;
+    case HIGH_FWD:
+      if( calibrationPause ) {
+        if(waitForStop(true)) {
+          Calibration calibration = getCalibration();
+          setCalibrationLowFwd(calibration.lowFwd);
+          setCalibrationLowRvr(calibration.lowRvr);
+          setCalibrationHighFwd(calibration.highFwd);
+          setCalibrationHighRvr(calibration.highRvr);
+          powerSetup();
+          calibrationStage = NOT_CALIBRATING;
+          calibrationPause = false;
+          deactivateCalibrateOnBoot();
+        }
+      }
+      else if( calibrateHighFwd() ) {
+        calibrationPause = true;
+        renderStopTransmitting();
+      }
+      break;
+    default:
+      error = true;
+      errorMsgLine1 = "Unexpected behavior";
+    }
   }
 }
 

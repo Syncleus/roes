@@ -117,7 +117,9 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
 
 void renderSwr(float power_fwd, float power_rvr) {
   display.clearDisplay();
-
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  
   //make sure power_rvr isnt higher than power_fwd
   renderCompleteBar(SCREEN_ROW_1_Y, "SWR", (power_rvr <= power_fwd ? swrFromPower(power_fwd, power_rvr) : swrFromPower(power_fwd, power_fwd)), "", 1.0, 2.0, 2.0);
   renderCompleteBar(SCREEN_ROW_2_Y, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
@@ -136,10 +138,51 @@ void renderSwr(float power_fwd, float power_rvr) {
   display.display();
 }
 
+void renderStopTransmitting() {
+  display.clearDisplay();
+  
+  display.setTextColor(WHITE);
+  display.setTextSize(2);
+  display.setCursor(36, SCREEN_ROW_1_Y);
+  display.println("STOP");
+
+  display.setTextSize(1);
+  display.setCursor(20, SCREEN_ROW_2_Y);
+  display.println("transmitting");
+
+  display.display();
+}
+
+void renderCalibration(float power, boolean forward) {
+  display.clearDisplay();
+  
+  display.setTextColor(WHITE);
+  display.setTextSize(2);
+  display.setCursor(4, SCREEN_ROW_1_Y);
+  display.println("Calibrate");
+
+  display.setTextSize(1);
+  String line1 = "Apply ";
+  line1.concat(makeValueLabel(power, "w"));
+  line1.concat(" in the ");
+  display.println(line1);
+  
+  String line2;
+  if(forward)
+    line2 = "forward";
+  else
+    line2 = "reverse";
+  line2.concat(" direction");
+  display.println(line2);
+  display.println("into a dummy load");
+
+  display.display();
+}
+
 void renderError(String message1, String message2, String message3, String message4) {
   display.clearDisplay();
+  
   display.setTextColor(WHITE);
-
   display.setTextSize(2);
   display.setCursor(32, SCREEN_ROW_1_Y);
   display.println("ERROR!");

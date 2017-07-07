@@ -61,6 +61,7 @@ void setup()   {
   commandLine.add("demo", handleDemo);
   commandLine.add("calibrateonboot", handleCalibrateOnBoot);
   commandLine.add("calibrationdata", handleCalibrationData);
+  commandLine.add("readinputs", handleReadInputs);
 }
 
 void loop() {
@@ -162,6 +163,20 @@ void handleCalibrationData(char* tokens)
   Serial.println(String(calibrationHighRatio()));
 }
 
+void handleReadInputs(char* tokens)
+{
+  Serial.print("POWER_FWD_PIN: ");
+  Serial.println(String(analogRead(POWER_FWD_PIN)));
+  Serial.print("POWER_RVR_PIN: ");
+  Serial.println(String(analogRead(POWER_RVR_PIN)));
+  Serial.print("COMPLEX_VREF_PIN: ");
+  Serial.println(String(analogRead(COMPLEX_VREF_PIN)));
+  Serial.print("COMPLEX_PHASE_PIN: ");
+  Serial.println(String(analogRead(COMPLEX_PHASE_PIN)));
+  Serial.print("COMPLEX_MAGNITUDE_PIN: ");
+  Serial.println(String(analogRead(COMPLEX_MAGNITUDE_PIN)));
+}
+
 void handleCalibrateOnBoot(char* tokens)
 {
   char* argument = strtok(NULL, " ");
@@ -215,6 +230,6 @@ void handleDemo(char* tokens)
 
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
+  Serial.println("Use the commands 'help', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
 }
 

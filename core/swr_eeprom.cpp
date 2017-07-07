@@ -13,8 +13,14 @@ struct SwrPersistedData {
   boolean demoMode;
   uint16_t calibrationLowFwd;
   uint16_t calibrationLowRvr;
+  uint16_t calibrationLowVref;
+  uint16_t calibrationLowMagnitude;
+  uint16_t calibrationLowPhase;
   uint16_t calibrationHighFwd;
   uint16_t calibrationHighRvr;
+  uint16_t calibrationHighVref;
+  uint16_t calibrationHighMagnitude;
+  uint16_t calibrationHighPhase;
   float calibrationLowRatio;
   float calibrationHighRatio;
 };
@@ -188,6 +194,78 @@ void setCalibrationLowRatio(float ratio) {
     return;
 
   persistedData.calibrationLowRatio = ratio;
+  storeData();
+}
+
+uint16_t calibrationLowVref() {
+  return persistedData.calibrationLowVref;
+}
+
+void setCalibrationLowVref(uint16_t adcValue) {
+  if( persistedData.calibrationLowVref == adcValue )
+    return;
+
+  persistedData.calibrationLowVref = adcValue;
+  storeData();
+}
+
+uint16_t calibrationLowMagnitude() {
+  return persistedData.calibrationLowMagnitude;
+}
+
+void setCalibrationLowMagnitude(uint16_t adcValue) {
+  if( persistedData.calibrationLowMagnitude == adcValue )
+    return;
+
+  persistedData.calibrationLowMagnitude = adcValue;
+  storeData();
+}
+
+uint16_t calibrationLowPhase() {
+  return persistedData.calibrationLowPhase;
+}
+
+void setCalibrationLowPhase(uint16_t adcValue) {
+  if( persistedData.calibrationLowPhase == adcValue )
+    return;
+
+  persistedData.calibrationLowPhase = adcValue;
+  storeData();
+}
+
+uint16_t calibrationHighVref() {
+  return persistedData.calibrationHighVref;
+}
+
+void setCalibrationHighVref(uint16_t adcValue) {
+  if( persistedData.calibrationHighVref == adcValue )
+    return;
+
+  persistedData.calibrationHighVref = adcValue;
+  storeData();
+}
+
+uint16_t calibrationHighMagnitude() {
+  return persistedData.calibrationHighVref;
+}
+
+void setCalibrationHighMagnitude(uint16_t adcValue) {
+  if( persistedData.calibrationHighMagnitude == adcValue )
+    return;
+
+  persistedData.calibrationHighMagnitude = adcValue;
+  storeData();
+}
+
+uint16_t calibrationHighPhase() {
+  return persistedData.calibrationHighPhase;
+}
+
+void setCalibrationHighPhase(uint16_t adcValue) {
+  if( persistedData.calibrationHighPhase == adcValue )
+    return;
+
+  persistedData.calibrationHighPhase = adcValue;
   storeData();
 }
 

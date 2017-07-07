@@ -18,13 +18,27 @@ uint16_t calibrationLowFwd();
 void setCalibrationLowFwd(uint16_t adcValue);
 uint16_t calibrationLowRvr();
 void setCalibrationLowRvr(uint16_t adcValue);
+uint16_t calibrationLowVref();
+void setCalibrationLowVref(uint16_t adcValue);
+uint16_t calibrationLowMagnitude();
+void setCalibrationLowMagnitude(uint16_t adcValue);
+uint16_t calibrationLowPhase();
+void setCalibrationLowPhase(uint16_t adcValue);
+float calibrationLowRatio();
+void setCalibrationLowRatio(float ratio);
+
 uint16_t calibrationHighFwd();
 void setCalibrationHighFwd(uint16_t adcValue);
 uint16_t calibrationHighRvr();
 void setCalibrationHighRvr(uint16_t adcValue);
+uint16_t calibrationHighVref();
+void setCalibrationHighVref(uint16_t adcValue);
+uint16_t calibrationHighMagnitude();
+void setCalibrationHighMagnitude(uint16_t adcValue);
+uint16_t calibrationHighPhase();
+void setCalibrationHighPhase(uint16_t adcValue);
 float calibrationHighRatio();
 void setCalibrationHighRatio(float ratio);
-float calibrationLowRatio();
-void setCalibrationLowRatio(float ratio);
+
 
 #endif /* _SWR_EEPROM_H_ */

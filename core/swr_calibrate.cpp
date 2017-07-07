@@ -5,7 +5,7 @@ Calibration calibration;
 
 #define REQUIRED_SAMPLES 10000
 
-#define THRESHOLD 50
+#define THRESHOLD 10
 
 uint32_t adcFwdTotal = 0;
 uint32_t adcRvrTotal = 0;

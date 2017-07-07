@@ -152,7 +152,7 @@ void handleCalibrationData(char* tokens)
   Serial.println(String(calibrationLowFwd()));
   Serial.print("calibrationLowRvr: ");
   Serial.println(String(calibrationLowRvr()));
-  Serial.print("calibrationLowRatior: ");
+  Serial.print("calibrationLowRatio: ");
   Serial.println(String(calibrationLowRatio()));
   Serial.print("calibrationHighFwd: ");
   Serial.println(String(calibrationHighFwd()));

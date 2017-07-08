@@ -50,8 +50,6 @@ void setup()   {
       calibrationStage = LOW_RVR;
       renderCalibration(LOW_POWER, false);
     }
-    else
-      powerSetup();
   }
 
   Serial.begin(9600);
@@ -135,7 +133,6 @@ void loop() {
           setCalibrationHighPhase(calibration.highPhase);
           setCalibrationHighMagnitude(calibration.highMagnitude);
           setCalibrationHighRatio(calibration.highRatio);
-          powerSetup();
           calibrationStage = NOT_CALIBRATING;
           calibrationPause = false;
           deactivateCalibrateOnBoot();

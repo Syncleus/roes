@@ -21,4 +21,7 @@
 #define LOW_POWER 5.0
 #define HIGH_POWER 200.0
 
+#define MAX_BANDS_COUNT 64
+#define MAX_BAND_NAME_LENGTH 8
+
 #endif /* _SWR_CONSTANTS_H_ */

@@ -2,8 +2,13 @@
 #define _SWR_EEPROM_H_
 
 #include <Arduino.h>
+#include <ArduinoSTL.h>
+#include <set.h>
+#include "swr_constants.h"
 
 void eepromSetup();
+void eepromClear();
+boolean isEepromBlank();
 boolean checkEepromCrc();
 uint32_t eepromCrc32();
 uint32_t persistedDataCrc32();
@@ -40,5 +45,7 @@ void setCalibrationHighPhase(uint16_t adcValue);
 float calibrationHighRatio();
 void setCalibrationHighRatio(float ratio);
 
+etl::set<String, MAX_BANDS_COUNT> bands();
+void setBands(etl::set<String, MAX_BANDS_COUNT> newBands);
 
 #endif /* _SWR_EEPROM_H_ */

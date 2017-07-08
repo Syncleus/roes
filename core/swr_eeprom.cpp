@@ -1,6 +1,7 @@
 #include "swr_eeprom.h"
-
+#include <cstring.h>
 #include <EEPROM.h>
+#include <avr/pgmspace.h>
 
 #define EEPROM_CRC_ADDR 0
 #define EEPROM_CRC_LENGTH 4
@@ -23,12 +24,25 @@ struct SwrPersistedData {
   uint16_t calibrationHighPhase;
   float calibrationLowRatio;
   float calibrationHighRatio;
+  etl::array<etl::string<MAX_BAND_NAME_LENGTH>, MAX_BANDS_COUNT> bands;
 };
 
 SwrPersistedData persistedData;
 
-uint32_t crc32(byte *data, int len) {
-  const uint32_t crc_table[16] = {
+void eepromClear() {
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.update(i, 0);
+  }
+}
+
+boolean isEepromBlank() {
+  uint32_t storedCrc;
+  EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
+  return storedCrc == 0;
+}
+
+static PROGMEM uint32_t crc32(byte *data, int len) {
+  const PROGMEM uint32_t crc_table[16] = {
     0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,
     0x76dc4190, 0x6b6b51f4, 0x4db26158, 0x5005713c,
     0xedb88320, 0xf00f9344, 0xd6d6a3e8, 0xcb61b38c,
@@ -57,7 +71,6 @@ uint32_t persistedDataCrc32() {
   return crc32((byte*) &persistedData, sizeof(persistedData));
 }
 
-//false
 boolean checkEepromCrc() {
   uint32_t storedCrc;
   EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
@@ -82,7 +95,10 @@ boolean recallData() {
 }
 
 void eepromSetup() {
-  recallData();
+  if( isEepromBlank() )
+    storeData();
+  else
+    recallData();
 }
 
 boolean calibrateOnBoot() {
@@ -266,6 +282,36 @@ void setCalibrationHighPhase(uint16_t adcValue) {
     return;
 
   persistedData.calibrationHighPhase = adcValue;
+  storeData();
+}
+
+etl::set<String, MAX_BANDS_COUNT> bands() {
+  etl::set<String, MAX_BANDS_COUNT> bandsSet;
+  for(uint16_t index = 0; index < persistedData.bands.size(); index++) {
+    etl::string<MAX_BAND_NAME_LENGTH> fixedString = persistedData.bands[index];
+
+    String dynamicString = String(fixedString.c_str());
+    bandsSet.insert(dynamicString);
+  }
+  return bandsSet;
+}
+
+void setBands(etl::set<String, MAX_BANDS_COUNT> newBands) {
+  etl::iset<String, std::less<String>>::const_iterator itr;
+
+  //clear current array
+  persistedData.bands.erase_range(0, persistedData.bands.size() - 1);
+
+  // Iterate through the list.
+  itr = newBands.begin();
+  uint8_t index = 0;
+  while (itr != newBands.end())
+  {
+    String currentBand = *itr++;
+    persistedData.bands.insert_at(0, etl::string<MAX_BAND_NAME_LENGTH>(currentBand.c_str()));
+    
+    index++;
+  }
   storeData();
 }
 

@@ -1,8 +1,12 @@
 #include "swr_calibrate.h"
 #include "swr_constants.h"
 
-#define REQUIRED_SAMPLES 10000
+struct CalibrationPoint {
+  String band;
+  float power;
+};
 
+#define REQUIRED_SAMPLES 10000
 #define THRESHOLD 10
 
 Calibration calibration;

@@ -1,9 +1,9 @@
 #include "swr_display.h"
+#include "swr_constants.h"
 
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "swr_constants.h"
 
 #if (SSD1306_LCDHEIGHT != SCREEN_HEIGHT)
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");

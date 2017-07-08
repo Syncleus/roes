@@ -1,4 +1,5 @@
 #include <CommandLine.h>
+#include <ArduinoSTL.h>
 
 #include "swr_display.h"
 #include "swr_power.h"
@@ -57,6 +58,8 @@ void setup()   {
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);
+  commandLine.add("bands", handleBands);
+  commandLine.add("cleareeprom", handleClearEeprom);
   commandLine.add("calibrateonboot", handleCalibrateOnBoot);
   commandLine.add("calibrationdata", handleCalibrationData);
   commandLine.add("readinputs", handleReadInputs);
@@ -243,8 +246,66 @@ void handleDemo(char* tokens)
   }
 }
 
+String splitString(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+        found++;
+        strIndex[0] = strIndex[1]+1;
+        strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
+void handleBands(char* tokens)
+{
+  char* argument = strtok(NULL, "\0");
+  if( argument == NULL ) {
+    Serial.print("bands: ");
+    etl::set<String, MAX_BANDS_COUNT> bandData = bands();
+    etl::iset<String, std::less<String>>::const_iterator itr;
+
+    // Iterate through the list.
+    itr = bandData.begin();
+    while (itr != bandData.end())
+    {
+      Serial.print(*itr++);
+      Serial.print(" ");
+    }
+    Serial.println();
+  }
+  else {
+    String argumentStr = String(argument);
+
+    etl::set<String, MAX_BANDS_COUNT> bandData;
+    String currentBand = "";
+    uint16_t index = 0;
+    do {
+      currentBand = splitString(argumentStr, " ", index);
+      bandData.insert(currentBand);
+      index++;
+    } while( !currentBand.equals("") );
+
+    setBands(bandData);
+    Serial.print("bands set to: ");
+    Serial.println(argumentStr);
+  }
+}
+
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
+  Serial.println("Use the commands 'help', 'bands', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
+}
+
+void handleClearEeprom(char* tokens)
+{
+  eepromClear();
+  Serial.println("Eeprom cleared.");
 }
 

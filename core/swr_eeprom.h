@@ -6,6 +6,12 @@
 #include <set.h>
 #include "swr_constants.h"
 
+struct CalibrationData {
+  uint16_t fwd;
+  uint16_t rvr;
+  uint16_t fwdRefl;
+};
+
 void eepromSetup();
 void eepromClear();
 boolean isEepromBlank();
@@ -49,5 +55,10 @@ etl::set<String, MAX_BANDS_COUNT> bands();
 void setBands(etl::set<String, MAX_BANDS_COUNT> newBands);
 etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints();
 void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> newCalibrationPowerPoints);
+
+uint8_t bandToIndex(char* band);
+uint8_t powerPointToIndex(float powerPoint);
+CalibrationData calibrationData(char* band, float powerPoint);
+void setCalibrationData(char* band, float powerPoint, CalibrationData data);
 
 #endif /* _SWR_EEPROM_H_ */

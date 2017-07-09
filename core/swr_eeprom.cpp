@@ -1,14 +1,13 @@
 #include "swr_eeprom.h"
 #include <cstring.h>
+#include <map.h>
 #include <container.h>
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
 
 #define EEPROM_CRC_ADDR 0
 #define EEPROM_CRC_LENGTH 4
-#define EEPROM_SIZE_ADDR (EEPROM_CRC_ADDR + EEPROM_CRC_LENGTH)
-#define EEPROM_SIZE_LENGTH 4
-#define EEPROM_DATA_ADDR (EEPROM_SIZE_ADDR + EEPROM_SIZE_LENGTH)
+#define EEPROM_DATA_ADDR (EEPROM_CRC_ADDR + EEPROM_CRC_LENGTH)
 
 struct SwrPersistedData {
   boolean calibrateOnBoot;
@@ -25,8 +24,9 @@ struct SwrPersistedData {
   uint16_t calibrationHighPhase;
   float calibrationLowRatio;
   float calibrationHighRatio;
-  etl::array<etl::string<MAX_BAND_NAME_LENGTH>, MAX_BANDS_COUNT> bands;
-  etl::array<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints;
+  etl::string<MAX_BAND_NAME_LENGTH> bands[MAX_BANDS_COUNT];
+  float calibrationPowerPoints[MAX_CALIBRATION_POWER_POINTS];
+  CalibrationData calibrationData[MAX_BANDS_COUNT][MAX_CALIBRATION_POWER_POINTS];
 };
 
 SwrPersistedData persistedData;
@@ -103,6 +103,9 @@ void eepromSetup() {
       persistedData.bands[index] = etl::string<MAX_BAND_NAME_LENGTH>();
     for(int index; index < MAX_CALIBRATION_POWER_POINTS; index++)
       persistedData.calibrationPowerPoints[index] = -1.0;
+    for(int indexBand; indexBand < MAX_BANDS_COUNT; indexBand++)
+      for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS; indexPoint++)
+        persistedData.calibrationData[indexBand][indexPoint] = {0, 0, 0};
     storeData();
   }
   else
@@ -348,4 +351,33 @@ void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> new
   }
   storeData();
 }
+
+uint8_t bandToIndex(char* band) {
+  for(int index = 0; index < MAX_BANDS_COUNT; index++) {
+    if( persistedData.bands[index].compare(band) == 0 )
+      return index;
+  }
+}
+
+uint8_t powerPointToIndex(float powerPoint) {
+  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
+    if( persistedData.calibrationPowerPoints[index] == powerPoint )
+      return index;
+  }
+}
+
+CalibrationData calibrationData(char* band, float powerPoint) {
+  uint8_t bandIndex = bandToIndex(band);
+  uint8_t powerPointIndex = powerPointToIndex(powerPoint);
+  return persistedData.calibrationData[bandIndex][powerPointIndex];
+}
+
+void setCalibrationData(char* band, float powerPoint, CalibrationData data) {
+  uint8_t bandIndex = bandToIndex(band);
+  uint8_t powerPointIndex = powerPointToIndex(powerPoint);
+  persistedData.calibrationData[bandIndex][powerPointIndex] = data;
+
+  storeData();
+}
+
 

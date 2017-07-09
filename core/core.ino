@@ -332,7 +332,7 @@ void handleCalibrationPoints(char* tokens)
 
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help', 'bands', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
+  Serial.println("Use the commands 'help', 'bands', 'calibrationpoints', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
 }
 
 void handleClearEeprom(char* tokens)

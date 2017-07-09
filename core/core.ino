@@ -13,23 +13,20 @@ String errorMsgLine2 = "";
 String errorMsgLine3 = "";
 String errorMsgLine4 = "";
 
-enum CalibratingStage {
-  NOT_CALIBRATING,
-  LOW_RVR,
-  HIGH_RVR,
-  LOW_FWD,
-  HIGH_FWD
-};
-boolean calibrationPause = false;
-
-CalibratingStage calibrationStage = NOT_CALIBRATING;
+boolean calibrating = false;
+boolean calibratingPause = false;
+boolean calibratingFwd = false;
 
 float power_fwd = 0.0;
 float power_rvr = 0.0;
 
+String calibratingBand = "";
+float calibratingPowerPoint = -1.0;
+
 CommandLine commandLine(Serial, "> ");
 
-void setup()   {                
+void setup()   {  
+  Serial.begin(9600);              
   displaySetup();
   eepromSetup();
 
@@ -48,12 +45,17 @@ void setup()   {
   else {
     if( calibrateOnBoot() == true )
     {
-      calibrationStage = LOW_RVR;
-      renderCalibration(LOW_POWER, false);
+      bumpCalibratingBand();
+      Serial.print("calibrating band: ");
+      Serial.println(calibratingBand);
+      bumpCalibratingPowerPoint();
+      calibrating = true;
+      calibratingPause = false;
+      calibratingFwd = false;
+
+      renderCalibration(calibratingPowerPoint, calibratingFwd, calibratingBand);
     }
   }
-
-  Serial.begin(9600);
 
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
@@ -71,7 +73,7 @@ void loop() {
   
   commandLine.update();
 
-  if( time%25 == 0 && error == false && calibrationStage == NOT_CALIBRATING) {
+  if( time%25 == 0 && error == false && !calibrating) {
     if(demoMode())
       updatePowerDemo(power_fwd, power_rvr);
     else
@@ -80,106 +82,123 @@ void loop() {
     renderSwr(power_fwd, power_rvr);
   }
   
-  if(calibrationStage != NOT_CALIBRATING) {
-    switch(calibrationStage) {
-    case LOW_RVR:
-      if( calibrationPause ) {
-        if(waitForStop(false)) {
-          calibrationStage = HIGH_RVR;
-          renderCalibration(HIGH_POWER, false);
-          calibrationPause = false;
+  if(calibrating) {
+    if( calibratingPause ) {
+        if(waitForStop(calibratingFwd)) {
+          if( bumpCalibratingPowerPoint() ) {
+            if( bumpCalibratingBand() ) {
+              if( calibratingFwd == false ) {
+                calibratingFwd = true;
+              }
+              else {
+                calibrating = false;
+                calibratingFwd = false;
+                calibratingPause = false;
+                deactivateCalibrateOnBoot();
+                return;
+              }
+            }
+          }
+          calibratingPause = false;
+          renderCalibration(calibratingPowerPoint, calibratingFwd, calibratingBand);
         }
-      }
-      else if( calibrateLowRvr() ) {
-        calibrationPause = true;
+    }
+    else {
+      if( runCalibration() ) {
+        calibratingPause = true;
+        CalibrationAverages result = getCalibration();
+        CalibrationData currentCalibration = calibrationData(calibratingBand.c_str(), calibratingPowerPoint);
+        if( calibratingFwd ) {
+          currentCalibration.fwd = result.adcFwd;
+          currentCalibration.fwdRefl = result.adcRvr;
+          currentCalibration.vref = result.adcVref;
+          currentCalibration.phase = result.adcPhase;
+          currentCalibration.magnitude = result.adcMagnitude;
+        }
+        else {
+          currentCalibration.rvr = result.adcRvr;
+        }
+        setCalibrationData(calibratingBand.c_str(), calibratingPowerPoint, currentCalibration);
         renderStopTransmitting();
       }
-      break;
-    case HIGH_RVR:
-      if( calibrationPause ) {
-        if(waitForStop(false)) {
-          calibrationStage = LOW_FWD;
-          renderCalibration(LOW_POWER, true);
-          calibrationPause = false;
-        }
-      }
-      else if( calibrateHighRvr() ) {
-        calibrationPause = true;
-        renderStopTransmitting();
-      }
-      break;
-    case LOW_FWD:
-      if( calibrationPause ) {
-        if(waitForStop(true)) {
-          calibrationStage = HIGH_FWD;
-          renderCalibration(HIGH_POWER, true);
-          calibrationPause = false;
-        }
-      }
-      else if( calibrateLowFwd() ) {
-        calibrationPause = true;
-        renderStopTransmitting();
-      }
-      break;
-    case HIGH_FWD:
-      if( calibrationPause ) {
-        if(waitForStop(true)) {
-          Calibration calibration = getCalibration();
-          setCalibrationLowFwd(calibration.lowFwd);
-          setCalibrationLowRvr(calibration.lowRvr);
-          setCalibrationLowVref(calibration.lowVref);
-          setCalibrationLowPhase(calibration.lowPhase);
-          setCalibrationLowMagnitude(calibration.lowMagnitude);
-          setCalibrationLowRatio(calibration.lowRatio);
-          setCalibrationHighFwd(calibration.highFwd);
-          setCalibrationHighRvr(calibration.highRvr);
-          setCalibrationHighVref(calibration.highVref);
-          setCalibrationHighPhase(calibration.highPhase);
-          setCalibrationHighMagnitude(calibration.highMagnitude);
-          setCalibrationHighRatio(calibration.highRatio);
-          calibrationStage = NOT_CALIBRATING;
-          calibrationPause = false;
-          deactivateCalibrateOnBoot();
-        }
-      }
-      else if( calibrateHighFwd() ) {
-        calibrationPause = true;
-        renderStopTransmitting();
-      }
-      break;
-    default:
-      error = true;
-      errorMsgLine1 = "Unexpected behavior";
     }
   }
+}
+
+boolean bumpCalibratingBand() {
+    etl::set<String, MAX_BANDS_COUNT> bandData = bands();
+    etl::iset<String, std::less<String>>::const_iterator itr = bandData.begin();
+
+    // Iterate through the list.
+    boolean isNext = false;
+    String firstBand = *itr;
+    while (itr != bandData.end())
+    {
+      String currentBand = *itr++;
+      if( calibratingBand.equals("") || isNext ) {
+         calibratingBand = currentBand;
+        return false;
+      }
+      else if(calibratingBand.equals(currentBand))
+        isNext = true;
+    }
+
+    if(isNext) {
+      calibratingBand = firstBand;
+      return true;
+    }
+}
+
+boolean bumpCalibratingPowerPoint() {
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPointData = calibrationPowerPoints();
+    etl::iset<float, std::less<float>>::const_iterator itr = powerPointData.begin();
+
+    // Iterate through the list.
+    boolean isNext = false;
+    float first = *itr;
+    while (itr != powerPointData.end())
+    {
+      float currentPowerPoint = *itr++;
+      if( calibratingPowerPoint < 0.0 || isNext ) {
+        calibratingPowerPoint = currentPowerPoint;
+        return false;
+      }
+      else if(calibratingPowerPoint == currentPowerPoint)
+        isNext = true;
+    }
+
+    if(isNext) {
+      calibratingPowerPoint = first;
+      return true;
+    }
 }
 
 void handleCalibrationData(char* tokens)
 {
   Serial.print("calibrationLowFwd: ");
-  Serial.println(String(calibrationLowFwd()));
+  Serial.println(String(calibrationData("15m", 5.0).fwd));
   Serial.print("calibrationLowRvr: ");
-  Serial.println(String(calibrationLowRvr()));
+  Serial.println(String(calibrationData("15m", 5.0).rvr));
   Serial.print("calibrationLowVref: ");
-  Serial.println(String(calibrationLowVref()));
+  Serial.println(String(calibrationData("15m", 5.0).vref));
   Serial.print("calibrationLowMagnitude: ");
-  Serial.println(String(calibrationLowMagnitude()));
+  Serial.println(String(calibrationData("15m", 5.0).magnitude));
   Serial.print("calibrationLowPhase: ");
-  Serial.println(String(calibrationLowPhase()));
-  Serial.print("calibrationLowRatio: ");
-  Serial.println(String(calibrationLowRatio()));
+  Serial.println(String(calibrationData("15m", 5.0).phase));
+  Serial.print("calibrationLowRefl: ");
+  Serial.println(String(calibrationData("15m", 5.0).fwdRefl));
   Serial.print("calibrationHighFwd: ");
-  Serial.println(String(calibrationHighFwd()));
+  Serial.println(String(calibrationData("15m", 200.0).fwd));
   Serial.print("calibrationHighRvr: ");
-  Serial.println(String(calibrationHighRvr()));
+  Serial.println(String(calibrationData("15m", 200.0).rvr));
   Serial.print("calibrationHighVref: ");
-  Serial.println(String(calibrationHighVref()));
+  Serial.println(String(calibrationData("15m", 200.0).vref));
   Serial.print("calibrationHighMagnitude: ");
-  Serial.println(String(calibrationHighMagnitude()));
+  Serial.println(String(calibrationData("15m", 200.0).magnitude));
   Serial.print("calibrationHighPhase: ");
-  Serial.println(String(calibrationHighPhase()));
-  Serial.print("calibrationHighRatio: ");
-  Serial.println(String(calibrationHighRatio()));
+  Serial.println(String(calibrationData("15m", 200.0).phase));
+  Serial.print("calibrationHighRefl: ");
+  Serial.println(String(calibrationData("15m", 200.0).fwdRefl));
 }
 
 void handleReadInputs(char* tokens)

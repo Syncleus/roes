@@ -8,27 +8,27 @@ float mapFloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 float adcToFwdVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationLowFwd(), calibrationHighFwd(), powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(adcValue, calibrationData("15m", 5.0).fwd, calibrationData("15m", 200.0).fwd, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
 }
 
 uint16_t fwdVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationLowFwd(), calibrationHighFwd());
+  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationData("15m", 5.0).fwd, calibrationData("15m", 200.0).fwd);
 }
 
 float adcToRvrVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationLowRvr(), calibrationHighRvr(), powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(adcValue, calibrationData("15m", 5.0).rvr, calibrationData("15m", 200.0).rvr, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
 }
 
 uint16_t RvrVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationLowRvr(), calibrationHighRvr());
+  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationData("15m", 5.0).rvr, calibrationData("15m", 200.0).rvr);
 }
 
 float fwdVoltageToRatio(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationLowRatio(), calibrationHighRatio());
+  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationData("15m", 5.0).fwdRefl, calibrationData("15m", 200.0).fwdRefl);
 }
 
 float ratioToFwdVoltage(float ratio) {
-  return mapFloat(ratio, calibrationLowRatio(), calibrationHighRatio(), powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(ratio, calibrationData("15m", 5.0).fwdRefl, calibrationData("15m", 200.0).fwdRefl, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
 }
 
 float voltageToPower(float voltage) {

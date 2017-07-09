@@ -1,5 +1,6 @@
 #include "swr_eeprom.h"
 #include <cstring.h>
+#include <container.h>
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
 
@@ -25,6 +26,7 @@ struct SwrPersistedData {
   float calibrationLowRatio;
   float calibrationHighRatio;
   etl::array<etl::string<MAX_BAND_NAME_LENGTH>, MAX_BANDS_COUNT> bands;
+  etl::array<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints;
 };
 
 SwrPersistedData persistedData;
@@ -96,7 +98,13 @@ boolean recallData() {
 
 void eepromSetup() {
   if( isEepromBlank() )
+  {
+    for(int index; index < MAX_BANDS_COUNT; index++)
+      persistedData.bands[index] = etl::string<MAX_BAND_NAME_LENGTH>();
+    for(int index; index < MAX_CALIBRATION_POWER_POINTS; index++)
+      persistedData.calibrationPowerPoints[index] = -1.0;
     storeData();
+  }
   else
     recallData();
 }
@@ -287,11 +295,10 @@ void setCalibrationHighPhase(uint16_t adcValue) {
 
 etl::set<String, MAX_BANDS_COUNT> bands() {
   etl::set<String, MAX_BANDS_COUNT> bandsSet;
-  for(uint16_t index = 0; index < persistedData.bands.size(); index++) {
-    etl::string<MAX_BAND_NAME_LENGTH> fixedString = persistedData.bands[index];
-
-    String dynamicString = String(fixedString.c_str());
-    bandsSet.insert(dynamicString);
+  for(uint16_t index = 0; index < MAX_BANDS_COUNT; index++) {
+    String dynamicString = String(persistedData.bands[index].c_str());
+    if( !dynamicString.equals("") )
+      bandsSet.insert(dynamicString);
   }
   return bandsSet;
 }
@@ -300,16 +307,43 @@ void setBands(etl::set<String, MAX_BANDS_COUNT> newBands) {
   etl::iset<String, std::less<String>>::const_iterator itr;
 
   //clear current array
-  persistedData.bands.erase_range(0, persistedData.bands.size() - 1);
+  for(int index = 0; index < MAX_BANDS_COUNT; index++)
+    persistedData.bands[index].assign("");
 
-  // Iterate through the list.
   itr = newBands.begin();
-  uint8_t index = 0;
+  int index = 0;
   while (itr != newBands.end())
   {
     String currentBand = *itr++;
-    persistedData.bands.insert_at(0, etl::string<MAX_BAND_NAME_LENGTH>(currentBand.c_str()));
-    
+    persistedData.bands[index].assign(currentBand.c_str());
+    index++;
+  }
+  storeData();
+}
+
+etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints() {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPointsSet;
+  for(uint16_t index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
+    float calibrationPowerPoint = persistedData.calibrationPowerPoints[index];
+    if( calibrationPowerPoint > 0.0 )
+      calibrationPowerPointsSet.insert(calibrationPowerPoint);
+  }
+  return calibrationPowerPointsSet;
+}
+
+void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> newCalibrationPowerPoints) {
+  etl::iset<float, std::less<float>>::const_iterator itr;
+
+  //clear current array
+  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++)
+    persistedData.calibrationPowerPoints[index] = -1.0;
+
+  itr = newCalibrationPowerPoints.begin();
+  int index = 0;
+  while (itr != newCalibrationPowerPoints.end())
+  {
+    float currentCalibrationPowerPoint = *itr++;
+    persistedData.calibrationPowerPoints[index] = currentCalibrationPowerPoint;
     index++;
   }
   storeData();

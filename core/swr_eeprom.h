@@ -47,5 +47,7 @@ void setCalibrationHighRatio(float ratio);
 
 etl::set<String, MAX_BANDS_COUNT> bands();
 void setBands(etl::set<String, MAX_BANDS_COUNT> newBands);
+etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints();
+void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> newCalibrationPowerPoints);
 
 #endif /* _SWR_EEPROM_H_ */

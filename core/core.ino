@@ -59,6 +59,7 @@ void setup()   {
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);
   commandLine.add("bands", handleBands);
+  commandLine.add("calibrationpoints", handleCalibrationPoints);
   commandLine.add("cleareeprom", handleClearEeprom);
   commandLine.add("calibrateonboot", handleCalibrateOnBoot);
   commandLine.add("calibrationdata", handleCalibrationData);
@@ -246,33 +247,33 @@ void handleDemo(char* tokens)
   }
 }
 
-String splitString(String data, char separator, int index)
+//splits a string in place, no dynamic allocation
+char* splitString(char* data, char separator)
 {
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length()-1;
+  int dataIndex = -1;
+  char currentChar = '\0';
+  do {
+    dataIndex++;
+    currentChar = data[dataIndex];
+  } while(currentChar != '\0' && currentChar != separator);
 
-  for(int i=0; i<=maxIndex && found<=index; i++){
-    if(data.charAt(i)==separator || i==maxIndex){
-        found++;
-        strIndex[0] = strIndex[1]+1;
-        strIndex[1] = (i == maxIndex) ? i+1 : i;
-    }
-  }
+  if( currentChar == '\0' )
+    return NULL;
 
-  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+  data[dataIndex] = '\0';
+  return data + dataIndex + 1;
 }
 
 void handleBands(char* tokens)
 {
   char* argument = strtok(NULL, "\0");
   if( argument == NULL ) {
-    Serial.print("bands: ");
     etl::set<String, MAX_BANDS_COUNT> bandData = bands();
     etl::iset<String, std::less<String>>::const_iterator itr;
 
     // Iterate through the list.
     itr = bandData.begin();
+    Serial.print("bands: ");
     while (itr != bandData.end())
     {
       Serial.print(*itr++);
@@ -282,19 +283,50 @@ void handleBands(char* tokens)
   }
   else {
     String argumentStr = String(argument);
+    char* argumentCharArray = argumentStr.c_str();
 
     etl::set<String, MAX_BANDS_COUNT> bandData;
-    String currentBand = "";
-    uint16_t index = 0;
     do {
-      currentBand = splitString(argumentStr, " ", index);
-      bandData.insert(currentBand);
-      index++;
-    } while( !currentBand.equals("") );
+      char* parsedArgument = argumentCharArray;
+      argumentCharArray = splitString(parsedArgument, ' ');
+      bandData.insert(String(parsedArgument));
+    } while(argumentCharArray != NULL);
 
     setBands(bandData);
-    Serial.print("bands set to: ");
-    Serial.println(argumentStr);
+    Serial.println("bands set");
+  }
+}
+
+void handleCalibrationPoints(char* tokens)
+{
+  char* argument = strtok(NULL, "\0");
+  if( argument == NULL ) {
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPointsData = calibrationPowerPoints();
+    etl::iset<float, std::less<float>>::const_iterator itr;
+
+    // Iterate through the list.
+    itr = calibrationPointsData.begin();
+    Serial.print("calibration points: ");
+    while (itr != calibrationPointsData.end())
+    {
+      Serial.print(String(*itr++));
+      Serial.print(" ");
+    }
+    Serial.println();
+  }
+  else {
+    String argumentStr = String(argument);
+    char* argumentCharArray = argumentStr.c_str();
+
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPointsData;
+    do {
+      char* parsedArgument = argumentCharArray;
+      argumentCharArray = splitString(parsedArgument, ' ');
+      calibrationPointsData.insert(String(parsedArgument).toFloat());
+    } while(argumentCharArray != NULL);
+
+    setCalibrationPowerPoints(calibrationPointsData);
+    Serial.println("calibration points set");
   }
 }
 

@@ -32,7 +32,6 @@ float power_rvr = 0.0;
 
 boolean downButtonLowLast = false;
 
-String calibratingBand = "";
 float calibratingPowerPoint = -1.0;
 
 CommandLine commandLine(Serial, "> ");
@@ -60,22 +59,18 @@ void setup()   {
   else {
     if( calibrateOnBoot() == true )
     {
-      bumpCalibratingBand();
-      Serial.print("calibrating band: ");
-      Serial.println(calibratingBand);
       bumpCalibratingPowerPoint();
       calibrating = true;
       calibratingPause = false;
       calibratingOpen = false;
 
-      renderCalibration(calibratingPowerPoint, calibratingOpen, calibratingBand);
+      renderCalibration(calibratingPowerPoint, calibratingOpen);
     }
   }
 
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);
-  commandLine.add("bands", handleBands);
   commandLine.add("calibrationpoints", handleCalibrationPoints);
   commandLine.add("cleareeprom", handleClearEeprom);
   commandLine.add("calibrateonboot", handleCalibrateOnBoot);
@@ -116,9 +111,7 @@ void loop() {
         if(waitForStop()) {
           if( !calibratingOpen ) {
             if( bumpCalibratingPowerPoint() ) {
-              if( bumpCalibratingBand() ) {
-                calibratingOpen = true;
-              }
+              calibratingOpen = true;
             }
           }
           else {
@@ -131,9 +124,9 @@ void loop() {
           calibratingPause = false;
 
           if( !calibratingOpen )
-            renderCalibration(calibratingPowerPoint, calibratingOpen, calibratingBand);
+            renderCalibration(calibratingPowerPoint, calibratingOpen);
           else
-            renderCalibration(5.0, calibratingOpen, calibratingBand);
+            renderCalibration(5.0, calibratingOpen);
         }
     }
     else {
@@ -141,16 +134,16 @@ void loop() {
         calibratingPause = true;
         CalibrationAverages result = getCalibration();
         if( !calibratingOpen ) {
-          CalibrationData currentCalibration = calibrationDataDummy(calibratingBand.c_str(), calibratingPowerPoint);
+          CalibrationData currentCalibration = calibrationDataDummy(calibratingPowerPoint);
           currentCalibration.fwd = result.adcFwd;
           currentCalibration.rvr = result.adcRvr;
           currentCalibration.vref = result.adcVref;
           currentCalibration.phase = result.adcPhase;
           currentCalibration.magnitude = result.adcMagnitude;
-          setCalibrationDataDummy(calibratingBand.c_str(), calibratingPowerPoint, currentCalibration);
+          setCalibrationDataDummy(calibratingPowerPoint, currentCalibration);
         }
         else {
-          setCalibrationDataOpen(calibratingBand.c_str(), result.adcRvr);
+          setCalibrationDataOpen(result.adcRvr);
         }
         renderStopTransmitting();
       }
@@ -174,29 +167,6 @@ void updateScreenFromButton() {
     downButtonLowLast = false;
 }
 
-boolean bumpCalibratingBand() {
-    etl::set<String, MAX_BANDS_COUNT> bandData = bands();
-    etl::iset<String, std::less<String>>::const_iterator itr = bandData.begin();
-
-    // Iterate through the list.
-    boolean isNext = false;
-    String firstBand = *itr;
-    while (itr != bandData.end())
-    {
-      String currentBand = *itr++;
-      if( calibratingBand.equals("") || isNext ) {
-         calibratingBand = currentBand;
-        return false;
-      }
-      else if(calibratingBand.equals(currentBand))
-        isNext = true;
-    }
-
-    if(isNext) {
-      calibratingBand = firstBand;
-      return true;
-    }
-}
 
 boolean bumpCalibratingPowerPoint() {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPointData = calibrationPowerPoints();
@@ -225,25 +195,25 @@ boolean bumpCalibratingPowerPoint() {
 void handleCalibrationData(char* tokens)
 {
   Serial.print("calibrationLowFwd: ");
-  Serial.println(String(calibrationDataDummy("15m", 5.0).fwd));
+  Serial.println(String(calibrationDataDummy(5.0).fwd));
   Serial.print("calibrationLowRvr: ");
-  Serial.println(String(calibrationDataDummy("15m", 5.0).rvr));
+  Serial.println(String(calibrationDataDummy(5.0).rvr));
   Serial.print("calibrationLowVref: ");
-  Serial.println(String(calibrationDataDummy("15m", 5.0).vref));
+  Serial.println(String(calibrationDataDummy(5.0).vref));
   Serial.print("calibrationLowMagnitude: ");
-  Serial.println(String(calibrationDataDummy("15m", 5.0).magnitude));
+  Serial.println(String(calibrationDataDummy(5.0).magnitude));
   Serial.print("calibrationLowPhase: ");
-  Serial.println(String(calibrationDataDummy("15m", 5.0).phase));
+  Serial.println(String(calibrationDataDummy(5.0).phase));
   Serial.print("calibrationHighFwd: ");
-  Serial.println(String(calibrationDataDummy("15m", 200.0).fwd));
+  Serial.println(String(calibrationDataDummy(200.0).fwd));
   Serial.print("calibrationHighRvr: ");
-  Serial.println(String(calibrationDataDummy("15m", 200.0).rvr));
+  Serial.println(String(calibrationDataDummy(200.0).rvr));
   Serial.print("calibrationHighVref: ");
-  Serial.println(String(calibrationDataDummy("15m", 200.0).vref));
+  Serial.println(String(calibrationDataDummy(200.0).vref));
   Serial.print("calibrationHighMagnitude: ");
-  Serial.println(String(calibrationDataDummy("15m", 200.0).magnitude));
+  Serial.println(String(calibrationDataDummy(200.0).magnitude));
   Serial.print("calibrationHighPhase: ");
-  Serial.println(String(calibrationDataDummy("15m", 200.0).phase));
+  Serial.println(String(calibrationDataDummy(200.0).phase));
 }
 
 void handleReadInputs(char* tokens)
@@ -328,39 +298,6 @@ char* splitString(char* data, char separator)
   return data + dataIndex + 1;
 }
 
-void handleBands(char* tokens)
-{
-  char* argument = strtok(NULL, "\0");
-  if( argument == NULL ) {
-    etl::set<String, MAX_BANDS_COUNT> bandData = bands();
-    etl::iset<String, std::less<String>>::const_iterator itr;
-
-    // Iterate through the list.
-    itr = bandData.begin();
-    Serial.print("bands: ");
-    while (itr != bandData.end())
-    {
-      Serial.print(*itr++);
-      Serial.print(" ");
-    }
-    Serial.println();
-  }
-  else {
-    String argumentStr = String(argument);
-    char* argumentCharArray = argumentStr.c_str();
-
-    etl::set<String, MAX_BANDS_COUNT> bandData;
-    do {
-      char* parsedArgument = argumentCharArray;
-      argumentCharArray = splitString(parsedArgument, ' ');
-      bandData.insert(String(parsedArgument));
-    } while(argumentCharArray != NULL);
-
-    setBands(bandData);
-    Serial.println("bands set");
-  }
-}
-
 void handleCalibrationPoints(char* tokens)
 {
   char* argument = strtok(NULL, "\0");
@@ -396,7 +333,7 @@ void handleCalibrationPoints(char* tokens)
 
 void handleHelp(char* tokens)
 {
-  Serial.println("Use the commands 'help', 'bands', 'calibrationpoints', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
+  Serial.println("Use the commands 'help', 'calibrationpoints', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
 }
 
 void handleClearEeprom(char* tokens)

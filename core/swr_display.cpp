@@ -202,7 +202,7 @@ void renderStopTransmitting() {
   display.display();
 }
 
-void renderCalibration(float power, boolean openLoad, String band) {
+void renderCalibration(float power, boolean openLoad) {
   display.clearDisplay();
 
   display.setTextColor(WHITE);
@@ -213,10 +213,7 @@ void renderCalibration(float power, boolean openLoad, String band) {
   display.setTextSize(1);
   display.print("Apply ");
   display.print(makeValueLabel(power, "w"));
-  display.println(" on");
-  display.print("the ");
-  display.print(band);
-  display.println(" band into");
+  display.println(" into");
   if (openLoad)
     display.println("an open load");
   else

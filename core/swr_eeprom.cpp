@@ -12,10 +12,9 @@
 struct SwrPersistedData {
   boolean calibrateOnBoot;
   boolean demoMode;
-  etl::string<MAX_BAND_NAME_LENGTH> bands[MAX_BANDS_COUNT];
   float calibrationPowerPoints[MAX_CALIBRATION_POWER_POINTS];
-  CalibrationData calibrationDataDummy[MAX_BANDS_COUNT][MAX_CALIBRATION_POWER_POINTS];
-  uint16_t calibrationDataOpen[MAX_BANDS_COUNT];
+  CalibrationData calibrationDataDummy[MAX_CALIBRATION_POWER_POINTS];
+  uint16_t calibrationDataOpen;
 };
 
 SwrPersistedData persistedData;
@@ -89,13 +88,10 @@ boolean recallData() {
 void eepromSetup() {
   if( isEepromBlank() )
   {
-    for(int index; index < MAX_BANDS_COUNT; index++)
-      persistedData.bands[index] = etl::string<MAX_BAND_NAME_LENGTH>();
     for(int index; index < MAX_CALIBRATION_POWER_POINTS; index++)
       persistedData.calibrationPowerPoints[index] = -1.0;
-    for(int indexBand; indexBand < MAX_BANDS_COUNT; indexBand++)
-      for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS; indexPoint++)
-        persistedData.calibrationDataDummy[indexBand][indexPoint] = {0, 0, 0};
+    for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS; indexPoint++)
+      persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
     storeData();
   }
   else
@@ -142,34 +138,6 @@ void deactivateDemoMode() {
   storeData();
 }
 
-etl::set<String, MAX_BANDS_COUNT> bands() {
-  etl::set<String, MAX_BANDS_COUNT> bandsSet;
-  for(uint16_t index = 0; index < MAX_BANDS_COUNT; index++) {
-    String dynamicString = String(persistedData.bands[index].c_str());
-    if( !dynamicString.equals("") )
-      bandsSet.insert(dynamicString);
-  }
-  return bandsSet;
-}
-
-void setBands(etl::set<String, MAX_BANDS_COUNT> newBands) {
-  etl::iset<String, std::less<String>>::const_iterator itr;
-
-  //clear current array
-  for(int index = 0; index < MAX_BANDS_COUNT; index++)
-    persistedData.bands[index].assign("");
-
-  itr = newBands.begin();
-  int index = 0;
-  while (itr != newBands.end())
-  {
-    String currentBand = *itr++;
-    persistedData.bands[index].assign(currentBand.c_str());
-    index++;
-  }
-  storeData();
-}
-
 etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints() {
   etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPointsSet;
   for(uint16_t index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
@@ -198,13 +166,6 @@ void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> new
   storeData();
 }
 
-uint8_t bandToIndex(char* band) {
-  for(int index = 0; index < MAX_BANDS_COUNT; index++) {
-    if( persistedData.bands[index].compare(band) == 0 )
-      return index;
-  }
-}
-
 uint8_t powerPointToIndex(float powerPoint) {
   for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
     if( persistedData.calibrationPowerPoints[index] == powerPoint )
@@ -212,28 +173,24 @@ uint8_t powerPointToIndex(float powerPoint) {
   }
 }
 
-CalibrationData calibrationDataDummy(char* band, float powerPoint) {
-  uint8_t bandIndex = bandToIndex(band);
+CalibrationData calibrationDataDummy(float powerPoint) {
   uint8_t powerPointIndex = powerPointToIndex(powerPoint);
-  return persistedData.calibrationDataDummy[bandIndex][powerPointIndex];
+  return persistedData.calibrationDataDummy[powerPointIndex];
 }
 
-void setCalibrationDataDummy(char* band, float powerPoint, CalibrationData data) {
-  uint8_t bandIndex = bandToIndex(band);
+void setCalibrationDataDummy(float powerPoint, CalibrationData data) {
   uint8_t powerPointIndex = powerPointToIndex(powerPoint);
-  persistedData.calibrationDataDummy[bandIndex][powerPointIndex] = data;
+  persistedData.calibrationDataDummy[powerPointIndex] = data;
 
   storeData();
 }
 
-uint16_t calibrationDataOpen(char* band) {
-  uint8_t bandIndex = bandToIndex(band);
-  return persistedData.calibrationDataOpen[bandIndex];
+uint16_t calibrationDataOpen() {\
+  return persistedData.calibrationDataOpen;
 }
 
-void setCalibrationDataOpen(char* band, uint16_t data) {
-  uint8_t bandIndex = bandToIndex(band);
-  persistedData.calibrationDataOpen[bandIndex] = data;
+void setCalibrationDataOpen(uint16_t data) {
+  persistedData.calibrationDataOpen = data;
 
   storeData();
 }

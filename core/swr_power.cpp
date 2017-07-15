@@ -8,19 +8,19 @@ float mapFloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 float adcToFwdVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationDataDummy("15m", 5.0).fwd, calibrationDataDummy("15m", 200.0).fwd, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(adcValue, calibrationDataDummy(5.0).fwd, calibrationDataDummy(200.0).fwd, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
 }
 
 uint16_t fwdVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationDataDummy("15m", 5.0).fwd, calibrationDataDummy("15m", 200.0).fwd);
+  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationDataDummy(5.0).fwd, calibrationDataDummy(200.0).fwd);
 }
 
 float adcToRvrVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationDataDummy("15m", 5.0).rvr, calibrationDataOpen("15m"), powerToVoltage(0.0), powerToVoltage(5.0));
+  return mapFloat(adcValue, calibrationDataDummy(5.0).rvr, calibrationDataOpen(), powerToVoltage(0.0), powerToVoltage(5.0));
 }
 
 uint16_t RvrVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(5.0), calibrationDataDummy("15m", 5.0).rvr, calibrationDataOpen("15m"));
+  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(5.0), calibrationDataDummy(5.0).rvr, calibrationDataOpen());
 }
 
 float voltageToPower(float voltage) {

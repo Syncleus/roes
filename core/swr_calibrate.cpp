@@ -43,17 +43,17 @@ void calibrate() {
     averages.adcPhase = adcPhaseTotal / samples;
     adcFwdTotal = 0;
     adcRvrTotal = 0;
-    uint32_t adcVrefTotal = 0;
-    uint32_t adcMagnitudeTotal = 0;
-    uint32_t adcPhaseTotal = 0;
+    adcVrefTotal = 0;
+    adcMagnitudeTotal = 0;
+    adcPhaseTotal = 0;
     samples = 0;
     calibrationComplete = true;
   }
 }
 
-boolean waitForStop(boolean forward) {
-  uint16_t adcValue = analogRead(forward ? POWER_FWD_PIN : POWER_RVR_PIN);
-  if( adcValue < THRESHOLD )
+boolean waitForStop() {
+  uint16_t adcValue = analogRead(POWER_FWD_PIN);
+  if( adcValue < 2 )
     adcFwdTotal++;
   samples++;
 

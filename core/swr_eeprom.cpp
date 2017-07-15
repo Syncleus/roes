@@ -12,21 +12,10 @@
 struct SwrPersistedData {
   boolean calibrateOnBoot;
   boolean demoMode;
-  uint16_t calibrationLowFwd;
-  uint16_t calibrationLowRvr;
-  uint16_t calibrationLowVref;
-  uint16_t calibrationLowMagnitude;
-  uint16_t calibrationLowPhase;
-  uint16_t calibrationHighFwd;
-  uint16_t calibrationHighRvr;
-  uint16_t calibrationHighVref;
-  uint16_t calibrationHighMagnitude;
-  uint16_t calibrationHighPhase;
-  float calibrationLowRatio;
-  float calibrationHighRatio;
   etl::string<MAX_BAND_NAME_LENGTH> bands[MAX_BANDS_COUNT];
   float calibrationPowerPoints[MAX_CALIBRATION_POWER_POINTS];
-  CalibrationData calibrationData[MAX_BANDS_COUNT][MAX_CALIBRATION_POWER_POINTS];
+  CalibrationData calibrationDataDummy[MAX_BANDS_COUNT][MAX_CALIBRATION_POWER_POINTS];
+  uint16_t calibrationDataOpen[MAX_BANDS_COUNT];
 };
 
 SwrPersistedData persistedData;
@@ -106,7 +95,7 @@ void eepromSetup() {
       persistedData.calibrationPowerPoints[index] = -1.0;
     for(int indexBand; indexBand < MAX_BANDS_COUNT; indexBand++)
       for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS; indexPoint++)
-        persistedData.calibrationData[indexBand][indexPoint] = {0, 0, 0};
+        persistedData.calibrationDataDummy[indexBand][indexPoint] = {0, 0, 0};
     storeData();
   }
   else
@@ -223,16 +212,28 @@ uint8_t powerPointToIndex(float powerPoint) {
   }
 }
 
-CalibrationData calibrationData(char* band, float powerPoint) {
+CalibrationData calibrationDataDummy(char* band, float powerPoint) {
   uint8_t bandIndex = bandToIndex(band);
   uint8_t powerPointIndex = powerPointToIndex(powerPoint);
-  return persistedData.calibrationData[bandIndex][powerPointIndex];
+  return persistedData.calibrationDataDummy[bandIndex][powerPointIndex];
 }
 
-void setCalibrationData(char* band, float powerPoint, CalibrationData data) {
+void setCalibrationDataDummy(char* band, float powerPoint, CalibrationData data) {
   uint8_t bandIndex = bandToIndex(band);
   uint8_t powerPointIndex = powerPointToIndex(powerPoint);
-  persistedData.calibrationData[bandIndex][powerPointIndex] = data;
+  persistedData.calibrationDataDummy[bandIndex][powerPointIndex] = data;
+
+  storeData();
+}
+
+uint16_t calibrationDataOpen(char* band) {
+  uint8_t bandIndex = bandToIndex(band);
+  return persistedData.calibrationDataOpen[bandIndex];
+}
+
+void setCalibrationDataOpen(char* band, uint16_t data) {
+  uint8_t bandIndex = bandToIndex(band);
+  persistedData.calibrationDataOpen[bandIndex] = data;
 
   storeData();
 }

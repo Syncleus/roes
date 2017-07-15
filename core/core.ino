@@ -21,7 +21,7 @@ String errorMsgLine4 = "";
 
 boolean calibrating = false;
 boolean calibratingPause = false;
-boolean calibratingFwd = false;
+boolean calibratingOpen = false;
 
 Screen currentScreen = POWER;
 
@@ -66,9 +66,9 @@ void setup()   {
       bumpCalibratingPowerPoint();
       calibrating = true;
       calibratingPause = false;
-      calibratingFwd = false;
+      calibratingOpen = false;
 
-      renderCalibration(calibratingPowerPoint, calibratingFwd, calibratingBand);
+      renderCalibration(calibratingPowerPoint, calibratingOpen, calibratingBand);
     }
   }
 
@@ -113,41 +113,45 @@ void loop() {
   
   if(calibrating) {
     if( calibratingPause ) {
-        if(waitForStop(calibratingFwd)) {
-          if( bumpCalibratingPowerPoint() ) {
-            if( bumpCalibratingBand() ) {
-              if( calibratingFwd == false ) {
-                calibratingFwd = true;
-              }
-              else {
-                calibrating = false;
-                calibratingFwd = false;
-                calibratingPause = false;
-                deactivateCalibrateOnBoot();
-                return;
+        if(waitForStop()) {
+          if( !calibratingOpen ) {
+            if( bumpCalibratingPowerPoint() ) {
+              if( bumpCalibratingBand() ) {
+                calibratingOpen = true;
               }
             }
           }
+          else {
+            calibrating = false;
+            calibratingOpen = false;
+            calibratingPause = false;
+            deactivateCalibrateOnBoot();
+            return;
+          }
           calibratingPause = false;
-          renderCalibration(calibratingPowerPoint, calibratingFwd, calibratingBand);
+
+          if( !calibratingOpen )
+            renderCalibration(calibratingPowerPoint, calibratingOpen, calibratingBand);
+          else
+            renderCalibration(5.0, calibratingOpen, calibratingBand);
         }
     }
     else {
       if( runCalibration() ) {
         calibratingPause = true;
         CalibrationAverages result = getCalibration();
-        CalibrationData currentCalibration = calibrationData(calibratingBand.c_str(), calibratingPowerPoint);
-        if( calibratingFwd ) {
+        if( !calibratingOpen ) {
+          CalibrationData currentCalibration = calibrationDataDummy(calibratingBand.c_str(), calibratingPowerPoint);
           currentCalibration.fwd = result.adcFwd;
-          currentCalibration.fwdRefl = result.adcRvr;
+          currentCalibration.rvr = result.adcRvr;
           currentCalibration.vref = result.adcVref;
           currentCalibration.phase = result.adcPhase;
           currentCalibration.magnitude = result.adcMagnitude;
+          setCalibrationDataDummy(calibratingBand.c_str(), calibratingPowerPoint, currentCalibration);
         }
         else {
-          currentCalibration.rvr = result.adcRvr;
+          setCalibrationDataOpen(calibratingBand.c_str(), result.adcRvr);
         }
-        setCalibrationData(calibratingBand.c_str(), calibratingPowerPoint, currentCalibration);
         renderStopTransmitting();
       }
     }
@@ -221,29 +225,25 @@ boolean bumpCalibratingPowerPoint() {
 void handleCalibrationData(char* tokens)
 {
   Serial.print("calibrationLowFwd: ");
-  Serial.println(String(calibrationData("15m", 5.0).fwd));
+  Serial.println(String(calibrationDataDummy("15m", 5.0).fwd));
   Serial.print("calibrationLowRvr: ");
-  Serial.println(String(calibrationData("15m", 5.0).rvr));
+  Serial.println(String(calibrationDataDummy("15m", 5.0).rvr));
   Serial.print("calibrationLowVref: ");
-  Serial.println(String(calibrationData("15m", 5.0).vref));
+  Serial.println(String(calibrationDataDummy("15m", 5.0).vref));
   Serial.print("calibrationLowMagnitude: ");
-  Serial.println(String(calibrationData("15m", 5.0).magnitude));
+  Serial.println(String(calibrationDataDummy("15m", 5.0).magnitude));
   Serial.print("calibrationLowPhase: ");
-  Serial.println(String(calibrationData("15m", 5.0).phase));
-  Serial.print("calibrationLowRefl: ");
-  Serial.println(String(calibrationData("15m", 5.0).fwdRefl));
+  Serial.println(String(calibrationDataDummy("15m", 5.0).phase));
   Serial.print("calibrationHighFwd: ");
-  Serial.println(String(calibrationData("15m", 200.0).fwd));
+  Serial.println(String(calibrationDataDummy("15m", 200.0).fwd));
   Serial.print("calibrationHighRvr: ");
-  Serial.println(String(calibrationData("15m", 200.0).rvr));
+  Serial.println(String(calibrationDataDummy("15m", 200.0).rvr));
   Serial.print("calibrationHighVref: ");
-  Serial.println(String(calibrationData("15m", 200.0).vref));
+  Serial.println(String(calibrationDataDummy("15m", 200.0).vref));
   Serial.print("calibrationHighMagnitude: ");
-  Serial.println(String(calibrationData("15m", 200.0).magnitude));
+  Serial.println(String(calibrationDataDummy("15m", 200.0).magnitude));
   Serial.print("calibrationHighPhase: ");
-  Serial.println(String(calibrationData("15m", 200.0).phase));
-  Serial.print("calibrationHighRefl: ");
-  Serial.println(String(calibrationData("15m", 200.0).fwdRefl));
+  Serial.println(String(calibrationDataDummy("15m", 200.0).phase));
 }
 
 void handleReadInputs(char* tokens)

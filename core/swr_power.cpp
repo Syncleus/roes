@@ -8,27 +8,19 @@ float mapFloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 float adcToFwdVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationData("15m", 5.0).fwd, calibrationData("15m", 200.0).fwd, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(adcValue, calibrationDataDummy("15m", 5.0).fwd, calibrationDataDummy("15m", 200.0).fwd, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
 }
 
 uint16_t fwdVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationData("15m", 5.0).fwd, calibrationData("15m", 200.0).fwd);
+  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationDataDummy("15m", 5.0).fwd, calibrationDataDummy("15m", 200.0).fwd);
 }
 
 float adcToRvrVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationData("15m", 5.0).rvr, calibrationData("15m", 200.0).rvr, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(adcValue, calibrationDataDummy("15m", 5.0).rvr, calibrationDataOpen("15m"), powerToVoltage(0.0), powerToVoltage(5.0));
 }
 
 uint16_t RvrVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationData("15m", 5.0).rvr, calibrationData("15m", 200.0).rvr);
-}
-
-float fwdVoltageToRatio(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationData("15m", 5.0).fwdRefl, calibrationData("15m", 200.0).fwdRefl);
-}
-
-float ratioToFwdVoltage(float ratio) {
-  return mapFloat(ratio, calibrationData("15m", 5.0).fwdRefl, calibrationData("15m", 200.0).fwdRefl, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(5.0), calibrationDataDummy("15m", 5.0).rvr, calibrationDataOpen("15m"));
 }
 
 float voltageToPower(float voltage) {
@@ -56,12 +48,7 @@ void updatePower(float *power_fwd, float *power_rvr) {
   float voltageFwd = adcToFwdVoltage(adcFwdValue);
   *power_fwd = voltageToPower(voltageFwd);
 
-  float reverseRatio = fwdVoltageToRatio(voltageFwd);
-
-  float reverseBaseline = ((float)adcFwdValue) / reverseRatio;
-  int32_t adcRvrValue = analogRead(POWER_RVR_PIN);
-  int32_t adjustedAdcRvrValue = adcRvrValue - reverseBaseline;
-  uint16_t boundedAdcRvrValue = (adjustedAdcRvrValue >= 0 ? adjustedAdcRvrValue : 0);
-  float rvrVoltage = adcToRvrVoltage(boundedAdcRvrValue);
-  *power_rvr = voltageToPower(rvrVoltage);
+  uint16_t adcRvrValue = analogRead(POWER_RVR_PIN);
+  float voltageRvr = adcToRvrVoltage(adcRvrValue);
+  *power_rvr = voltageToPower(voltageRvr);
 }

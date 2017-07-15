@@ -9,7 +9,6 @@
 struct CalibrationData {
   uint16_t fwd;
   uint16_t rvr;
-  uint16_t fwdRefl;
   uint16_t vref;
   uint16_t magnitude;
   uint16_t phase;
@@ -35,7 +34,9 @@ void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> new
 
 uint8_t bandToIndex(char* band);
 uint8_t powerPointToIndex(float powerPoint);
-CalibrationData calibrationData(char* band, float powerPoint);
-void setCalibrationData(char* band, float powerPoint, CalibrationData data);
+CalibrationData calibrationDataDummy(char* band, float powerPoint);
+void setCalibrationDataDummy(char* band, float powerPoint, CalibrationData data);
+uint16_t calibrationDataOpen(char* band);
+void setCalibrationDataOpen(char* band, uint16_t data);
 
 #endif /* _SWR_EEPROM_H_ */

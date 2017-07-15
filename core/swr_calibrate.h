@@ -13,6 +13,6 @@ struct CalibrationAverages {
 
 boolean runCalibration();
 CalibrationAverages getCalibration();
-boolean waitForStop(boolean forward);
+boolean waitForStop();
 
 #endif /* _SWR_CALIBRATE_H_ */

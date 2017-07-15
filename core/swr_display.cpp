@@ -202,7 +202,7 @@ void renderStopTransmitting() {
   display.display();
 }
 
-void renderCalibration(float power, boolean forward, String band) {
+void renderCalibration(float power, boolean openLoad, String band) {
   display.clearDisplay();
 
   display.setTextColor(WHITE);
@@ -213,17 +213,14 @@ void renderCalibration(float power, boolean forward, String band) {
   display.setTextSize(1);
   display.print("Apply ");
   display.print(makeValueLabel(power, "w"));
-  display.println(" in the ");
-
-  if (forward)
-    display.print("forward");
-  else
-    display.print("reverse");
-  display.println(" direction on");
+  display.println(" on");
   display.print("the ");
   display.print(band);
   display.println(" band into");
-  display.println("a dummy load");
+  if (openLoad)
+    display.println("an open load");
+  else
+    display.println("a dummy load");
 
   display.display();
 }

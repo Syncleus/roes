@@ -39,6 +39,18 @@ float powerToVoltage(float power) {
   return sqrt(power * 50.0);
 }
 
+void updateComplex(float *magnitudeDb, float *phase) {
+  float adcMax = analogRead(COMPLEX_VREF_PIN);
+
+  float adcMagnitude = analogRead(COMPLEX_MAGNITUDE_PIN);
+  float magnitudeNormalized = (adcMagnitude / adcMax) * 2.0 - 1.0;
+  *magnitudeDb = magnitudeNormalized * 30.0;
+
+  float adcPhase = analogRead(COMPLEX_PHASE_PIN);
+  float phaseNormalized = 1.0 - (adcPhase / adcMax);
+  *phase = phaseNormalized * 180.0;
+}
+
 void updatePower(float &power_fwd, float &power_rvr) {
   uint16_t adcFwdValue = analogRead(POWER_FWD_PIN);
   float voltageFwd = adcToFwdVoltage(adcFwdValue);

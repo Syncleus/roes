@@ -7,6 +7,11 @@
 #include "swr_calibrate.h"
 #include "swr_constants.h"
 
+enum Screen {
+  POWER,
+  COMPLEX
+};
+
 boolean error = false;
 String errorMsgLine1 = "";
 String errorMsgLine2 = "";
@@ -17,6 +22,10 @@ boolean calibrating = false;
 boolean calibratingPause = false;
 boolean calibratingFwd = false;
 
+Screen currentScreen = POWER;
+
+float magnitudeDb = 0.0;
+float phase = 0.0;
 float power_fwd = 0.0;
 float power_rvr = 0.0;
 
@@ -74,12 +83,23 @@ void loop() {
   commandLine.update();
 
   if( time%25 == 0 && error == false && !calibrating) {
-    if(demoMode())
+    if(demoMode()) {
+      updateComplexDemo(magnitudeDb, phase);
       updatePowerDemo(power_fwd, power_rvr);
-    else
+    }
+    else {
+      updateComplex(&magnitudeDb, &phase);
       updatePower(power_fwd, power_rvr);
-    
-    renderSwr(power_fwd, power_rvr);
+    }
+
+    switch( currentScreen ) {
+    case POWER:
+      renderPowerSwr(power_fwd, power_rvr);
+      break;
+    case COMPLEX:
+      renderComplexSwr(magnitudeDb, phase);
+      break;
+    }
   }
   
   if(calibrating) {

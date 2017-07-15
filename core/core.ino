@@ -126,7 +126,7 @@ void loop() {
           if( !calibratingOpen )
             renderCalibration(calibratingPowerPoint, calibratingOpen);
           else
-            renderCalibration(5.0, calibratingOpen);
+            renderCalibration(lowestPowerPoint(), calibratingOpen);
         }
     }
     else {

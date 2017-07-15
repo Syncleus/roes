@@ -93,6 +93,8 @@ void eepromSetup() {
     for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS; indexPoint++)
       persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
     storeData();
+
+    
   }
   else
     recallData();
@@ -195,4 +197,29 @@ void setCalibrationDataOpen(uint16_t data) {
   storeData();
 }
 
+float lowestPowerPoint() {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPoints = calibrationPowerPoints();
+  etl::iset<float, std::less<float>>::const_iterator itr = powerPoints.begin();
+  float power = -1.0;
+  while (itr != powerPoints.end())
+  {
+    float powerPoint = *itr++;
+    if(powerPoint < power || power == -1.0)
+      power = powerPoint;
+  }
+  return power;
+}
+
+float highestPowerPoint() {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPoints = calibrationPowerPoints();
+  etl::iset<float, std::less<float>>::const_iterator itr = powerPoints.begin();
+  float power = -1.0;
+  while (itr != powerPoints.end())
+  {
+    float powerPoint = *itr++;
+    if(powerPoint > power)
+      power = powerPoint;
+  }
+  return power;
+}
 

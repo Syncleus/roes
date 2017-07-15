@@ -37,4 +37,7 @@ void setCalibrationDataDummy(float powerPoint, CalibrationData data);
 uint16_t calibrationDataOpen();
 void setCalibrationDataOpen(uint16_t data);
 
+float lowestPowerPoint();
+float highestPowerPoint();
+
 #endif /* _SWR_EEPROM_H_ */

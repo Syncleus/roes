@@ -8,27 +8,27 @@ float mapFloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 float adcToFwdVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationDataDummy(5.0).fwd, calibrationDataDummy(200.0).fwd, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER));
+  return mapFloat(adcValue, calibrationDataDummy(lowestPowerPoint()).fwd, calibrationDataDummy(highestPowerPoint()).fwd, powerToVoltage(lowestPowerPoint()), powerToVoltage(highestPowerPoint()));
 }
 
 uint16_t fwdVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(LOW_POWER), powerToVoltage(HIGH_POWER), calibrationDataDummy(5.0).fwd, calibrationDataDummy(200.0).fwd);
+  return mapFloat(voltage, powerToVoltage(lowestPowerPoint()), powerToVoltage(highestPowerPoint()), calibrationDataDummy(lowestPowerPoint()).fwd, calibrationDataDummy(highestPowerPoint()).fwd);
 }
 
 float adcToRvrVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationDataDummy(5.0).rvr, calibrationDataOpen(), powerToVoltage(0.0), powerToVoltage(5.0));
+  return mapFloat(adcValue, calibrationDataDummy(lowestPowerPoint()).rvr, calibrationDataOpen(), powerToVoltage(0.0), powerToVoltage(lowestPowerPoint()));
 }
 
 uint16_t RvrVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(5.0), calibrationDataDummy(5.0).rvr, calibrationDataOpen());
+  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(lowestPowerPoint()), calibrationDataDummy(lowestPowerPoint()).rvr, calibrationDataOpen());
 }
 
 float voltageToPower(float voltage) {
-  return (voltage*voltage) / 50.0;
+  return (voltage*voltage) / CHARACTERISTIC_IMPEDANCE;
 }
 
 float powerToVoltage(float power) {
-  return sqrt(power * 50.0);
+  return sqrt(power * CHARACTERISTIC_IMPEDANCE);
 }
 
 void updateComplex(float *magnitudeDb, float *phase) {

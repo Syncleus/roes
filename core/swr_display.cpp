@@ -17,7 +17,7 @@ boolean demo_phase_increasing = true;
 boolean demo_power_fwd_increasing = true;
 boolean demo_power_rvr_increasing = true;
 
-static const unsigned char PROGMEM gamma16_glcd_bmp[] =
+static const PROGMEM unsigned char gamma16_glcd_bmp[] =
 { B01111111, B11111110,
   B00111111, B11111110,
   B00011000, B00000110,
@@ -36,7 +36,7 @@ static const unsigned char PROGMEM gamma16_glcd_bmp[] =
   B01111110, B00000000
 };
 
-static const unsigned char PROGMEM angle8_glcd_bmp[] =
+static const PROGMEM unsigned char angle8_glcd_bmp[] =
 { B00000000,
   B00000010,
   B00000100,

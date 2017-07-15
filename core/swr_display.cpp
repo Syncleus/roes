@@ -12,6 +12,8 @@
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
 
+boolean demo_magnitude_db_increasing = true;
+boolean demo_phase_increasing = true;
 boolean demo_power_fwd_increasing = true;
 boolean demo_power_rvr_increasing = true;
 
@@ -243,32 +245,32 @@ void renderError(String message1, String message2, String message3, String messa
 }
 
 void updateComplexDemo(float *magnitudeDb, float *phase) {
-  if ( demo_power_fwd_increasing )
+  if ( demo_magnitude_db_increasing )
     *magnitudeDb += 0.1;
   else
     *magnitudeDb -= 0.1;
 
   if (*magnitudeDb > 0.0) {
     *magnitudeDb = 0.0;
-    demo_power_fwd_increasing = false;
+    demo_magnitude_db_increasing = false;
   }
   else if (*magnitudeDb < -30.0 ) {
     *magnitudeDb = -30.0;
-    demo_power_fwd_increasing = true;
+    demo_magnitude_db_increasing = true;
   }
 
-  if ( demo_power_rvr_increasing )
+  if ( demo_phase_increasing )
     *phase += 1.0;
   else
     *phase -= 1.0;
 
   if ( *phase > 180 ) {
     *phase = 180.0;
-    demo_power_rvr_increasing = false;
+    demo_phase_increasing = false;
   }
   else if ( *phase < 0 ) {
     *phase = 0.0;
-    demo_power_rvr_increasing = true;
+    demo_phase_increasing = true;
   }
 }
 

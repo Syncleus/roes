@@ -29,6 +29,8 @@ float phase = 0.0;
 float power_fwd = 0.0;
 float power_rvr = 0.0;
 
+boolean downButtonLowLast = false;
+
 String calibratingBand = "";
 float calibratingPowerPoint = -1.0;
 
@@ -38,6 +40,8 @@ void setup()   {
   Serial.begin(9600);              
   displaySetup();
   eepromSetup();
+
+  pinMode(DOWN_BUTTON_PIN, INPUT);
 
   //make sure eeprom isn't corrupt
   if( checkEepromCrc() == false ) {
@@ -81,6 +85,8 @@ void loop() {
   unsigned long time = millis();
   
   commandLine.update();
+
+  updateScreenFromButton();
 
   if( time%25 == 0 && error == false && !calibrating) {
     if(demoMode()) {
@@ -143,6 +149,22 @@ void loop() {
       }
     }
   }
+}
+
+void updateScreenFromButton() {
+  int buttonState = digitalRead(DOWN_BUTTON_PIN);
+
+  if( downButtonLowLast == false && buttonState == LOW ) {
+    if( currentScreen == POWER )
+      currentScreen = COMPLEX;
+    else if( currentScreen == COMPLEX )
+      currentScreen = POWER;
+
+    downButtonLowLast = true;
+  }
+
+  if(downButtonLowLast && buttonState == HIGH)
+    downButtonLowLast = false;
 }
 
 boolean bumpCalibratingBand() {

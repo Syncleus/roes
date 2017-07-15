@@ -71,7 +71,7 @@ float polarToComplexB(float magnitudeDb, float phase) {
   return magnitudeDb * sin(phase);
 }
 
-float swrFromPower(float power_fwd, float power_rvr) {
+float powerToSwr(float power_fwd, float power_rvr) {
   if ( power_rvr <= 0 )
     return 1.0;
   float pwrs = sqrt(power_rvr / power_fwd);
@@ -153,7 +153,7 @@ void renderPowerSwr(float power_fwd, float power_rvr) {
   display.setTextColor(WHITE);
 
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), (power_rvr <= power_fwd ? swrFromPower(power_fwd, power_rvr) : swrFromPower(power_fwd, power_fwd)), NULL, 1.0, 2.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), (power_rvr <= power_fwd ? powerToSwr(power_fwd, power_rvr) : powerToSwr(power_fwd, power_fwd)), NULL, 1.0, 2.0, 2.0);
   renderCompleteBar(SCREEN_ROW_2_Y, strings(FWD_LABEL), power_fwd, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
   renderCompleteBar(SCREEN_ROW_3_Y, strings(RVR_LABEL), power_rvr, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
 

@@ -8,6 +8,7 @@
 #include "swr_calibrate.h"
 #include "swr_constants.h"
 #include "swr_strings.h"
+#include "swr_status_led.h"
 
 enum Screen {
   POWER,
@@ -33,6 +34,7 @@ CommandLine commandLine(Serial, "> ");
 
 void setup()   {  
   heartbeatSetup();
+  statusLedSetup();
   Serial.begin(9600);              
   displaySetup();
   eepromSetup();
@@ -77,6 +79,7 @@ void loop() {
   unsigned long time = millis();
 
   heartbeatUpdate();
+  statusLedUpdate();
   commandLine.update();
 
   if( error )
@@ -93,6 +96,25 @@ void loop() {
       updateComplex(&magnitudeDb, &phase);
       updatePower(&power_fwd, &power_rvr);
     }
+
+    float swr;
+    if( currentScreen == POWER )
+      swr = powerToSwr(power_fwd, power_rvr);
+    else if( currentScreen == COMPLEX )
+      swr = dbToSwr(magnitudeDb);
+    
+    if( power_fwd >= 0.1 ) {
+      if( swr < 1.5 )
+        setLedStatus(SLOW);
+      else if( swr >= 1.5 && swr < 2.0 )
+        setLedStatus(FAST);
+      else if( swr >= 2.0 && swr < 3.0 )
+        setLedStatus(VERY_FAST);
+      else
+        setLedStatus(ON);
+    }
+    else
+      setLedStatus(OFF);
 
     switch( currentScreen ) {
     case POWER:

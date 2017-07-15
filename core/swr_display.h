@@ -13,7 +13,7 @@ String makeValueLabel(float value, const char* units);
 uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale);
 void renderPowerSwr(float power_fwd, float power_rvr);
 void renderComplexSwr(float magnitude, float phase);
-float swrFromPower(float power_fwd, float power_rvr);
+float powerToSwr(float power_fwd, float power_rvr);
 void updatePowerDemo(float *power_fwd, float *power_rvr);
 void updateComplexDemo(float *magnitudeDb, float *phase);
 void renderError(String message1, String message2, String message3, String message4);

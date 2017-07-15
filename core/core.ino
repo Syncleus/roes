@@ -143,7 +143,13 @@ void loop() {
           setCalibrationDataDummy(calibratingPowerPoint, currentCalibration);
         }
         else {
-          setCalibrationDataOpen(result.adcRvr);
+          CalibrationData currentCalibration = calibrationDataOpen();
+          currentCalibration.fwd = result.adcFwd;
+          currentCalibration.rvr = result.adcRvr;
+          currentCalibration.vref = result.adcVref;
+          currentCalibration.phase = result.adcPhase;
+          currentCalibration.magnitude = result.adcMagnitude;
+          setCalibrationDataOpen(currentCalibration);
         }
         renderStopTransmitting();
       }

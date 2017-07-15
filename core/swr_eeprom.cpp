@@ -14,7 +14,7 @@ struct SwrPersistedData {
   boolean demoMode;
   float calibrationPowerPoints[MAX_CALIBRATION_POWER_POINTS];
   CalibrationData calibrationDataDummy[MAX_CALIBRATION_POWER_POINTS];
-  uint16_t calibrationDataOpen;
+  CalibrationData calibrationDataOpen;
 };
 
 SwrPersistedData persistedData;
@@ -187,11 +187,11 @@ void setCalibrationDataDummy(float powerPoint, CalibrationData data) {
   storeData();
 }
 
-uint16_t calibrationDataOpen() {\
+CalibrationData calibrationDataOpen() {
   return persistedData.calibrationDataOpen;
 }
 
-void setCalibrationDataOpen(uint16_t data) {
+void setCalibrationDataOpen(CalibrationData data) {
   persistedData.calibrationDataOpen = data;
 
   storeData();

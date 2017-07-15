@@ -16,11 +16,11 @@ uint16_t fwdVoltageToAdc(float voltage) {
 }
 
 float adcToRvrVoltage(uint16_t adcValue) {
-  return mapFloat(adcValue, calibrationDataDummy(lowestPowerPoint()).rvr, calibrationDataOpen(), powerToVoltage(0.0), powerToVoltage(lowestPowerPoint()));
+  return mapFloat(adcValue, calibrationDataDummy(lowestPowerPoint()).rvr, calibrationDataOpen().rvr, powerToVoltage(0.0), powerToVoltage(lowestPowerPoint()));
 }
 
 uint16_t RvrVoltageToAdc(float voltage) {
-  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(lowestPowerPoint()), calibrationDataDummy(lowestPowerPoint()).rvr, calibrationDataOpen());
+  return mapFloat(voltage, powerToVoltage(0.0), powerToVoltage(lowestPowerPoint()), calibrationDataDummy(lowestPowerPoint()).rvr, calibrationDataOpen().rvr);
 }
 
 float voltageToPower(float voltage) {

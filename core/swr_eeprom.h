@@ -34,8 +34,8 @@ uint8_t bandToIndex(char* band);
 uint8_t powerPointToIndex(float powerPoint);
 CalibrationData calibrationDataDummy(float powerPoint);
 void setCalibrationDataDummy(float powerPoint, CalibrationData data);
-uint16_t calibrationDataOpen();
-void setCalibrationDataOpen(uint16_t data);
+CalibrationData calibrationDataOpen();
+void setCalibrationDataOpen(CalibrationData data);
 
 float lowestPowerPoint();
 float highestPowerPoint();

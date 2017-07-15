@@ -27,8 +27,6 @@ float phase = 0.0;
 float power_fwd = 0.0;
 float power_rvr = 0.0;
 
-boolean downButtonLowLast = false;
-
 float calibratingPowerPoint = -1.0;
 
 CommandLine commandLine(Serial, "> ");
@@ -81,10 +79,10 @@ void loop() {
   heartbeatUpdate();
   commandLine.update();
 
-  updateScreenFromButton();
-
   if( error )
     return;
+
+  updateDownButton();
 
   if( time%25 == 0&& !calibrating) {
     if(demoMode()) {
@@ -157,7 +155,8 @@ void loop() {
   }
 }
 
-void updateScreenFromButton() {
+void updateDownButton() {
+  static boolean downButtonLowLast = false;
   int buttonState = digitalRead(DOWN_BUTTON_PIN);
 
   if( downButtonLowLast == false && buttonState == LOW ) {

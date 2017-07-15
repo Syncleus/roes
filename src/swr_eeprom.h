@@ -31,8 +31,7 @@ boolean demoMode();
 etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints();
 void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> newCalibrationPowerPoints);
 
-uint8_t bandToIndex(char* band);
-uint8_t powerPointToIndex(float powerPoint);
+int8_t powerPointToIndex(float powerPoint);
 CalibrationData calibrationDataDummy(float powerPoint);
 void setCalibrationDataDummy(float powerPoint, CalibrationData data);
 CalibrationData calibrationDataOpen();

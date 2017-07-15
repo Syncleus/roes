@@ -1,6 +1,6 @@
 #include "CommandLine.h"
 
-CommandLine::CommandLine(Stream& _serial, char* _token): serial(_serial), token(_token)
+CommandLine::CommandLine(Stream& _serial, const char* _token): serial(_serial), token(_token)
 {
     input.index = 0;
     commands.index = 0;
@@ -173,14 +173,14 @@ bool CommandLine::add(Command& command)
     return false;
 }
 
-bool CommandLine::add(char* command, void (*callback)(char*))
+bool CommandLine::add(const char* command, void (*callback)(char*))
 {
     Command* cmd = (Command*) malloc(sizeof(Command));
 
     cmd->command = command;
     cmd->callback = callback;
 
-    this->add(*cmd);
+    return this->add(*cmd);
 }
 
 bool CommandLine::remove(Command& command)

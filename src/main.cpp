@@ -1,3 +1,5 @@
+#include "main.h"
+
 #include <CommandLine.h>
 #include <ArduinoSTL.h>
 
@@ -32,10 +34,10 @@ float calibratingPowerPoint = -1.0;
 
 CommandLine commandLine(Serial, "> ");
 
-void setup()   {  
+void setup()   {
   heartbeatSetup();
   statusLedSetup();
-  Serial.begin(9600);              
+  Serial.begin(9600);
   displaySetup();
   eepromSetup();
 
@@ -46,9 +48,9 @@ void setup()   {
     error = true;
     uint32_t actualCrc = eepromCrc32Actual();
     uint32_t storedCrc = eepromCrc32Stored();
-    const char errorMsgLine3[11] = "0x";
+    char errorMsgLine3[11] = "0x";
     uint32toa(actualCrc, errorMsgLine3 + 2, 16);
-    const char errorMsgLine4[11] = "0x";
+    char errorMsgLine4[11] = "0x";
     uint32toa(storedCrc, errorMsgLine4 + 2, 16);
 
     renderError(strings(CORRUPT_EEPROM), strings(CRC_CHECK_FAILED), errorMsgLine3, errorMsgLine4);
@@ -102,7 +104,7 @@ void loop() {
       swr = powerToSwr(power_fwd, power_rvr);
     else if( currentScreen == COMPLEX )
       swr = dbToSwr(magnitudeDb);
-    
+
     if( power_fwd >= 0.1 ) {
       if( swr < 1.5 )
         setLedStatus(SLOW);
@@ -125,7 +127,7 @@ void loop() {
       break;
     }
   }
-  
+
   if(calibrating) {
     if( calibratingPause ) {
         if(waitForStop()) {
@@ -217,10 +219,11 @@ boolean bumpCalibratingPowerPoint() {
       calibratingPowerPoint = first;
       return true;
     }
+
+    return false;
 }
 
-void handleCalibrationData(char* tokens)
-{
+void handleCalibrationData(char* tokens) {
   Serial.print("calibrationLowFwd: ");
   Serial.println(String(calibrationDataDummy(5.0).fwd));
   Serial.print("calibrationLowRvr: ");
@@ -243,8 +246,7 @@ void handleCalibrationData(char* tokens)
   Serial.println(String(calibrationDataDummy(200.0).phase));
 }
 
-void handleReadInputs(char* tokens)
-{
+void handleReadInputs(char* tokens) {
   Serial.print("POWER_FWD_PIN: ");
   Serial.println(String(analogRead(POWER_FWD_PIN)));
   Serial.print("POWER_RVR_PIN: ");
@@ -257,8 +259,7 @@ void handleReadInputs(char* tokens)
   Serial.println(String(analogRead(COMPLEX_MAGNITUDE_PIN)));
 }
 
-void handleCalibrateOnBoot(char* tokens)
-{
+void handleCalibrateOnBoot(char* tokens) {
   char* argument = strtok(NULL, " ");
   if( argument == NULL ) {
     Serial.print("calibrateonboot: ");
@@ -280,13 +281,11 @@ void handleCalibrateOnBoot(char* tokens)
   }
 }
 
-void handlePing(char* tokens)
-{
+void handlePing(char* tokens) {
   Serial.println("Pong!");
 }
 
-void handleDemo(char* tokens)
-{
+void handleDemo(char* tokens) {
   char* argument = strtok(NULL, " ");
   if( argument == NULL ) {
     Serial.print("demoMode: ");
@@ -309,8 +308,7 @@ void handleDemo(char* tokens)
 }
 
 //splits a string in place, no dynamic allocation
-char* splitString(char* data, char separator)
-{
+char* splitString(char* data, char separator) {
   int dataIndex = -1;
   char currentChar = '\0';
   do {
@@ -325,8 +323,7 @@ char* splitString(char* data, char separator)
   return data + dataIndex + 1;
 }
 
-void handleCalibrationPoints(char* tokens)
-{
+void handleCalibrationPoints(char* tokens) {
   char* argument = strtok(NULL, "\0");
   if( argument == NULL ) {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPointsData = calibrationPowerPoints();
@@ -343,29 +340,24 @@ void handleCalibrationPoints(char* tokens)
     Serial.println();
   }
   else {
-    String argumentStr = String(argument);
-    char* argumentCharArray = argumentStr.c_str();
 
     etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPointsData;
     do {
-      char* parsedArgument = argumentCharArray;
-      argumentCharArray = splitString(parsedArgument, ' ');
+      char* parsedArgument = argument;
+      argument = splitString(parsedArgument, ' ');
       calibrationPointsData.insert(String(parsedArgument).toFloat());
-    } while(argumentCharArray != NULL);
+    } while(argument != NULL);
 
     setCalibrationPowerPoints(calibrationPointsData);
     Serial.println("calibration points set");
   }
 }
 
-void handleHelp(char* tokens)
-{
+void handleHelp(char* tokens) {
   Serial.println("Use the commands 'help', 'calibrationpoints', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
 }
 
-void handleClearEeprom(char* tokens)
-{
+void handleClearEeprom(char* tokens) {
   eepromClear();
   Serial.println("Eeprom cleared.");
 }
-

@@ -3,6 +3,7 @@
 #include "swr_strings.h"
 
 #include <math.h>
+#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
@@ -107,7 +108,7 @@ uint8_t percentBar(uint8_t y_offset, float percent) {
 }
 
 String makeValueLabel(float value) {
-  makeValueLabel(value, NULL);
+  return makeValueLabel(value, NULL);
 }
 
 String makeValueLabel(float value, const char* units) {
@@ -185,16 +186,16 @@ void renderComplexSwr(float magnitudeDb, float phase) {
   display.setTextColor(WHITE);
   display.setCursor(44, SCREEN_ROW_4_Y);
   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
-  display.print(String(magnitudeLinear));
+  display.print(makeValueLabel(magnitudeLinear));
   display.print(" ");
-  display.println(String(phase));
+  display.println(makeValueLabel(phase));
   display.drawBitmap(60, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
   display.drawCircle(93, SCREEN_ROW_4_Y, 1, WHITE);
 
   display.setCursor(44, SCREEN_ROW_5_Y);
-  display.print(String(polarToComplexA(magnitudeDb, phase)));
+  display.print(makeValueLabel(polarToComplexA(magnitudeDb, phase)));
   display.print(" + ");
-  display.print(String(polarToComplexB(magnitudeDb, phase)));
+  display.print(makeValueLabel(polarToComplexB(magnitudeDb, phase)));
   display.println(" i");
 
   display.display();

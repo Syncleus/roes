@@ -78,7 +78,7 @@ static const PROGMEM char* const string_table[] PROGMEM = {
 };
 
 const char* strings(uint16_t id);
-const char* strings(uint16_t id, const char *buffer);
-void uint32toa(uint32_t value, char*buffer, uint8_t radix);
+char* strings(uint16_t id, char *buffer);
+void uint32toa(uint32_t value, char *buffer, uint8_t radix);
 
 #endif /* _SWR_STRINGS_H_ */

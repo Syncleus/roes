@@ -20,7 +20,7 @@ struct SwrPersistedData {
 SwrPersistedData persistedData;
 
 void eepromClear() {
-  for (int i = 0 ; i < EEPROM.length() ; i++) {
+  for (uint16_t i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.update(i, 0);
   }
 }
@@ -49,7 +49,7 @@ static PROGMEM uint32_t crc32(byte *data, int len) {
     crc = data_read2 ^ (crc >> 4);
     crc = ~crc;
   }
-  
+
   return crc;
 }
 
@@ -98,7 +98,7 @@ void eepromSetup() {
       persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
     storeData();
 
-    
+
   }
   else
     recallData();
@@ -172,11 +172,12 @@ void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> new
   storeData();
 }
 
-uint8_t powerPointToIndex(float powerPoint) {
+int8_t powerPointToIndex(float powerPoint) {
   for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
     if( persistedData.calibrationPowerPoints[index] == powerPoint )
       return index;
   }
+  return -1;
 }
 
 CalibrationData calibrationDataDummy(float powerPoint) {
@@ -226,4 +227,3 @@ float highestPowerPoint() {
   }
   return power;
 }
-

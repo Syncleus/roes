@@ -165,7 +165,7 @@ class Adafruit_GFX_Button {
  private:
   Adafruit_GFX *_gfx;
   int16_t       _x1, _y1; // Coordinates of top-left corner
-  uint16_t      _w, _h;
+  int16_t      _w, _h;
   uint8_t       _textsize;
   uint16_t      _outlinecolor, _fillcolor, _textcolor;
   char          _label[10];

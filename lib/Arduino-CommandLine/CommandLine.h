@@ -38,7 +38,7 @@
  */
 struct Command
 {
-    char* command;
+    const char* command;
     void (*callback)(char*);
 
     /**
@@ -47,7 +47,7 @@ struct Command
      * @param command Name of the command
      * @param callback Function pointer
      */
-    Command(char* _command, void (*_callback)(char*)): command(_command), callback(_callback) {}
+    Command(const char* _command, void (*_callback)(char*)): command(_command), callback(_callback) {}
 };
 
 /**
@@ -64,7 +64,7 @@ public:
      * @param serial Serial stream to wrap
      * @param token Command line token to indicate new line (e.g. "> ")
      */
-    CommandLine(Stream& serial, char* token);
+    CommandLine(Stream& serial, const char* token);
 
     /**
      * Read the serial stream and evaluate commands.
@@ -88,7 +88,7 @@ public:
      * @param callback Function pointer.
      * @return True on success, false otherwise.
      */
-    bool add(char* command, void (*callback)(char*));
+    bool add(const char* command, void (*callback)(char*));
 
     /**
      * Remove a command instance
@@ -144,7 +144,7 @@ private:
         void restore();
     #endif
 
-    char* token;
+    const char* token;
 
     #ifdef COMMANDLINE_PRE_POST
         void (*preCallback)(char*);

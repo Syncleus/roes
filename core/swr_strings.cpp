@@ -1,9 +1,14 @@
 #include "swr_strings.h"
 #include <Arduino.h>
 
+static const char sharedBuffer[BUFFER_COUNT][MAX_STRING_LENGTH];
+uint8_t currentBuffer = 0;
+
 const char* strings(uint16_t id) {
-  static const char buffer[MAX_STRING_LENGTH];
-  return strings(id, buffer);
+  currentBuffer++;
+  if( currentBuffer >= BUFFER_COUNT )
+    currentBuffer = 0;
+  return strings(id, sharedBuffer[currentBuffer]);
 }
 
 const char* strings(uint16_t id, const char *buffer) {

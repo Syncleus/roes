@@ -1,5 +1,6 @@
 #include "swr_display.h"
 #include "swr_constants.h"
+#include "swr_strings.h"
 
 #include <math.h>
 #include <Adafruit_GFX.h>
@@ -105,35 +106,44 @@ uint8_t percentBar(uint8_t y_offset, float percent) {
   return PERCENT_BAR_TITLE_WIDTH + (PERCENT_BAR_WIDTH * percent);
 }
 
-String makeValueLabel(float value, String units) {
+String makeValueLabel(float value) {
+  makeValueLabel(value, NULL);
+}
+
+String makeValueLabel(float value, const char* units) {
   String label = String(value);
   if ( isinf(value) )
     return "***";
-  int8_t decimalIndex = label.indexOf(".");
+  uint8_t decimalIndex = label.indexOf(".");
+  uint8_t labelLength = label.length();
   if ( decimalIndex > 1 )
     label = label.substring(0, decimalIndex);
-  else
-    label = label.substring(0, 3);
-  label.concat(units);
+  else if(decimalIndex >= 0) {
+    label = label.substring(0, (labelLength >= 3 ? 3 : labelLength));
+  }
+  if( units != NULL )
+    label.concat(units);
   return label;
 }
 
-void renderCompleteBar(int8_t y_offset, String label, float value, String units, float value_min, float value_mid, float scale) {
+uint8_t renderCompleteBar(int8_t y_offset, const char *label, float value, const char *units, float value_min, float value_mid, float scale) {
   display.setCursor(0, y_offset + 4);
   display.println(label);
   float barPercent = scaleToPercent(value, value_min, value_mid, scale);
   uint8_t barEnd = percentBar(y_offset, barPercent);
   String valueLabel = makeValueLabel(value, units);
-  uint8_t valueLabelWidth = valueLabel.length() * CHARACTER_WIDTH + 2;
-  if ( barEnd < PERCENT_BAR_TITLE_WIDTH + valueLabelWidth) {
+  uint8_t valueLabelWidth = valueLabel.length() * CHARACTER_WIDTH + 4;
+  if ( barEnd < PERCENT_BAR_TITLE_WIDTH + valueLabelWidth + 2) {
     display.setCursor(barEnd + 2, y_offset + 4);
     display.println(valueLabel);
+    return barEnd + 2 + valueLabelWidth;
   }
   else {
     display.setTextColor(BLACK);
     display.setCursor(barEnd - valueLabelWidth, y_offset + 4);
     display.println(valueLabel);
     display.setTextColor(WHITE);
+    return (barEnd - valueLabelWidth + valueLabelWidth) * -1;
   }
 }
 
@@ -143,9 +153,9 @@ void renderPowerSwr(float power_fwd, float power_rvr) {
   display.setTextColor(WHITE);
 
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_1_Y, "SWR", (power_rvr <= power_fwd ? swrFromPower(power_fwd, power_rvr) : swrFromPower(power_fwd, power_fwd)), "", 1.0, 2.0, 2.0);
-  renderCompleteBar(SCREEN_ROW_2_Y, "Fwd", power_fwd, "w", 0.0, 100.0, 2.0);
-  renderCompleteBar(SCREEN_ROW_3_Y, "Rvr", power_rvr, "w", 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), (power_rvr <= power_fwd ? swrFromPower(power_fwd, power_rvr) : swrFromPower(power_fwd, power_fwd)), NULL, 1.0, 2.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_2_Y, strings(FWD_LABEL), power_fwd, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_3_Y, strings(RVR_LABEL), power_rvr, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
 
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
   display.setTextColor(WHITE);
@@ -166,9 +176,10 @@ void renderComplexSwr(float magnitudeDb, float phase) {
   display.setTextColor(WHITE);
 
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_1_Y, "SWR", dbToSwr(magnitudeDb), "", 1.0, 2.0, 2.0);
-  renderCompleteBar(SCREEN_ROW_2_Y, "Mag", magnitudeDb, "dB", -30.0, -15.0, 1.5);
-  renderCompleteBar(SCREEN_ROW_3_Y, "Phs", phase, "deg", 0.0, 90.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), dbToSwr(magnitudeDb), NULL, 1.0, 2.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_2_Y, strings(MAG_LABEL), magnitudeDb, strings(DECIBEL_UNIT_LABEL), -30.0, -15.0, 1.5);
+  int8_t drawDegreeX = renderCompleteBar(SCREEN_ROW_3_Y, strings(PHS_LABEL), phase, NULL, 0.0, 90.0, 2.0);
+  display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
 
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
   display.setTextColor(WHITE);
@@ -195,11 +206,11 @@ void renderStopTransmitting() {
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(36, SCREEN_ROW_1_Y);
-  display.println("STOP");
+  display.println(strings(STOP_WARNING_LABEL));
 
   display.setTextSize(1);
   display.setCursor(20, SCREEN_ROW_2_Y);
-  display.println("transmitting");
+  display.println(strings(TRANSMITTING_LABEL));
 
   display.display();
 }
@@ -210,16 +221,16 @@ void renderCalibration(float power, boolean openLoad) {
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(4, SCREEN_ROW_1_Y);
-  display.println("Calibrate");
+  display.println(strings(CALIBRATE_LABEL));
 
   display.setTextSize(1);
-  display.print("Apply ");
-  display.print(makeValueLabel(power, "w"));
-  display.println(" into");
+  display.print(strings(CALIBRATE_LINE_1A));
+  display.print(makeValueLabel(power, strings(WATTS_UNIT_LABEL)));
+  display.println(strings(CALIBRATE_LINE_1B));
   if (openLoad)
-    display.println("an open load");
+    display.println(strings(CALIBRATE_LINE_2_OPEN));
   else
-    display.println("a dummy load");
+    display.println(strings(CALIBRATE_LINE_2_DUMMY));
 
   display.display();
 }
@@ -230,7 +241,7 @@ void renderError(String message1, String message2, String message3, String messa
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(32, SCREEN_ROW_1_Y);
-  display.println("ERROR!");
+  display.println(strings(ERROR_WARNING_LABEL));
 
   display.setTextSize(1);
   display.setCursor(0, SCREEN_ROW_2_Y);

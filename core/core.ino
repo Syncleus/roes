@@ -44,8 +44,6 @@ void setup()   {
   //make sure eeprom isn't corrupt
   if( checkEepromCrc() == false ) {
     error = true;
-    const char errorMsgLine1[MAX_STRING_LENGTH];
-    const char errorMsgLine2[MAX_STRING_LENGTH];
     uint32_t actualCrc = eepromCrc32Actual();
     uint32_t storedCrc = eepromCrc32Stored();
     const char errorMsgLine3[11] = "0x";
@@ -53,7 +51,7 @@ void setup()   {
     const char errorMsgLine4[11] = "0x";
     uint32toa(storedCrc, errorMsgLine4 + 2, 16);
 
-    renderError(strings(CORRUPT_EEPROM, errorMsgLine1), strings(CRC_CHECK_FAILED, errorMsgLine2), errorMsgLine3, errorMsgLine4);
+    renderError(strings(CORRUPT_EEPROM), strings(CRC_CHECK_FAILED), errorMsgLine3, errorMsgLine4);
   }
   else {
     if( calibrateOnBoot() == true )
@@ -66,7 +64,7 @@ void setup()   {
       renderCalibration(calibratingPowerPoint, calibratingOpen);
     }
   }
-    
+
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);

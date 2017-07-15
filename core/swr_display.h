@@ -13,8 +13,8 @@ void renderCompleteBar(int8_t y_offset, String label, float value, String units,
 void renderPowerSwr(float power_fwd, float power_rvr);
 void renderComplexSwr(float magnitude, float phase);
 float swrFromPower(float power_fwd, float power_rvr);
-void updatePowerDemo(float &power_fwd, float &power_rvr);
-void updateComplexDemo(float &magnitudeDb, float &phase);
+void updatePowerDemo(float *power_fwd, float *power_rvr);
+void updateComplexDemo(float *magnitudeDb, float *phase);
 void renderError(String message1, String message2, String message3, String message4);
 void renderCalibration(float power, boolean forward, String band);
 void renderStopTransmitting();

@@ -248,81 +248,81 @@ void renderError(String message1, String message2, String message3, String messa
   display.display();
 }
 
-void updateComplexDemo(float &magnitudeDb, float &phase) {
+void updateComplexDemo(float *magnitudeDb, float *phase) {
   if ( demo_power_fwd_increasing )
-    magnitudeDb += 0.1;
+    *magnitudeDb += 0.1;
   else
-    magnitudeDb -= 0.1;
+    *magnitudeDb -= 0.1;
 
-  if (magnitudeDb > 0.0) {
-    magnitudeDb = 0.0;
+  if (*magnitudeDb > 0.0) {
+    *magnitudeDb = 0.0;
     demo_power_fwd_increasing = false;
   }
-  else if (magnitudeDb < -30.0 ) {
-    magnitudeDb = -30.0;
+  else if (*magnitudeDb < -30.0 ) {
+    *magnitudeDb = -30.0;
     demo_power_fwd_increasing = true;
   }
 
   if ( demo_power_rvr_increasing )
-    phase += 1.0;
+    *phase += 1.0;
   else
-    phase -= 1.0;
+    *phase -= 1.0;
 
-  if ( phase > 180 ) {
-    phase = 180.0;
+  if ( *phase > 180 ) {
+    *phase = 180.0;
     demo_power_rvr_increasing = false;
   }
-  else if ( phase < 0 ) {
-    phase = 0.0;
+  else if ( *phase < 0 ) {
+    *phase = 0.0;
     demo_power_rvr_increasing = true;
   }
 }
 
-void updatePowerDemo(float &power_fwd, float &power_rvr) {
-  if ( power_fwd < 10.0 )
+void updatePowerDemo(float *power_fwd, float *power_rvr) {
+  if ( *power_fwd < 10.0 )
     if ( demo_power_fwd_increasing )
-      power_fwd += 0.1;
+      *power_fwd += 0.1;
     else
-      power_fwd -= 0.1;
-  else if (power_fwd >= 100)
+      *power_fwd -= 0.1;
+  else if (*power_fwd >= 100)
     if ( demo_power_fwd_increasing )
-      power_fwd += 10.0;
+      *power_fwd += 10.0;
     else
-      power_fwd -= 10.0;
+      *power_fwd -= 10.0;
   else if ( demo_power_fwd_increasing )
-    power_fwd += 1.0;
+    *power_fwd += 1.0;
   else
-    power_fwd -= 1.0;
+    *power_fwd -= 1.0;
 
-  if (power_fwd > 1000.0) {
-    power_fwd = 1000.0;
+  if (*power_fwd > 1000.0) {
+    *power_fwd = 1000.0;
     demo_power_fwd_increasing = false;
   }
-  else if (power_fwd < 0.0 ) {
-    power_fwd = 0.0;
+  else if (*power_fwd < 0.0 ) {
+    *power_fwd = 0.0;
     demo_power_fwd_increasing = true;
   }
 
-  if ( power_rvr < 10.0 )
+  if ( *power_rvr < 10.0 )
     if ( demo_power_rvr_increasing )
-      power_rvr += 0.2;
+      *power_rvr += 0.2;
     else
-      power_rvr -= 0.2;
-  else if (power_rvr >= 100)
+      *power_rvr -= 0.2;
+  else if (*power_rvr >= 100)
     if ( demo_power_rvr_increasing )
-      power_rvr += 20.0;
+      *power_rvr += 20.0;
     else
-      power_rvr -= 20.0;
+      *power_rvr -= 20.0;
   else if ( demo_power_rvr_increasing )
-    power_rvr += 2.0;
+    *power_rvr += 2.0;
   else
-    power_rvr -= 2.0;
-  if (power_rvr > power_fwd) {
-    power_rvr = power_fwd;
+    *power_rvr -= 2.0;
+  if (*power_rvr > *power_fwd) {
+    *power_rvr = *power_fwd;
     demo_power_rvr_increasing = false;
   }
-  else if ( power_rvr < 0.0 ) {
-    power_rvr = 0.0;
+  else if ( *power_rvr < 0.0 ) {
+    *power_rvr = 0.0;
     demo_power_rvr_increasing = true;
   }
 }

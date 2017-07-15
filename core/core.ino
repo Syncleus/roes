@@ -84,12 +84,12 @@ void loop() {
 
   if( time%25 == 0 && error == false && !calibrating) {
     if(demoMode()) {
-      updateComplexDemo(magnitudeDb, phase);
-      updatePowerDemo(power_fwd, power_rvr);
+      updateComplexDemo(&magnitudeDb, &phase);
+      updatePowerDemo(&power_fwd, &power_rvr);
     }
     else {
       updateComplex(&magnitudeDb, &phase);
-      updatePower(power_fwd, power_rvr);
+      updatePower(&power_fwd, &power_rvr);
     }
 
     switch( currentScreen ) {

@@ -51,10 +51,10 @@ void updateComplex(float *magnitudeDb, float *phase) {
   *phase = phaseNormalized * 180.0;
 }
 
-void updatePower(float &power_fwd, float &power_rvr) {
+void updatePower(float *power_fwd, float *power_rvr) {
   uint16_t adcFwdValue = analogRead(POWER_FWD_PIN);
   float voltageFwd = adcToFwdVoltage(adcFwdValue);
-  power_fwd = voltageToPower(voltageFwd);
+  *power_fwd = voltageToPower(voltageFwd);
 
   float reverseRatio = fwdVoltageToRatio(voltageFwd);
 
@@ -63,5 +63,5 @@ void updatePower(float &power_fwd, float &power_rvr) {
   int32_t adjustedAdcRvrValue = adcRvrValue - reverseBaseline;
   uint16_t boundedAdcRvrValue = (adjustedAdcRvrValue >= 0 ? adjustedAdcRvrValue : 0);
   float rvrVoltage = adcToRvrVoltage(boundedAdcRvrValue);
-  power_rvr = voltageToPower(rvrVoltage);
+  *power_rvr = voltageToPower(rvrVoltage);
 }

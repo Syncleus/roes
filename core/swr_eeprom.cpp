@@ -53,10 +53,16 @@ static PROGMEM uint32_t crc32(byte *data, int len) {
   return crc;
 }
 
-uint32_t eepromCrc32() {
+uint32_t eepromCrc32Actual() {
   SwrPersistedData eepromData;
   EEPROM.get(EEPROM_DATA_ADDR, eepromData);
   return crc32((byte*) &eepromData, sizeof(eepromData));
+}
+
+uint32_t eepromCrc32Stored() {
+  uint32_t storedCrc;
+  EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
+  return storedCrc;
 }
 
 uint32_t persistedDataCrc32() {
@@ -64,13 +70,9 @@ uint32_t persistedDataCrc32() {
 }
 
 boolean checkEepromCrc() {
-  uint32_t storedCrc;
-  EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
-  uint32_t calculatedCrc = eepromCrc32();
-  if( storedCrc == calculatedCrc )
-    return true;
-  else
-    return false;
+  uint32_t storedCrc = eepromCrc32Stored();
+  uint32_t calculatedCrc = eepromCrc32Actual();
+  return (storedCrc == calculatedCrc);
 }
 
 boolean storeData() {
@@ -79,7 +81,7 @@ boolean storeData() {
   if( sizeof(persistedData) + EEPROM_CRC_LENGTH < EEPROM.length() )
     EEPROM.put(EEPROM_DATA_ADDR, persistedData);
 
-  return crc == eepromCrc32();
+  return crc == eepromCrc32Actual();
 }
 
 boolean recallData() {

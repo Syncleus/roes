@@ -7,6 +7,7 @@
 #include "swr_heartbeat.h"
 #include "swr_calibrate.h"
 #include "swr_constants.h"
+#include "swr_strings.h"
 
 enum Screen {
   POWER,
@@ -14,10 +15,6 @@ enum Screen {
 };
 
 boolean error = false;
-String errorMsgLine1 = "";
-String errorMsgLine2 = "";
-String errorMsgLine3 = "";
-String errorMsgLine4 = "";
 
 boolean calibrating = false;
 boolean calibratingPause = false;
@@ -47,14 +44,16 @@ void setup()   {
   //make sure eeprom isn't corrupt
   if( checkEepromCrc() == false ) {
     error = true;
-    errorMsgLine1 = "EEPROM is corrupt";
-    errorMsgLine2 = "CRC check failed";
-    uint32_t dataCrc = persistedDataCrc32();
-    uint32_t eepromCrc = eepromCrc32();
-    errorMsgLine3 = String(dataCrc);
-    errorMsgLine4 = String(eepromCrc);
+    const char errorMsgLine1[MAX_STRING_LENGTH];
+    const char errorMsgLine2[MAX_STRING_LENGTH];
+    uint32_t actualCrc = eepromCrc32Actual();
+    uint32_t storedCrc = eepromCrc32Stored();
+    const char errorMsgLine3[11] = "0x";
+    uint32toa(actualCrc, errorMsgLine3 + 2, 16);
+    const char errorMsgLine4[11] = "0x";
+    uint32toa(storedCrc, errorMsgLine4 + 2, 16);
 
-    renderError(errorMsgLine1, errorMsgLine2, errorMsgLine3, errorMsgLine4);
+    renderError(strings(CORRUPT_EEPROM, errorMsgLine1), strings(CRC_CHECK_FAILED, errorMsgLine2), errorMsgLine3, errorMsgLine4);
   }
   else {
     if( calibrateOnBoot() == true )
@@ -67,7 +66,7 @@ void setup()   {
       renderCalibration(calibratingPowerPoint, calibratingOpen);
     }
   }
-
+    
   commandLine.add("help", handleHelp);
   commandLine.add("ping", handlePing);
   commandLine.add("demo", handleDemo);
@@ -86,7 +85,10 @@ void loop() {
 
   updateScreenFromButton();
 
-  if( time%25 == 0 && error == false && !calibrating) {
+  if( error )
+    return;
+
+  if( time%25 == 0&& !calibrating) {
     if(demoMode()) {
       updateComplexDemo(&magnitudeDb, &phase);
       updatePowerDemo(&power_fwd, &power_rvr);

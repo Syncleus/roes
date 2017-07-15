@@ -4,6 +4,7 @@
 #include "swr_display.h"
 #include "swr_power.h"
 #include "swr_eeprom.h"
+#include "swr_heartbeat.h"
 #include "swr_calibrate.h"
 #include "swr_constants.h"
 
@@ -37,6 +38,7 @@ float calibratingPowerPoint = -1.0;
 CommandLine commandLine(Serial, "> ");
 
 void setup()   {  
+  heartbeatSetup();
   Serial.begin(9600);              
   displaySetup();
   eepromSetup();
@@ -83,7 +85,8 @@ void setup()   {
 
 void loop() {
   unsigned long time = millis();
-  
+
+  heartbeatUpdate();
   commandLine.update();
 
   updateScreenFromButton();

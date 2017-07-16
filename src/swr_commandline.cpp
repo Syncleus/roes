@@ -92,26 +92,54 @@ void handleClearEeprom(char* tokens) {
 }
 
 void handleCalibrationData(char* tokens) {
-  Serial.print("calibrationLowFwd: ");
-  Serial.println(String(calibrationData(5.0, true).fwd));
-  Serial.print("calibrationLowRvr: ");
-  Serial.println(String(calibrationData(5.0, true).rvr));
-  Serial.print("calibrationLowVref: ");
-  Serial.println(String(calibrationData(5.0, true).vref));
-  Serial.print("calibrationLowMagnitude: ");
-  Serial.println(String(calibrationData(5.0, true).magnitude));
-  Serial.print("calibrationLowPhase: ");
-  Serial.println(String(calibrationData(5.0, true).phase));
-  Serial.print("calibrationHighFwd: ");
-  Serial.println(String(calibrationData(200.0, true).fwd));
-  Serial.print("calibrationHighRvr: ");
-  Serial.println(String(calibrationData(200.0, true).rvr));
-  Serial.print("calibrationHighVref: ");
-  Serial.println(String(calibrationData(200.0, true).vref));
-  Serial.print("calibrationHighMagnitude: ");
-  Serial.println(String(calibrationData(200.0, true).magnitude));
-  Serial.print("calibrationHighPhase: ");
-  Serial.println(String(calibrationData(200.0, true).phase));
+  //dummy load first
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> dummyPowerPoints = calibrationPowerPointsDummy();
+  etl::iset<float, std::less<float>>::const_iterator dummyPowerPointsItr = dummyPowerPoints.begin();
+  //iterate through dummy load power points
+  while (dummyPowerPointsItr != dummyPowerPoints.end())
+  {
+    float currentPowerPoint = *dummyPowerPointsItr++;
+    Serial.print("Calibration data for ");
+    Serial.print(String(currentPowerPoint));
+    Serial.println("w into a dummy load");
+
+    CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, true);
+    Serial.print("        fwd: ");
+    Serial.println(String(currentCalibrationData.fwd));
+    Serial.print("        rvr: ");
+    Serial.println(String(currentCalibrationData.rvr));
+    Serial.print("  magnitude: ");
+    Serial.println(String(currentCalibrationData.magnitude));
+    Serial.print("      phase: ");
+    Serial.println(String(currentCalibrationData.phase));
+    Serial.print("       vref: ");
+    Serial.println(String(currentCalibrationData.vref));
+  }
+
+  //open load next
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> openPowerPoints = calibrationPowerPointsOpen();
+  etl::iset<float, std::less<float>>::const_iterator openPowerPointsItr = openPowerPoints.begin();
+  //iterate through dummy load power points
+  while (openPowerPointsItr != openPowerPoints.end())
+  {
+    float currentPowerPoint = *openPowerPointsItr++;
+    Serial.print("Calibration data for ");
+    Serial.print(String(currentPowerPoint));
+    Serial.println("w into a open load");
+
+    CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, false);
+    Serial.print("        fwd: ");
+    Serial.println(String(currentCalibrationData.fwd));
+    Serial.print("        rvr: ");
+    Serial.println(String(currentCalibrationData.rvr));
+    Serial.print("  magnitude: ");
+    Serial.println(String(currentCalibrationData.magnitude));
+    Serial.print("      phase: ");
+    Serial.println(String(currentCalibrationData.phase));
+    Serial.print("       vref: ");
+    Serial.println(String(currentCalibrationData.vref));
+  }
+
 }
 
 void handleReadInputs(char* tokens) {

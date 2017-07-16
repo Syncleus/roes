@@ -31,9 +31,9 @@ float power_rvr = 0.0;
 float calibratingPowerPoint = -1.0;
 
 void setup()   {
+  Serial.begin(9600);
   heartbeatSetup();
   statusLedSetup();
-  Serial.begin(9600);
   displaySetup();
   eepromSetup();
   commandlineSetup();
@@ -121,24 +121,24 @@ void loop() {
   if(calibrating) {
     if( calibratingPause ) {
         if(waitForStop()) {
-          if( !calibratingOpen ) {
-            if( bumpCalibratingPowerPoint() ) {
+          if( bumpCalibratingPowerPoint() ) {
+            if( !calibratingOpen ) {
               calibratingOpen = true;
             }
-          }
-          else {
-            calibrating = false;
-            calibratingOpen = false;
-            calibratingPause = false;
-            deactivateCalibrateOnBoot();
-            return;
+            else {
+              calibrating = false;
+              calibratingOpen = false;
+              calibratingPause = false;
+              deactivateCalibrateOnBoot();
+              return;
+            }
           }
           calibratingPause = false;
 
           if( !calibratingOpen )
             renderCalibration(calibratingPowerPoint, calibratingOpen);
           else
-            renderCalibration(lowestPowerPoint(), calibratingOpen);
+            renderCalibration(calibratingPowerPoint, calibratingOpen);
         }
     }
     else {
@@ -188,6 +188,32 @@ void updateDownButton() {
 
 
 boolean bumpCalibratingPowerPoint() {
+  if( calibratingOpen ) {
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> powerPointData = calibrationPowerPointsOpen();
+    etl::iset<float, std::less<float>>::const_iterator itr = powerPointData.begin();
+
+    // Iterate through the list.
+    boolean isNext = false;
+    float first = *itr;
+    while (itr != powerPointData.end())
+    {
+      float currentPowerPoint = *itr++;
+      if( calibratingPowerPoint < 0.0 || isNext ) {
+        calibratingPowerPoint = currentPowerPoint;
+        return false;
+      }
+      else if(calibratingPowerPoint == currentPowerPoint)
+        isNext = true;
+    }
+
+    if(isNext) {
+      calibratingPowerPoint = first;
+      return true;
+    }
+
+    return false;
+  }
+  else {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPointData = calibrationPowerPointsDummy();
     etl::iset<float, std::less<float>>::const_iterator itr = powerPointData.begin();
 
@@ -211,4 +237,5 @@ boolean bumpCalibratingPowerPoint() {
     }
 
     return false;
+  }
 }

@@ -8,5 +8,4 @@ void loop();
 void updateDownButton();
 boolean bumpCalibratingPowerPoint();
 
-
 #endif /* _MAIN_H_ */

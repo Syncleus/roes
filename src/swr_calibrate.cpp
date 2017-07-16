@@ -6,9 +6,6 @@ struct CalibrationPoint {
   float power;
 };
 
-#define REQUIRED_SAMPLES 10000
-#define THRESHOLD 10
-
 CalibrationAverages averages;
 boolean calibrationComplete = false;
 uint32_t adcFwdTotal = 0;
@@ -25,7 +22,7 @@ void calibrate() {
   uint16_t adcVrefValue = analogRead(COMPLEX_VREF_PIN);
   uint16_t adcMagnitudeValue = analogRead(COMPLEX_MAGNITUDE_PIN);
   uint16_t adcPhaseValue = analogRead(COMPLEX_PHASE_PIN);
-  if( (adcFwdValue < THRESHOLD) && ( adcRvrValue < THRESHOLD ) )
+  if( (adcFwdValue < CALIBRATION_THRESHOLD) && ( adcRvrValue < CALIBRATION_THRESHOLD ) )
     return;
 
   adcFwdTotal += adcFwdValue;
@@ -34,8 +31,8 @@ void calibrate() {
   adcPhaseTotal += adcPhaseValue;
   adcMagnitudeTotal += adcMagnitudeValue;
   samples++;
-  
-  if(samples >= REQUIRED_SAMPLES) {
+
+  if(samples >= CALIBRATION_SAMPLES) {
     averages.adcFwd = adcFwdTotal / samples;
     averages.adcRvr = adcRvrTotal / samples;
     averages.adcVref = adcVrefTotal / samples;
@@ -79,4 +76,3 @@ boolean runCalibration() {
 CalibrationAverages getCalibration() {
   return averages;
 }
-

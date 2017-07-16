@@ -31,7 +31,7 @@ float power_rvr = 0.0;
 float calibratingPowerPoint = -1.0;
 
 void setup()   {
-  Serial.begin(9600);
+  Serial.begin(SERIAL_BAUDE_RATE);
   heartbeatSetup();
   statusLedSetup();
   displaySetup();

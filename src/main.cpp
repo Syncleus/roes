@@ -69,6 +69,7 @@ void setup()   {
 
 void loop() {
   unsigned long time = millis();
+  static unsigned long refreshDisplayTime = 0;
 
   heartbeatUpdate();
   statusLedUpdate();
@@ -79,7 +80,9 @@ void loop() {
 
   updateDownButton();
 
-  if( time%25 == 0&& !calibrating) {
+  if( (long)(time - refreshDisplayTime) >= 0 && !calibrating) {
+    refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
+
     if(demoMode()) {
       updateComplexDemo(&magnitudeDb, &phase);
       updatePowerDemo(&power_fwd, &power_rvr);

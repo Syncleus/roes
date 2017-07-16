@@ -31,7 +31,7 @@ void handleCalibrationPoints(char* tokens) {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPointsDataDummy = calibrationPowerPointsDummy();
     // Iterate through the list.
     itr = calibrationPointsDataDummy.begin();
-    Serial.print("calibration points [dummy]: ");
+    Serial.print(strings(CALIBRATIONPOINTS_DUMMY_LABEL));
     while (itr != calibrationPointsDataDummy.end())
     {
       Serial.print(String(*itr++));
@@ -42,11 +42,11 @@ void handleCalibrationPoints(char* tokens) {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPointsDataOpen = calibrationPowerPointsOpen();
     // Iterate through the list.
     itr = calibrationPointsDataOpen.begin();
-    Serial.print("calibration points [open]: ");
+    Serial.print(strings(CALIBRATIONPOINTS_OPEN_LABEL));
     while (itr != calibrationPointsDataOpen.end())
     {
       Serial.print(String(*itr++));
-      Serial.print(" ");
+      Serial.print(strings(SINGLE_SPACE));
     }
     Serial.println();
   }
@@ -54,7 +54,7 @@ void handleCalibrationPoints(char* tokens) {
     char* parsedArgument = argument;
     argument = splitString(parsedArgument, ' ');
     boolean isDummyPoints = true;
-    if( String(parsedArgument).equals("open") )
+    if( String(parsedArgument).equals(strings(OPEN_LABEL)) )
       isDummyPoints = false;
 
     if( isDummyPoints ) {
@@ -78,17 +78,17 @@ void handleCalibrationPoints(char* tokens) {
       setCalibrationPowerPointsOpen(calibrationPointsData);
     }
 
-    Serial.println("calibration points set");
+    Serial.println(strings(CALIBRATIONPOINTS_SET));
   }
 }
 
 void handleHelp(char* tokens) {
-  Serial.println("Use the commands 'help', 'calibrationpoints', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.");
+  Serial.println(strings(COMMANDS_OVERVIEW_HELP));
 }
 
 void handleClearEeprom(char* tokens) {
   eepromClear();
-  Serial.println("Eeprom cleared.");
+  Serial.println(strings(EEPROM_CLEARED));
 }
 
 void handleCalibrationData(char* tokens) {
@@ -99,20 +99,20 @@ void handleCalibrationData(char* tokens) {
   while (dummyPowerPointsItr != dummyPowerPoints.end())
   {
     float currentPowerPoint = *dummyPowerPointsItr++;
-    Serial.print("Calibration data for ");
+    Serial.print(strings(CALIBRATIONDATA_HEADER_1));
     Serial.print(String(currentPowerPoint));
-    Serial.println("w into a dummy load");
+    Serial.println(strings(CALIBRATIONDATA_HEADER_2_DUMMY));
 
     CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, true);
-    Serial.print("        fwd: ");
+    Serial.print(strings(CALIBRATIONDATA_FWD));
     Serial.println(String(currentCalibrationData.fwd));
-    Serial.print("        rvr: ");
+    Serial.print(strings(CALIBRATIONDATA_RVR));
     Serial.println(String(currentCalibrationData.rvr));
-    Serial.print("  magnitude: ");
+    Serial.print(strings(CALIBRATIONDATA_MAGNITUDE));
     Serial.println(String(currentCalibrationData.magnitude));
-    Serial.print("      phase: ");
+    Serial.print(strings(CALIBRATIONDATA_PHASE));
     Serial.println(String(currentCalibrationData.phase));
-    Serial.print("       vref: ");
+    Serial.print(strings(CALIBRATIONDATA_VREF));
     Serial.println(String(currentCalibrationData.vref));
   }
 
@@ -123,82 +123,82 @@ void handleCalibrationData(char* tokens) {
   while (openPowerPointsItr != openPowerPoints.end())
   {
     float currentPowerPoint = *openPowerPointsItr++;
-    Serial.print("Calibration data for ");
+    Serial.print(strings(CALIBRATIONDATA_HEADER_1));
     Serial.print(String(currentPowerPoint));
-    Serial.println("w into a open load");
+    Serial.println(strings(CALIBRATIONDATA_HEADER_2_OPEN));
 
     CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, false);
-    Serial.print("        fwd: ");
+    Serial.print(strings(CALIBRATIONDATA_FWD));
     Serial.println(String(currentCalibrationData.fwd));
-    Serial.print("        rvr: ");
+    Serial.print(strings(CALIBRATIONDATA_RVR));
     Serial.println(String(currentCalibrationData.rvr));
-    Serial.print("  magnitude: ");
+    Serial.print(strings(CALIBRATIONDATA_MAGNITUDE));
     Serial.println(String(currentCalibrationData.magnitude));
-    Serial.print("      phase: ");
+    Serial.print(strings(CALIBRATIONDATA_PHASE));
     Serial.println(String(currentCalibrationData.phase));
-    Serial.print("       vref: ");
+    Serial.print(strings(CALIBRATIONDATA_VREF));
     Serial.println(String(currentCalibrationData.vref));
   }
 
 }
 
 void handleReadInputs(char* tokens) {
-  Serial.print("POWER_FWD_PIN: ");
+  Serial.print(strings(READINPUTS_FWD));
   Serial.println(String(analogRead(POWER_FWD_PIN)));
-  Serial.print("POWER_RVR_PIN: ");
+  Serial.print(strings(READINPUTS_RVR));
   Serial.println(String(analogRead(POWER_RVR_PIN)));
-  Serial.print("COMPLEX_VREF_PIN: ");
+  Serial.print(strings(READINPUTS_VREF));
   Serial.println(String(analogRead(COMPLEX_VREF_PIN)));
-  Serial.print("COMPLEX_PHASE_PIN: ");
+  Serial.print(strings(READINPUTS_PHASE));
   Serial.println(String(analogRead(COMPLEX_PHASE_PIN)));
-  Serial.print("COMPLEX_MAGNITUDE_PIN: ");
+  Serial.print(strings(READINPUTS_MAGNITUDE));
   Serial.println(String(analogRead(COMPLEX_MAGNITUDE_PIN)));
 }
 
 void handleCalibrateOnBoot(char* tokens) {
-  char* argument = strtok(NULL, " ");
+  char* argument = strtok(NULL, strings(SINGLE_SPACE));
   if( argument == NULL ) {
-    Serial.print("calibrateonboot: ");
-    Serial.println((calibrateOnBoot() == true ? "on" : "off"));
+    Serial.print(strings(CALIBRATEONBOOT_LABEL));
+    Serial.println((calibrateOnBoot() == true ? strings(CALIBRATEONBOOT_ON) : strings(CALIBRATEONBOOT_OFF)));
   }
   else {
     String argumentStr = String(argument);
-    if( argumentStr.equals("on") ) {
+    if( argumentStr.equals(strings(CALIBRATEONBOOT_ON)) ) {
       activateCalibrateOnBoot();
-      Serial.println("Activating calibrateonboot.");
+      Serial.println(strings(CALIBRATEONBOOT_ACTIVATING));
     }
-    else if( argumentStr.equals("off") ) {
+    else if( argumentStr.equals(strings(CALIBRATEONBOOT_OFF)) ) {
       deactivateCalibrateOnBoot();
-      Serial.println("Deactivating calibrateonboot.");
+      Serial.println(strings(CALIBRATEONBOOT_DEACTIVATING));
     }
     else {
-      Serial.println("Invalid argument, argument to calibrateonboot command must be either 'on' or 'off'");
+      Serial.println(strings(CALIBRATEONBOOT_INVALID_ARGUMENT));
     }
   }
 }
 
 void handlePing(char* tokens) {
-  Serial.println("Pong!");
+  Serial.println(strings(PONG_LABEL));
 }
 
 void handleDemo(char* tokens) {
-  char* argument = strtok(NULL, " ");
+  char* argument = strtok(NULL, strings(SINGLE_SPACE));
   if( argument == NULL ) {
-    Serial.print("demoMode: ");
-    Serial.println((demoMode() == true ? "on" : "off"));
+    Serial.print(strings(DEMO_LABEL));
+    Serial.println((demoMode() == true ? strings(DEMO_ON) : strings(DEMO_OFF)));
   }
   else {
     String argumentStr = String(argument);
-    if( argumentStr.equals("on") ) {
+    if( argumentStr.equals(strings(DEMO_ON)) ) {
       activateDemoMode();
-      Serial.println("Activating demo.");
+      Serial.println(strings(DEMO_ACTIVATING));
     }
-    else if( argumentStr.equals("off") ) {
+    else if( argumentStr.equals(strings(DEMO_OFF)) ) {
       deactivateDemoMode();
-      Serial.println("Deactivating demo.");
+      Serial.println(strings(DEMO_DEACTIVATING));
     }
     else {
-      Serial.println("Invalid argument, argument to demo command must be either 'on' or 'off'");
+      Serial.println(strings(DEMO_INVALID_ARGUMENT));
     }
   }
 }

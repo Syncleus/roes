@@ -17,7 +17,7 @@ float powerToSwr(float power_fwd, float power_rvr);
 void updatePowerDemo(float *power_fwd, float *power_rvr);
 void updateComplexDemo(float *magnitudeDb, float *phase);
 void renderError(String message1, String message2, String message3, String message4);
-void renderCalibration(float power, boolean openLoad);
+void renderCalibration(float power, boolean dummyLoad);
 void renderStopTransmitting();
 float dbToSwr(float magnitudeDb);
 float polarToComplexA(float magnitudeDb, float phase);

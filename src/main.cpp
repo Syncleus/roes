@@ -19,7 +19,7 @@ boolean error = false;
 
 boolean calibrating = false;
 boolean calibratingPause = false;
-boolean calibratingOpen = false;
+boolean calibratingDummy = true;
 
 Screen currentScreen = POWER;
 
@@ -55,12 +55,12 @@ void setup()   {
   else {
     if( calibrateOnBoot() == true )
     {
-      bumpCalibratingPowerPoint();
       calibrating = true;
       calibratingPause = false;
-      calibratingOpen = false;
+      calibratingDummy = true;
+      bumpCalibratingPowerPoint();
 
-      renderCalibration(calibratingPowerPoint, calibratingOpen);
+      renderCalibration(calibratingPowerPoint, calibratingDummy);
     }
   }
 
@@ -122,47 +122,32 @@ void loop() {
     if( calibratingPause ) {
         if(waitForStop()) {
           if( bumpCalibratingPowerPoint() ) {
-            if( !calibratingOpen ) {
-              calibratingOpen = true;
+            if( calibratingDummy ) {
+              calibratingDummy = false;
             }
             else {
               calibrating = false;
-              calibratingOpen = false;
+              calibratingDummy = true;
               calibratingPause = false;
               deactivateCalibrateOnBoot();
               return;
             }
           }
           calibratingPause = false;
-
-          if( !calibratingOpen )
-            renderCalibration(calibratingPowerPoint, calibratingOpen);
-          else
-            renderCalibration(calibratingPowerPoint, calibratingOpen);
+          renderCalibration(calibratingPowerPoint, calibratingDummy);
         }
     }
     else {
       if( runCalibration() ) {
         calibratingPause = true;
         CalibrationAverages result = getCalibration();
-        if( !calibratingOpen ) {
-          CalibrationData currentCalibration = calibrationDataDummy(calibratingPowerPoint);
-          currentCalibration.fwd = result.adcFwd;
-          currentCalibration.rvr = result.adcRvr;
-          currentCalibration.vref = result.adcVref;
-          currentCalibration.phase = result.adcPhase;
-          currentCalibration.magnitude = result.adcMagnitude;
-          setCalibrationDataDummy(calibratingPowerPoint, currentCalibration);
-        }
-        else {
-          CalibrationData currentCalibration = calibrationDataOpen();
-          currentCalibration.fwd = result.adcFwd;
-          currentCalibration.rvr = result.adcRvr;
-          currentCalibration.vref = result.adcVref;
-          currentCalibration.phase = result.adcPhase;
-          currentCalibration.magnitude = result.adcMagnitude;
-          setCalibrationDataOpen(currentCalibration);
-        }
+        CalibrationData currentCalibration = calibrationData(calibratingPowerPoint, calibratingDummy);
+        currentCalibration.fwd = result.adcFwd;
+        currentCalibration.rvr = result.adcRvr;
+        currentCalibration.vref = result.adcVref;
+        currentCalibration.phase = result.adcPhase;
+        currentCalibration.magnitude = result.adcMagnitude;
+        setCalibrationData(calibratingPowerPoint, calibratingDummy, currentCalibration);
         renderStopTransmitting();
       }
     }
@@ -188,54 +173,42 @@ void updateDownButton() {
 
 
 boolean bumpCalibratingPowerPoint() {
-  if( calibratingOpen ) {
-    etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> powerPointData = calibrationPowerPointsOpen();
-    etl::iset<float, std::less<float>>::const_iterator itr = powerPointData.begin();
+  etl::iset<float, std::less<float>>::const_iterator itr;
+  etl::iset<float, std::less<float>>::const_iterator itrEnd;
 
-    // Iterate through the list.
-    boolean isNext = false;
-    float first = *itr;
-    while (itr != powerPointData.end())
-    {
-      float currentPowerPoint = *itr++;
-      if( calibratingPowerPoint < 0.0 || isNext ) {
-        calibratingPowerPoint = currentPowerPoint;
-        return false;
-      }
-      else if(calibratingPowerPoint == currentPowerPoint)
-        isNext = true;
-    }
-
-    if(isNext) {
-      calibratingPowerPoint = first;
-      return true;
-    }
-
-    return false;
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPointDataDummy = calibrationPowerPointsDummy();
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> powerPointDataOpen = calibrationPowerPointsOpen();
+  if(calibratingDummy) {
+    itr = powerPointDataDummy.begin();
+    itrEnd = powerPointDataDummy.end();
   }
   else {
-    etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPointData = calibrationPowerPointsDummy();
-    etl::iset<float, std::less<float>>::const_iterator itr = powerPointData.begin();
-
-    // Iterate through the list.
-    boolean isNext = false;
-    float first = *itr;
-    while (itr != powerPointData.end())
-    {
-      float currentPowerPoint = *itr++;
-      if( calibratingPowerPoint < 0.0 || isNext ) {
-        calibratingPowerPoint = currentPowerPoint;
-        return false;
-      }
-      else if(calibratingPowerPoint == currentPowerPoint)
-        isNext = true;
-    }
-
-    if(isNext) {
-      calibratingPowerPoint = first;
-      return true;
-    }
-
-    return false;
+    itr = powerPointDataOpen.begin();
+    itrEnd = powerPointDataOpen.end();
   }
+
+  // Iterate through the list.
+  boolean isNext = false;
+  while (itr != itrEnd)
+  {
+    float currentPowerPoint = *itr++;
+    Serial.print("checking: ");
+    Serial.println(String(currentPowerPoint));
+    if( calibratingPowerPoint < 0.0 || isNext ) {
+      calibratingPowerPoint = currentPowerPoint;
+      return false;
+    }
+    else if(calibratingPowerPoint == currentPowerPoint)
+      isNext = true;
+  }
+
+  if(isNext) {
+    if( calibratingDummy )
+      calibratingPowerPoint = *(calibrationPowerPointsOpen().begin());
+    else
+      calibratingPowerPoint = *(calibrationPowerPointsDummy().begin());
+    return true;
+  }
+
+  return false;
 }

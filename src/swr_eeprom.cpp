@@ -15,7 +15,7 @@ struct SwrPersistedData {
   float calibrationPowerPointsDummy[MAX_CALIBRATION_POWER_POINTS_DUMMY];
   float calibrationPowerPointsOpen[MAX_CALIBRATION_POWER_POINTS_OPEN];
   CalibrationData calibrationDataDummy[MAX_CALIBRATION_POWER_POINTS_DUMMY];
-  CalibrationData calibrationDataOpen;
+  CalibrationData calibrationDataOpen[MAX_CALIBRATION_POWER_POINTS_OPEN];
 };
 
 SwrPersistedData persistedData;
@@ -155,16 +155,16 @@ etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPowerPointsDummy(
   return calibrationPowerPointsDummySet;
 }
 
-void setcalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newcalibrationPowerPointsDummy) {
+void setCalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newCalibrationPowerPointsDummy) {
   etl::iset<float, std::less<float>>::const_iterator itr;
 
   //clear current array
   for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++)
     persistedData.calibrationPowerPointsDummy[index] = -1.0;
 
-  itr = newcalibrationPowerPointsDummy.begin();
+  itr = newCalibrationPowerPointsDummy.begin();
   int index = 0;
-  while (itr != newcalibrationPowerPointsDummy.end())
+  while (itr != newCalibrationPowerPointsDummy.end())
   {
     float currentCalibrationPowerPoint = *itr++;
     persistedData.calibrationPowerPointsDummy[index] = currentCalibrationPowerPoint;
@@ -183,16 +183,16 @@ etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPowerPointsOpen() 
   return calibrationPowerPointsOpenSet;
 }
 
-void setcalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> newcalibrationPowerPointsOpen) {
+void setCalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> newCalibrationPowerPointsOpen) {
   etl::iset<float, std::less<float>>::const_iterator itr;
 
   //clear current array
   for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_OPEN; index++)
     persistedData.calibrationPowerPointsOpen[index] = -1.0;
 
-  itr = newcalibrationPowerPointsOpen.begin();
+  itr = newCalibrationPowerPointsOpen.begin();
   int index = 0;
-  while (itr != newcalibrationPowerPointsOpen.end())
+  while (itr != newCalibrationPowerPointsOpen.end())
   {
     float currentCalibrationPowerPoint = *itr++;
     persistedData.calibrationPowerPointsOpen[index] = currentCalibrationPowerPoint;
@@ -201,58 +201,37 @@ void setcalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_
   storeData();
 }
 
-int8_t powerPointToIndex(float powerPoint) {
-  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
-    if( persistedData.calibrationPowerPointsDummy[index] == powerPoint )
-      return index;
+int8_t powerPointToIndex(float powerPoint, boolean dummy) {
+  if( dummy ) {
+    for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
+      if( persistedData.calibrationPowerPointsDummy[index] == powerPoint )
+        return index;
+    }
   }
+  else {
+    for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_OPEN; index++) {
+      if( persistedData.calibrationPowerPointsOpen[index] == powerPoint )
+        return index;
+    }
+  }
+
   return -1;
 }
 
-CalibrationData calibrationDataDummy(float powerPoint) {
-  uint8_t powerPointIndex = powerPointToIndex(powerPoint);
-  return persistedData.calibrationDataDummy[powerPointIndex];
+CalibrationData calibrationData(float powerPoint, boolean dummy) {
+  uint8_t powerPointIndex = powerPointToIndex(powerPoint, dummy);
+  if( dummy )
+    return persistedData.calibrationDataDummy[powerPointIndex];
+  else
+    return persistedData.calibrationDataOpen[powerPointIndex];
 }
 
-void setCalibrationDataDummy(float powerPoint, CalibrationData data) {
-  uint8_t powerPointIndex = powerPointToIndex(powerPoint);
-  persistedData.calibrationDataDummy[powerPointIndex] = data;
+void setCalibrationData(float powerPoint, boolean dummy, CalibrationData data) {
+  uint8_t powerPointIndex = powerPointToIndex(powerPoint, dummy);
+  if( dummy )
+    persistedData.calibrationDataDummy[powerPointIndex] = data;
+  else
+    persistedData.calibrationDataOpen[powerPointIndex] = data;
 
   storeData();
-}
-
-CalibrationData calibrationDataOpen() {
-  return persistedData.calibrationDataOpen;
-}
-
-void setCalibrationDataOpen(CalibrationData data) {
-  persistedData.calibrationDataOpen = data;
-
-  storeData();
-}
-
-float lowestPowerPoint() {
-  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPoints = calibrationPowerPointsDummy();
-  etl::iset<float, std::less<float>>::const_iterator itr = powerPoints.begin();
-  float power = -1.0;
-  while (itr != powerPoints.end())
-  {
-    float powerPoint = *itr++;
-    if(powerPoint < power || power == -1.0)
-      power = powerPoint;
-  }
-  return power;
-}
-
-float highestPowerPoint() {
-  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPoints = calibrationPowerPointsDummy();
-  etl::iset<float, std::less<float>>::const_iterator itr = powerPoints.begin();
-  float power = -1.0;
-  while (itr != powerPoints.end())
-  {
-    float powerPoint = *itr++;
-    if(powerPoint > power)
-      power = powerPoint;
-  }
-  return power;
 }

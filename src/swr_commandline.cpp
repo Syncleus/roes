@@ -65,7 +65,7 @@ void handleCalibrationPoints(char* tokens) {
         calibrationPointsData.insert(String(parsedArgument).toFloat());
       } while(argument != NULL);
 
-      setcalibrationPowerPointsDummy(calibrationPointsData);
+      setCalibrationPowerPointsDummy(calibrationPointsData);
     }
     else {
       etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPointsData;
@@ -75,7 +75,7 @@ void handleCalibrationPoints(char* tokens) {
         calibrationPointsData.insert(String(parsedArgument).toFloat());
       } while(argument != NULL);
 
-      setcalibrationPowerPointsOpen(calibrationPointsData);
+      setCalibrationPowerPointsOpen(calibrationPointsData);
     }
 
     Serial.println("calibration points set");
@@ -93,25 +93,25 @@ void handleClearEeprom(char* tokens) {
 
 void handleCalibrationData(char* tokens) {
   Serial.print("calibrationLowFwd: ");
-  Serial.println(String(calibrationDataDummy(5.0).fwd));
+  Serial.println(String(calibrationData(5.0, true).fwd));
   Serial.print("calibrationLowRvr: ");
-  Serial.println(String(calibrationDataDummy(5.0).rvr));
+  Serial.println(String(calibrationData(5.0, true).rvr));
   Serial.print("calibrationLowVref: ");
-  Serial.println(String(calibrationDataDummy(5.0).vref));
+  Serial.println(String(calibrationData(5.0, true).vref));
   Serial.print("calibrationLowMagnitude: ");
-  Serial.println(String(calibrationDataDummy(5.0).magnitude));
+  Serial.println(String(calibrationData(5.0, true).magnitude));
   Serial.print("calibrationLowPhase: ");
-  Serial.println(String(calibrationDataDummy(5.0).phase));
+  Serial.println(String(calibrationData(5.0, true).phase));
   Serial.print("calibrationHighFwd: ");
-  Serial.println(String(calibrationDataDummy(200.0).fwd));
+  Serial.println(String(calibrationData(200.0, true).fwd));
   Serial.print("calibrationHighRvr: ");
-  Serial.println(String(calibrationDataDummy(200.0).rvr));
+  Serial.println(String(calibrationData(200.0, true).rvr));
   Serial.print("calibrationHighVref: ");
-  Serial.println(String(calibrationDataDummy(200.0).vref));
+  Serial.println(String(calibrationData(200.0, true).vref));
   Serial.print("calibrationHighMagnitude: ");
-  Serial.println(String(calibrationDataDummy(200.0).magnitude));
+  Serial.println(String(calibrationData(200.0, true).magnitude));
   Serial.print("calibrationHighPhase: ");
-  Serial.println(String(calibrationDataDummy(200.0).phase));
+  Serial.println(String(calibrationData(200.0, true).phase));
 }
 
 void handleReadInputs(char* tokens) {

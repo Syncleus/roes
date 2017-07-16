@@ -29,18 +29,13 @@ void deactivateDemoMode();
 boolean demoMode();
 
 etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPowerPointsDummy();
-void setcalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newcalibrationPowerPointsDummy);
+void setCalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newcalibrationPowerPointsDummy);
 etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPowerPointsOpen();
-void setcalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> newcalibrationPowerPointsOpen);
+void setCalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> newcalibrationPowerPointsOpen);
 
 
-int8_t powerPointToIndex(float powerPoint);
-CalibrationData calibrationDataDummy(float powerPoint);
-void setCalibrationDataDummy(float powerPoint, CalibrationData data);
-CalibrationData calibrationDataOpen();
-void setCalibrationDataOpen(CalibrationData data);
-
-float lowestPowerPoint();
-float highestPowerPoint();
+int8_t powerPointToIndex(float powerPoint, boolean dummy);
+CalibrationData calibrationData(float powerPoint, boolean dummy);
+void setCalibrationData(float powerPoint, boolean dummy, CalibrationData data);
 
 #endif /* _SWR_EEPROM_H_ */

@@ -215,7 +215,7 @@ void renderStopTransmitting() {
   display.display();
 }
 
-void renderCalibration(float power, boolean openLoad) {
+void renderCalibration(float power, boolean dummyLoad) {
   display.clearDisplay();
 
   display.setTextColor(WHITE);
@@ -227,10 +227,10 @@ void renderCalibration(float power, boolean openLoad) {
   display.print(strings(CALIBRATE_LINE_1A));
   display.print(makeValueLabel(power, strings(WATTS_UNIT_LABEL)));
   display.println(strings(CALIBRATE_LINE_1B));
-  if (openLoad)
-    display.println(strings(CALIBRATE_LINE_2_OPEN));
-  else
+  if (dummyLoad)
     display.println(strings(CALIBRATE_LINE_2_DUMMY));
+  else
+    display.println(strings(CALIBRATE_LINE_2_OPEN));
 
   display.display();
 }

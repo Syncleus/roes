@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 
 #define MAX_STRING_LENGTH 130
-#define BUFFER_COUNT 4
+#define BUFFER_COUNT 2
 
 #define CORRUPT_EEPROM 0
 static const PROGMEM char CORRUPT_EEPROM_STRING[] = "EEPROM is corrupt";

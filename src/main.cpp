@@ -195,8 +195,6 @@ boolean bumpCalibratingPowerPoint() {
   while (itr != itrEnd)
   {
     float currentPowerPoint = *itr++;
-    Serial.print("checking: ");
-    Serial.println(String(currentPowerPoint));
     if( calibratingPowerPoint < 0.0 || isNext ) {
       calibratingPowerPoint = currentPowerPoint;
       return false;

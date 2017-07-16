@@ -28,8 +28,11 @@ void activateDemoMode();
 void deactivateDemoMode();
 boolean demoMode();
 
-etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints();
-void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> newCalibrationPowerPoints);
+etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPowerPointsDummy();
+void setcalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newcalibrationPowerPointsDummy);
+etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPowerPointsOpen();
+void setcalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> newcalibrationPowerPointsOpen);
+
 
 int8_t powerPointToIndex(float powerPoint);
 CalibrationData calibrationDataDummy(float powerPoint);

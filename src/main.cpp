@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include <Arduino.h>
 #include <CommandLine.h>
 #include <ArduinoSTL.h>
 
@@ -198,7 +199,7 @@ void updateDownButton() {
 
 
 boolean bumpCalibratingPowerPoint() {
-    etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPointData = calibrationPowerPoints();
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPointData = calibrationPowerPointsDummy();
     etl::iset<float, std::less<float>>::const_iterator itr = powerPointData.begin();
 
     // Iterate through the list.
@@ -326,13 +327,24 @@ char* splitString(char* data, char separator) {
 void handleCalibrationPoints(char* tokens) {
   char* argument = strtok(NULL, "\0");
   if( argument == NULL ) {
-    etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPointsData = calibrationPowerPoints();
     etl::iset<float, std::less<float>>::const_iterator itr;
 
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPointsDataDummy = calibrationPowerPointsDummy();
     // Iterate through the list.
-    itr = calibrationPointsData.begin();
-    Serial.print("calibration points: ");
-    while (itr != calibrationPointsData.end())
+    itr = calibrationPointsDataDummy.begin();
+    Serial.print("calibration points [dummy]: ");
+    while (itr != calibrationPointsDataDummy.end())
+    {
+      Serial.print(String(*itr++));
+      Serial.print(" ");
+    }
+    Serial.println();
+
+    etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPointsDataOpen = calibrationPowerPointsOpen();
+    // Iterate through the list.
+    itr = calibrationPointsDataOpen.begin();
+    Serial.print("calibration points [open]: ");
+    while (itr != calibrationPointsDataOpen.end())
     {
       Serial.print(String(*itr++));
       Serial.print(" ");
@@ -340,15 +352,33 @@ void handleCalibrationPoints(char* tokens) {
     Serial.println();
   }
   else {
+    char* parsedArgument = argument;
+    argument = splitString(parsedArgument, ' ');
+    boolean isDummyPoints = true;
+    if( String(parsedArgument).equals("open") )
+      isDummyPoints = false;
 
-    etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPointsData;
-    do {
-      char* parsedArgument = argument;
-      argument = splitString(parsedArgument, ' ');
-      calibrationPointsData.insert(String(parsedArgument).toFloat());
-    } while(argument != NULL);
+    if( isDummyPoints ) {
+      etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPointsData;
+      do {
+        parsedArgument = argument;
+        argument = splitString(parsedArgument, ' ');
+        calibrationPointsData.insert(String(parsedArgument).toFloat());
+      } while(argument != NULL);
 
-    setCalibrationPowerPoints(calibrationPointsData);
+      setcalibrationPowerPointsDummy(calibrationPointsData);
+    }
+    else {
+      etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPointsData;
+      do {
+        parsedArgument = argument;
+        argument = splitString(parsedArgument, ' ');
+        calibrationPointsData.insert(String(parsedArgument).toFloat());
+      } while(argument != NULL);
+
+      setcalibrationPowerPointsOpen(calibrationPointsData);
+    }
+
     Serial.println("calibration points set");
   }
 }

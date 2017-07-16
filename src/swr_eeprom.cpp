@@ -12,8 +12,9 @@
 struct SwrPersistedData {
   boolean calibrateOnBoot;
   boolean demoMode;
-  float calibrationPowerPoints[MAX_CALIBRATION_POWER_POINTS];
-  CalibrationData calibrationDataDummy[MAX_CALIBRATION_POWER_POINTS];
+  float calibrationPowerPointsDummy[MAX_CALIBRATION_POWER_POINTS_DUMMY];
+  float calibrationPowerPointsOpen[MAX_CALIBRATION_POWER_POINTS_OPEN];
+  CalibrationData calibrationDataDummy[MAX_CALIBRATION_POWER_POINTS_DUMMY];
   CalibrationData calibrationDataOpen;
 };
 
@@ -92,9 +93,9 @@ boolean recallData() {
 void eepromSetup() {
   if( isEepromBlank() )
   {
-    for(int index; index < MAX_CALIBRATION_POWER_POINTS; index++)
-      persistedData.calibrationPowerPoints[index] = -1.0;
-    for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS; indexPoint++)
+    for(int index; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++)
+      persistedData.calibrationPowerPointsDummy[index] = -1.0;
+    for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS_DUMMY; indexPoint++)
       persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
     storeData();
 
@@ -144,37 +145,65 @@ void deactivateDemoMode() {
   storeData();
 }
 
-etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPoints() {
-  etl::set<float, MAX_CALIBRATION_POWER_POINTS> calibrationPowerPointsSet;
-  for(uint16_t index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
-    float calibrationPowerPoint = persistedData.calibrationPowerPoints[index];
+etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPowerPointsDummy() {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPowerPointsDummySet;
+  for(uint16_t index = 0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
+    float calibrationPowerPoint = persistedData.calibrationPowerPointsDummy[index];
     if( calibrationPowerPoint > 0.0 )
-      calibrationPowerPointsSet.insert(calibrationPowerPoint);
+      calibrationPowerPointsDummySet.insert(calibrationPowerPoint);
   }
-  return calibrationPowerPointsSet;
+  return calibrationPowerPointsDummySet;
 }
 
-void setCalibrationPowerPoints(etl::set<float, MAX_CALIBRATION_POWER_POINTS> newCalibrationPowerPoints) {
+void setcalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newcalibrationPowerPointsDummy) {
   etl::iset<float, std::less<float>>::const_iterator itr;
 
   //clear current array
-  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++)
-    persistedData.calibrationPowerPoints[index] = -1.0;
+  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++)
+    persistedData.calibrationPowerPointsDummy[index] = -1.0;
 
-  itr = newCalibrationPowerPoints.begin();
+  itr = newcalibrationPowerPointsDummy.begin();
   int index = 0;
-  while (itr != newCalibrationPowerPoints.end())
+  while (itr != newcalibrationPowerPointsDummy.end())
   {
     float currentCalibrationPowerPoint = *itr++;
-    persistedData.calibrationPowerPoints[index] = currentCalibrationPowerPoint;
+    persistedData.calibrationPowerPointsDummy[index] = currentCalibrationPowerPoint;
+    index++;
+  }
+  storeData();
+}
+
+etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPowerPointsOpen() {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPowerPointsOpenSet;
+  for(uint16_t index = 0; index < MAX_CALIBRATION_POWER_POINTS_OPEN; index++) {
+    float calibrationPowerPoint = persistedData.calibrationPowerPointsOpen[index];
+    if( calibrationPowerPoint > 0.0 )
+      calibrationPowerPointsOpenSet.insert(calibrationPowerPoint);
+  }
+  return calibrationPowerPointsOpenSet;
+}
+
+void setcalibrationPowerPointsOpen(etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> newcalibrationPowerPointsOpen) {
+  etl::iset<float, std::less<float>>::const_iterator itr;
+
+  //clear current array
+  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_OPEN; index++)
+    persistedData.calibrationPowerPointsOpen[index] = -1.0;
+
+  itr = newcalibrationPowerPointsOpen.begin();
+  int index = 0;
+  while (itr != newcalibrationPowerPointsOpen.end())
+  {
+    float currentCalibrationPowerPoint = *itr++;
+    persistedData.calibrationPowerPointsOpen[index] = currentCalibrationPowerPoint;
     index++;
   }
   storeData();
 }
 
 int8_t powerPointToIndex(float powerPoint) {
-  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS; index++) {
-    if( persistedData.calibrationPowerPoints[index] == powerPoint )
+  for(int index = 0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
+    if( persistedData.calibrationPowerPointsDummy[index] == powerPoint )
       return index;
   }
   return -1;
@@ -203,7 +232,7 @@ void setCalibrationDataOpen(CalibrationData data) {
 }
 
 float lowestPowerPoint() {
-  etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPoints = calibrationPowerPoints();
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPoints = calibrationPowerPointsDummy();
   etl::iset<float, std::less<float>>::const_iterator itr = powerPoints.begin();
   float power = -1.0;
   while (itr != powerPoints.end())
@@ -216,7 +245,7 @@ float lowestPowerPoint() {
 }
 
 float highestPowerPoint() {
-  etl::set<float, MAX_CALIBRATION_POWER_POINTS> powerPoints = calibrationPowerPoints();
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> powerPoints = calibrationPowerPointsDummy();
   etl::iset<float, std::less<float>>::const_iterator itr = powerPoints.begin();
   float power = -1.0;
   while (itr != powerPoints.end())

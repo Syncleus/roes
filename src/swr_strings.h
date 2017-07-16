@@ -80,5 +80,6 @@ static const PROGMEM char* const string_table[] PROGMEM = {
 const char* strings(uint16_t id);
 char* strings(uint16_t id, char *buffer);
 void uint32toa(uint32_t value, char *buffer, uint8_t radix);
+char* splitString(char* data, char separator);
 
 #endif /* _SWR_STRINGS_H_ */

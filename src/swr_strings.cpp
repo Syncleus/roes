@@ -27,3 +27,19 @@ void uint32toa(uint32_t value, char* buffer, uint8_t radix) {
     buffer++;
   }
 }
+
+//splits a string in place, no dynamic allocation
+char* splitString(char* data, char separator) {
+  int dataIndex = -1;
+  char currentChar = '\0';
+  do {
+    dataIndex++;
+    currentChar = data[dataIndex];
+  } while(currentChar != '\0' && currentChar != separator);
+
+  if( currentChar == '\0' )
+    return NULL;
+
+  data[dataIndex] = '\0';
+  return data + dataIndex + 1;
+}

@@ -50,7 +50,9 @@ void setup()   {
     char errorMsgLine4[11] = "0x";
     uint32toa(storedCrc, errorMsgLine4 + 2, 16);
 
+    prepareRender();
     renderError(strings(CORRUPT_EEPROM), strings(CRC_CHECK_FAILED), errorMsgLine3, errorMsgLine4);
+    finishRender();
   }
   else {
     if( calibrateOnBoot() == true )
@@ -60,7 +62,9 @@ void setup()   {
       calibratingDummy = true;
       bumpCalibratingPowerPoint();
 
+      prepareRender();
       renderCalibration(calibratingPowerPoint, calibratingDummy);
+      finishRender();
     }
   }
 
@@ -111,14 +115,18 @@ void loop() {
     else
       setLedStatus(OFF);
 
+    prepareRender();
+    renderSwr(swr);
     switch( currentScreen ) {
     case POWER:
-      renderPowerSwr(power_fwd, power_rvr);
+      renderPowerBars(power_fwd, power_rvr);
       break;
     case COMPLEX:
-      renderComplexSwr(magnitudeDb, phase);
+      renderReflectionBars(magnitudeDb, phase);
       break;
     }
+    renderReflectionText(magnitudeDb, phase);
+    finishRender();
   }
 
   if(calibrating) {
@@ -137,7 +145,9 @@ void loop() {
             }
           }
           calibratingPause = false;
+          prepareRender();
           renderCalibration(calibratingPowerPoint, calibratingDummy);
+          finishRender();
         }
     }
     else {
@@ -151,7 +161,9 @@ void loop() {
         currentCalibration.phase = result.adcPhase;
         currentCalibration.magnitude = result.adcMagnitude;
         setCalibrationData(calibratingPowerPoint, calibratingDummy, currentCalibration);
+        prepareRender();
         renderStopTransmitting();
+        finishRender();
       }
     }
   }

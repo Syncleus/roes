@@ -147,40 +147,35 @@ uint8_t renderCompleteBar(int8_t y_offset, const char *label, float value, const
   }
 }
 
-void renderPowerSwr(float power_fwd, float power_rvr) {
+void prepareRender() {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
+}
 
-  //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), (power_rvr <= power_fwd ? powerToSwr(power_fwd, power_rvr) : powerToSwr(power_fwd, power_fwd)), NULL, 1.0, 2.0, 2.0);
-  renderCompleteBar(SCREEN_ROW_2_Y, strings(FWD_LABEL), power_fwd, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
-  renderCompleteBar(SCREEN_ROW_3_Y, strings(RVR_LABEL), power_rvr, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
+void renderSwr(float swr) {
+  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), swr, NULL, 1.0, 2.0, 2.0);
+}
 
-  display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
-  display.setTextColor(WHITE);
-  display.setCursor(44, SCREEN_ROW_4_Y);
-  display.println("39   152");
-  display.drawBitmap(60, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
-  display.drawCircle(93, SCREEN_ROW_4_Y, 1, WHITE);
-
-  display.setCursor(44, SCREEN_ROW_5_Y);
-  display.println("34 + 9i");
-
+void finishRender() {
   display.display();
 }
 
-void renderComplexSwr(float magnitudeDb, float phase) {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
+void renderPowerBars(float power_fwd, float power_rvr) {
+  //make sure power_rvr isnt higher than power_fwd
+  renderCompleteBar(SCREEN_ROW_2_Y, strings(FWD_LABEL), power_fwd, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_3_Y, strings(RVR_LABEL), power_rvr, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
+}
 
+void renderReflectionBars(float magnitudeDb, float phase) {
   //make sure power_rvr isnt higher than power_fwd
   renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), dbToSwr(magnitudeDb), NULL, 1.0, 2.0, 2.0);
   renderCompleteBar(SCREEN_ROW_2_Y, strings(MAG_LABEL), magnitudeDb, strings(DECIBEL_UNIT_LABEL), -30.0, -15.0, 1.5);
   int8_t drawDegreeX = renderCompleteBar(SCREEN_ROW_3_Y, strings(PHS_LABEL), phase, NULL, 0.0, 90.0, 2.0);
   display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
+}
 
+void renderReflectionText(float magnitudeDb, float phase) {
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
 
   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
@@ -198,13 +193,9 @@ void renderComplexSwr(float magnitudeDb, float phase) {
   uint8_t complexLeftMargin = (SCREEN_WIDTH - complexTextWidth) / 2;
   display.setCursor(complexLeftMargin, SCREEN_ROW_5_Y);
   display.println(complexText);
-
-  display.display();
 }
 
 void renderStopTransmitting() {
-  display.clearDisplay();
-
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(36, SCREEN_ROW_1_Y);
@@ -213,13 +204,9 @@ void renderStopTransmitting() {
   display.setTextSize(1);
   display.setCursor(20, SCREEN_ROW_2_Y);
   display.println(strings(TRANSMITTING_LABEL));
-
-  display.display();
 }
 
 void renderCalibration(float power, boolean dummyLoad) {
-  display.clearDisplay();
-
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(4, SCREEN_ROW_1_Y);
@@ -233,13 +220,9 @@ void renderCalibration(float power, boolean dummyLoad) {
     display.println(strings(CALIBRATE_LINE_2_DUMMY));
   else
     display.println(strings(CALIBRATE_LINE_2_OPEN));
-
-  display.display();
 }
 
 void renderError(String message1, String message2, String message3, String message4) {
-  display.clearDisplay();
-
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(32, SCREEN_ROW_1_Y);
@@ -253,8 +236,6 @@ void renderError(String message1, String message2, String message3, String messa
   display.println();
   display.println(message3);
   display.println(message4);
-
-  display.display();
 }
 
 void updateComplexDemo(float *magnitudeDb, float *phase) {

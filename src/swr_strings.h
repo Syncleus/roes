@@ -184,6 +184,18 @@ static const PROGMEM char HELP_COMMANDS_7_STRING[] = "  demo";
 #define HELP_COMMANDS_8 57
 static const PROGMEM char HELP_COMMANDS_8_STRING[] = "  ping";
 
+#define POWER_LABEL 58
+static const PROGMEM char POWER_LABEL_STRING[] = "Pwr";
+
+#define POWER_FWD_LABEL 59
+static const PROGMEM char POWER_FWD_LABEL_STRING[] = "Fwd:";
+
+#define DBM_UNIT_LABEL 60
+static const PROGMEM char DBM_UNIT_LABEL_STRING[] = "dBm";
+
+#define POWER_RVR_LABEL 61
+static const PROGMEM char POWER_RVR_LABEL_STRING[] = "Rvr:";
+
 static const PROGMEM char* const string_table[] PROGMEM = {
   CORRUPT_EEPROM_STRING, //0
   CRC_CHECK_FAILED_STRING, //1
@@ -242,7 +254,11 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   HELP_COMMANDS_5_STRING, //54
   HELP_COMMANDS_6_STRING, //55
   HELP_COMMANDS_7_STRING, //56
-  HELP_COMMANDS_8_STRING //57
+  HELP_COMMANDS_8_STRING, //57
+  POWER_LABEL_STRING, //58
+  POWER_FWD_LABEL_STRING, //59
+  DBM_UNIT_LABEL_STRING, //60
+  POWER_RVR_LABEL_STRING //61
 };
 
 const char* strings(uint16_t id);

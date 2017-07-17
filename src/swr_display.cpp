@@ -150,18 +150,18 @@ void renderReflectionBars(float magnitudeDb, float phase) {
 void renderPowerText(float power_fwd, float power_rvr) {
   display.setTextColor(WHITE);
   display.setCursor(0, SCREEN_ROW_4_Y + 4);
-  display.println("Pwr");
+  display.println(strings(POWER_LABEL));
 
   display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y);
-  String forwardTitle = "Fwd:";
+  String forwardTitle = strings(POWER_FWD_LABEL);
   display.print(forwardTitle);
-  String forwardText = String(" ") + String(makeValueLabel(power_fwd, "w")) + String(" ") + String(makeValueLabel(powerToDbm(power_fwd), "dBm"));
+  String forwardText = String(strings(SINGLE_SPACE)) + String(makeValueLabel(power_fwd, strings(WATTS_UNIT_LABEL))) + String(strings(SINGLE_SPACE)) + String(makeValueLabel(powerToDbm(power_fwd), strings(DBM_UNIT_LABEL)));
   display.println(forwardText);
 
   display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y);
-  String reverseTitle = "Rvr:";
+  String reverseTitle = strings(POWER_RVR_LABEL);
   display.print(reverseTitle);
-  String reverseText = String(" ") + String(makeValueLabel(power_rvr, "w")) + String(" ") + String(makeValueLabel(powerToDbm(power_rvr), "dBm"));
+  String reverseText = String(strings(SINGLE_SPACE)) + String(makeValueLabel(power_rvr, strings(WATTS_UNIT_LABEL))) + String(strings(SINGLE_SPACE)) + String(makeValueLabel(powerToDbm(power_rvr), strings(DBM_UNIT_LABEL)));
   display.println(reverseText);
 }
 

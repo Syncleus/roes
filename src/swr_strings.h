@@ -3,7 +3,7 @@
 
 #include <avr/pgmspace.h>
 
-#define MAX_STRING_LENGTH 130
+#define MAX_STRING_LENGTH 83
 #define BUFFER_COUNT 2
 
 #define CORRUPT_EEPROM 0
@@ -58,7 +58,7 @@ static const PROGMEM char CALIBRATE_LINE_2_DUMMY_STRING[] = "a dummy load";
 static const PROGMEM char ERROR_WARNING_LABEL_STRING[] = "ERROR!";
 
 #define COMMANDS_OVERVIEW_HELP 17
-static const PROGMEM char COMMANDS_OVERVIEW_HELP_STRING[] = "Use the commands 'help', 'calibrationpoints', 'cleareeprom', 'readinputs', 'calibrationdata', 'calibrateonboot', 'demo', or 'ping'.";
+static const PROGMEM char COMMANDS_OVERVIEW_HELP_STRING[] = "Availible commands:";
 
 #define CALIBRATEONBOOT_INVALID_ARGUMENT 18
 static const PROGMEM char CALIBRATEONBOOT_INVALID_ARGUMENT_STRING[] = "Invalid argument, argument to calibrateonboot command must be either 'on' or 'off'";
@@ -160,6 +160,30 @@ static const PROGMEM char CALIBRATIONPOINTS_TOO_MANY_STRING[] = "Too many calibr
 #define CALIBRATIONPOINTS_TOO_FEW 49
 static const PROGMEM char CALIBRATIONPOINTS_TOO_FEW_STRING[] = "Must provide at least one calibration point!";
 
+#define HELP_COMMANDS_1 50
+static const PROGMEM char HELP_COMMANDS_1_STRING[] = "  help";
+
+#define HELP_COMMANDS_2 51
+static const PROGMEM char HELP_COMMANDS_2_STRING[] = "  calibrationpoints";
+
+#define HELP_COMMANDS_3 52
+static const PROGMEM char HELP_COMMANDS_3_STRING[] = "  cleareeprom";
+
+#define HELP_COMMANDS_4 53
+static const PROGMEM char HELP_COMMANDS_4_STRING[] = "  readinputs";
+
+#define HELP_COMMANDS_5 54
+static const PROGMEM char HELP_COMMANDS_5_STRING[] = "  calibrationdata";
+
+#define HELP_COMMANDS_6 55
+static const PROGMEM char HELP_COMMANDS_6_STRING[] = "  calibrateonboot";
+
+#define HELP_COMMANDS_7 56
+static const PROGMEM char HELP_COMMANDS_7_STRING[] = "  demo";
+
+#define HELP_COMMANDS_8 57
+static const PROGMEM char HELP_COMMANDS_8_STRING[] = "  ping";
+
 static const PROGMEM char* const string_table[] PROGMEM = {
   CORRUPT_EEPROM_STRING, //0
   CRC_CHECK_FAILED_STRING, //1
@@ -210,7 +234,15 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   DEMO_ACTIVATING_STRING, //46
   DEMO_DEACTIVATING_STRING, //47
   CALIBRATIONPOINTS_TOO_MANY_STRING, //48
-  CALIBRATIONPOINTS_TOO_FEW_STRING
+  CALIBRATIONPOINTS_TOO_FEW_STRING, //49
+  HELP_COMMANDS_1_STRING, //50
+  HELP_COMMANDS_2_STRING, //51
+  HELP_COMMANDS_3_STRING, //52
+  HELP_COMMANDS_4_STRING, //53
+  HELP_COMMANDS_5_STRING, //54
+  HELP_COMMANDS_6_STRING, //55
+  HELP_COMMANDS_7_STRING, //56
+  HELP_COMMANDS_8_STRING //57
 };
 
 const char* strings(uint16_t id);

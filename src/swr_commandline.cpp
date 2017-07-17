@@ -109,6 +109,14 @@ void handleCalibrationPoints(char* tokens) {
 
 void handleHelp(char* tokens) {
   Serial.println(strings(COMMANDS_OVERVIEW_HELP));
+  Serial.println(strings(HELP_COMMANDS_1));
+  Serial.println(strings(HELP_COMMANDS_2));
+  Serial.println(strings(HELP_COMMANDS_3));
+  Serial.println(strings(HELP_COMMANDS_4));
+  Serial.println(strings(HELP_COMMANDS_5));
+  Serial.println(strings(HELP_COMMANDS_6));
+  Serial.println(strings(HELP_COMMANDS_7));
+  Serial.println(strings(HELP_COMMANDS_8));
 }
 
 void handleClearEeprom(char* tokens) {

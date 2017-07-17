@@ -182,20 +182,22 @@ void renderComplexSwr(float magnitudeDb, float phase) {
   display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
 
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
-  display.setTextColor(WHITE);
-  display.setCursor(44, SCREEN_ROW_4_Y);
-  float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
-  display.print(makeValueLabel(magnitudeLinear));
-  display.print(" ");
-  display.println(makeValueLabel(phase));
-  display.drawBitmap(60, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
-  display.drawCircle(93, SCREEN_ROW_4_Y, 1, WHITE);
 
-  display.setCursor(44, SCREEN_ROW_5_Y);
-  display.print(makeValueLabel(polarToComplexA(magnitudeDb, phase)));
-  display.print(" + ");
-  display.print(makeValueLabel(polarToComplexB(magnitudeDb, phase)));
-  display.println(" i");
+  float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
+  String cartesianText = makeValueLabel(magnitudeLinear) + String("   ") + makeValueLabel(phase);
+  uint8_t cartesianTextWidth = cartesianText.length() * CHARACTER_WIDTH;
+  uint8_t cartesianLeftMargin = (SCREEN_WIDTH - cartesianTextWidth) / 2;
+  display.setTextColor(WHITE);
+  display.setCursor(cartesianLeftMargin, SCREEN_ROW_4_Y);
+  display.println(cartesianText);
+  display.drawBitmap((SCREEN_WIDTH - 8) / 2, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
+  display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_4_Y, 1, WHITE);
+
+  String complexText = makeValueLabel(polarToComplexA(magnitudeDb, phase)) + String(" + ") + makeValueLabel(polarToComplexB(magnitudeDb, phase)) + String(" i");
+  uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
+  uint8_t complexLeftMargin = (SCREEN_WIDTH - complexTextWidth) / 2;
+  display.setCursor(complexLeftMargin, SCREEN_ROW_5_Y);
+  display.println(complexText);
 
   display.display();
 }

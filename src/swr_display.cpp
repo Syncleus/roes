@@ -1,6 +1,7 @@
 #include "swr_display.h"
 #include "swr_constants.h"
 #include "swr_strings.h"
+#include "swr_power.h"
 
 #include <math.h>
 #include <Adafruit_GFX.h>
@@ -53,31 +54,6 @@ void displaySetup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
 }
 
-float dbToSwr(float magnitudeDb) {
-  float linearFactor = pow(10.0, magnitudeDb / 20.0);
-
-  if ( linearFactor <= 0 )
-    return 1.0;
-
-  float pwrs = sqrt(pow(linearFactor, 2.0));
-  return (1.0 + pwrs) / (1.0 - pwrs);
-}
-
-float polarToComplexA(float magnitudeDb, float phase) {
-  return magnitudeDb * cos(phase);
-}
-
-float polarToComplexB(float magnitudeDb, float phase) {
-  return magnitudeDb * sin(phase);
-}
-
-float powerToSwr(float power_fwd, float power_rvr) {
-  if ( power_rvr <= 0 )
-    return 1.0;
-  float pwrs = sqrt(power_rvr / power_fwd);
-  return (1.0 + pwrs) / (1.0 - pwrs);
-}
-
 float scaleToPercent(float value, float middle, float scale) {
   if ( value == 0 )
     return 0.0;
@@ -95,10 +71,6 @@ float scaleToPercent(float value, float value_min, float value_mid, float scale)
   if (isinf(value))
     return 1.0;
   return scaleToPercent(value - value_min, value_mid - value_min, scale);
-}
-
-float logBased(float value, float base) {
-  return log10(value) / log10(base);
 }
 
 uint8_t percentBar(uint8_t y_offset, float percent) {
@@ -175,22 +147,40 @@ void renderReflectionBars(float magnitudeDb, float phase) {
   display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
 }
 
+void renderPowerText(float power_fwd, float power_rvr) {
+  display.setTextColor(WHITE);
+  display.setCursor(0, SCREEN_ROW_4_Y + 4);
+  display.println("Pwr");
+
+  display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y);
+  String forwardTitle = "Fwd:";
+  display.print(forwardTitle);
+  String forwardText = String(" ") + String(makeValueLabel(power_fwd, "w")) + String(" ") + String(makeValueLabel(powerToDbm(power_fwd), "dBm"));
+  display.println(forwardText);
+
+  display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y);
+  String reverseTitle = "Rvr:";
+  display.print(reverseTitle);
+  String reverseText = String(" ") + String(makeValueLabel(power_rvr, "w")) + String(" ") + String(makeValueLabel(powerToDbm(power_rvr), "dBm"));
+  display.println(reverseText);
+}
+
 void renderReflectionText(float magnitudeDb, float phase) {
   display.drawBitmap(0, SCREEN_ROW_4_Y, gamma16_glcd_bmp, 16, 16, 1);
 
   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
   String cartesianText = makeValueLabel(magnitudeLinear) + String("   ") + makeValueLabel(phase);
   uint8_t cartesianTextWidth = cartesianText.length() * CHARACTER_WIDTH;
-  uint8_t cartesianLeftMargin = (SCREEN_WIDTH - cartesianTextWidth) / 2;
+  uint8_t cartesianLeftMargin = ((SCREEN_WIDTH - cartesianTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
   display.setTextColor(WHITE);
   display.setCursor(cartesianLeftMargin, SCREEN_ROW_4_Y);
   display.println(cartesianText);
-  display.drawBitmap((SCREEN_WIDTH - 8) / 2, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
+  display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
   display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_4_Y, 1, WHITE);
 
   String complexText = makeValueLabel(polarToComplexA(magnitudeDb, phase)) + String(" + ") + makeValueLabel(polarToComplexB(magnitudeDb, phase)) + String(" i");
   uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
-  uint8_t complexLeftMargin = (SCREEN_WIDTH - complexTextWidth) / 2;
+  uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
   display.setCursor(complexLeftMargin, SCREEN_ROW_5_Y);
   display.println(complexText);
 }

@@ -10,9 +10,14 @@
 #include "swr_commandline.h"
 #include "swr_eeprom.h"
 
-enum Screen {
-  POWER,
-  COMPLEX
+enum TopScreen {
+  TOP_POWER,
+  TOP_REFLECTION
+};
+
+enum BottomScreen {
+  BOTTOM_POWER,
+  BOTTOM_REFLECTION
 };
 
 boolean error = false;
@@ -21,7 +26,8 @@ boolean calibrating = false;
 boolean calibratingPause = false;
 boolean calibratingDummy = true;
 
-Screen currentScreen = POWER;
+TopScreen currentTopScreen = TOP_POWER;
+BottomScreen currentBottomScreen = BOTTOM_POWER;
 
 float magnitudeDb = 0.0;
 float phase = 0.0;
@@ -39,6 +45,7 @@ void setup()   {
   commandlineSetup();
 
   pinMode(DOWN_BUTTON_PIN, INPUT);
+  pinMode(UP_BUTTON_PIN, INPUT);
 
   //make sure eeprom isn't corrupt
   if( checkEepromCrc() == false ) {
@@ -83,6 +90,7 @@ void loop() {
     return;
 
   updateDownButton();
+  updateUpButton();
 
   if( (long)(time - refreshDisplayTime) >= 0 && !calibrating) {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
@@ -97,9 +105,9 @@ void loop() {
     }
 
     float swr;
-    if( currentScreen == POWER )
+    if( currentTopScreen == TOP_POWER )
       swr = powerToSwr(power_fwd, power_rvr);
-    else if( currentScreen == COMPLEX )
+    else if( currentTopScreen == TOP_REFLECTION )
       swr = dbToSwr(magnitudeDb);
 
     if( power_fwd >= 0.1 ) {
@@ -117,15 +125,22 @@ void loop() {
 
     prepareRender();
     renderSwr(swr);
-    switch( currentScreen ) {
-    case POWER:
+    switch( currentTopScreen ) {
+    case TOP_POWER:
       renderPowerBars(power_fwd, power_rvr);
       break;
-    case COMPLEX:
+    case TOP_REFLECTION:
       renderReflectionBars(magnitudeDb, phase);
       break;
     }
-    renderReflectionText(magnitudeDb, phase);
+    switch( currentBottomScreen ) {
+    case BOTTOM_POWER:
+      renderPowerText(power_fwd, power_rvr);
+      break;
+    case BOTTOM_REFLECTION:
+      renderReflectionText(magnitudeDb, phase);
+      break;
+    }
     finishRender();
   }
 
@@ -174,16 +189,33 @@ void updateDownButton() {
   int buttonState = digitalRead(DOWN_BUTTON_PIN);
 
   if( downButtonLowLast == false && buttonState == LOW ) {
-    if( currentScreen == POWER )
-      currentScreen = COMPLEX;
-    else if( currentScreen == COMPLEX )
-      currentScreen = POWER;
+    if( currentBottomScreen == BOTTOM_POWER )
+      currentBottomScreen = BOTTOM_REFLECTION;
+    else if( currentBottomScreen == BOTTOM_REFLECTION )
+      currentBottomScreen = BOTTOM_POWER;
 
     downButtonLowLast = true;
   }
 
   if(downButtonLowLast && buttonState == HIGH)
     downButtonLowLast = false;
+}
+
+void updateUpButton() {
+  static boolean upButtonLowLast = false;
+  int buttonState = digitalRead(UP_BUTTON_PIN);
+
+  if( upButtonLowLast == false && buttonState == LOW ) {
+    if( currentTopScreen == TOP_POWER )
+      currentTopScreen = TOP_REFLECTION;
+    else if( currentTopScreen == TOP_REFLECTION )
+      currentTopScreen = TOP_POWER;
+
+    upButtonLowLast = true;
+  }
+
+  if(upButtonLowLast && buttonState == HIGH)
+    upButtonLowLast = false;
 }
 
 

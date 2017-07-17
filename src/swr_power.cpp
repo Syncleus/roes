@@ -164,3 +164,36 @@ float highestPowerPoint(boolean dummy) {
   }
   return power;
 }
+
+float dbToSwr(float magnitudeDb) {
+  float linearFactor = pow(10.0, magnitudeDb / 20.0);
+
+  if ( linearFactor <= 0 )
+    return 1.0;
+
+  float pwrs = sqrt(pow(linearFactor, 2.0));
+  return (1.0 + pwrs) / (1.0 - pwrs);
+}
+
+float polarToComplexA(float magnitudeDb, float phase) {
+  return magnitudeDb * cos(phase);
+}
+
+float polarToComplexB(float magnitudeDb, float phase) {
+  return magnitudeDb * sin(phase);
+}
+
+float powerToSwr(float power_fwd, float power_rvr) {
+  if ( power_rvr <= 0 )
+    return 1.0;
+  float pwrs = sqrt(power_rvr / power_fwd);
+  return (1.0 + pwrs) / (1.0 - pwrs);
+}
+
+float logBased(float value, float base) {
+  return log10(value) / log10(base);
+}
+
+float powerToDbm(float power) {
+  return 10.0 * log10(power) + 30.0;
+}

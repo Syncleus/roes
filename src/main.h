@@ -6,6 +6,7 @@
 void setup();
 void loop();
 void updateDownButton();
+void updateUpButton();
 boolean bumpCalibratingPowerPoint();
 
 #endif /* _MAIN_H_ */

@@ -154,6 +154,12 @@ static const PROGMEM char DEMO_ACTIVATING_STRING[] = "Activating demo.";
 #define DEMO_DEACTIVATING 47
 static const PROGMEM char DEMO_DEACTIVATING_STRING[] = "Deactivating demo.";
 
+#define CALIBRATIONPOINTS_TOO_MANY 48
+static const PROGMEM char CALIBRATIONPOINTS_TOO_MANY_STRING[] = "Too many calibration points! max: ";
+
+#define CALIBRATIONPOINTS_TOO_FEW 49
+static const PROGMEM char CALIBRATIONPOINTS_TOO_FEW_STRING[] = "Must provide at least one calibration point!";
+
 static const PROGMEM char* const string_table[] PROGMEM = {
   CORRUPT_EEPROM_STRING, //0
   CRC_CHECK_FAILED_STRING, //1
@@ -202,7 +208,9 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   PONG_LABEL_STRING, //44
   DEMO_LABEL_STRING, //45
   DEMO_ACTIVATING_STRING, //46
-  DEMO_DEACTIVATING_STRING //47
+  DEMO_DEACTIVATING_STRING, //47
+  CALIBRATIONPOINTS_TOO_MANY_STRING, //48
+  CALIBRATIONPOINTS_TOO_FEW_STRING
 };
 
 const char* strings(uint16_t id);

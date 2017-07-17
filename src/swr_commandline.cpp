@@ -57,14 +57,27 @@ void handleCalibrationPoints(char* tokens) {
     if( String(parsedArgument).equals(strings(OPEN_LABEL)) )
       isDummyPoints = false;
 
+    uint8_t entryCount = 0;
     if( isDummyPoints ) {
       etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPointsData;
       do {
         parsedArgument = argument;
         argument = splitString(parsedArgument, ' ');
-        calibrationPointsData.insert(String(parsedArgument).toFloat());
+        if( parsedArgument != NULL ) {
+          entryCount++;
+          if( entryCount > MAX_CALIBRATION_POWER_POINTS_DUMMY ) {
+            Serial.print(strings(CALIBRATIONPOINTS_TOO_MANY));
+            Serial.println(String(MAX_CALIBRATION_POWER_POINTS_DUMMY));
+            return;
+          }
+          calibrationPointsData.insert(String(parsedArgument).toFloat());
+        }
       } while(argument != NULL);
 
+      if( entryCount <= 0 ) {
+        Serial.println(strings(CALIBRATIONPOINTS_TOO_FEW));
+        return;
+      }
       setCalibrationPowerPointsDummy(calibrationPointsData);
     }
     else {
@@ -72,9 +85,21 @@ void handleCalibrationPoints(char* tokens) {
       do {
         parsedArgument = argument;
         argument = splitString(parsedArgument, ' ');
-        calibrationPointsData.insert(String(parsedArgument).toFloat());
+        if( parsedArgument != NULL ) {
+          entryCount++;
+          if( entryCount > MAX_CALIBRATION_POWER_POINTS_OPEN ) {
+            Serial.print(strings(CALIBRATIONPOINTS_TOO_MANY));
+            Serial.println(String(MAX_CALIBRATION_POWER_POINTS_OPEN));
+            return;
+          }
+          calibrationPointsData.insert(String(parsedArgument).toFloat());
+        }
       } while(argument != NULL);
 
+      if( entryCount <= 0 ) {
+        Serial.println(strings(CALIBRATIONPOINTS_TOO_FEW));
+        return;
+      }
       setCalibrationPowerPointsOpen(calibrationPointsData);
     }
 

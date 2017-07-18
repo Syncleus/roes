@@ -2,6 +2,8 @@
 #include "swr_constants.h"
 #include "swr_eeprom.h"
 
+#include <complex.h>
+
 
 PowerPointBounds determineBounds(uint16_t adcValue, boolean dummy) {
   etl::iset<float, std::less<float>>::const_iterator itr;
@@ -93,7 +95,7 @@ float powerToVoltage(float power) {
   return sqrt(power * CHARACTERISTIC_IMPEDANCE);
 }
 
-void updateComplex(float *magnitudeDb, float *phase) {
+void updateReflection(float *magnitudeDb, float *phase) {
   float adcMax = analogRead(COMPLEX_VREF_PIN);
 
   float adcMagnitude = analogRead(COMPLEX_MAGNITUDE_PIN);
@@ -175,12 +177,10 @@ float dbToSwr(float magnitudeDb) {
   return (1.0 + pwrs) / (1.0 - pwrs);
 }
 
-float polarToComplexA(float magnitudeDb, float phase) {
-  return magnitudeDb * cos(phase);
-}
-
-float polarToComplexB(float magnitudeDb, float phase) {
-  return magnitudeDb * sin(phase);
+Complex polarToComplex(float magnitude, float phase) {
+  double real = magnitude * cos(phase);
+  double imaginary = magnitude * sin(phase);
+  return Complex(real, imaginary);
 }
 
 float powerToSwr(float power_fwd, float power_rvr) {
@@ -196,4 +196,11 @@ float logBased(float value, float base) {
 
 float powerToDbm(float power) {
   return 10.0 * log10(power) + 30.0;
+}
+
+Complex complexLoadFromReflection(float magnitude, float phase) {
+  Complex refl = polarToComplex(magnitude, phase);
+  Complex characteristicZ(CHARACTERISTIC_IMPEDANCE, 0.0);
+  Complex loadZ = (characteristicZ * (refl + one)) / (refl - one);
+  return loadZ;
 }

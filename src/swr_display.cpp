@@ -178,7 +178,34 @@ void renderReflectionText(float magnitudeDb, float phase) {
   display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
   display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_4_Y, 1, WHITE);
 
-  String complexText = makeValueLabel(polarToComplexA(magnitudeLinear, phase)) + String(" + ") + makeValueLabel(polarToComplexB(magnitudeLinear, phase)) + String(" i");
+  Complex reflComplex = polarToComplex(magnitudeLinear, phase);
+  String complexText = makeValueLabel(reflComplex.real()) + String(" + ") + makeValueLabel(reflComplex.imag()) + String(" i");
+  uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
+  uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
+  display.setCursor(complexLeftMargin, SCREEN_ROW_5_Y);
+  display.println(complexText);
+}
+
+void renderLoadZText(float magnitudeDb, float phase) {
+  display.setTextColor(WHITE);
+  display.setTextSize(2);
+  display.setCursor(0, SCREEN_ROW_4_Y);
+  display.print("Z");
+  
+  display.setTextSize(1);
+  float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
+  Complex loadZ = complexLoadFromReflection(magnitudeLinear, phase);
+
+  String cartesianText = makeValueLabel(loadZ.modulus()) + String("   ") + makeValueLabel(loadZ.phase());
+  uint8_t cartesianTextWidth = cartesianText.length() * CHARACTER_WIDTH;
+  uint8_t cartesianLeftMargin = ((SCREEN_WIDTH - cartesianTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
+  display.setTextColor(WHITE);
+  display.setCursor(cartesianLeftMargin, SCREEN_ROW_4_Y);
+  display.println(cartesianText);
+  display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
+  display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_4_Y, 1, WHITE);
+
+  String complexText = makeValueLabel(loadZ.real()) + String(" + ") + makeValueLabel(loadZ.imag()) + String(" i");
   uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
   uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
   display.setCursor(complexLeftMargin, SCREEN_ROW_5_Y);

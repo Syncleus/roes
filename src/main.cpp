@@ -17,7 +17,8 @@ enum TopScreen {
 
 enum BottomScreen {
   BOTTOM_POWER,
-  BOTTOM_REFLECTION
+  BOTTOM_REFLECTION,
+  BOTTOM_LOAD
 };
 
 boolean error = false;
@@ -100,7 +101,7 @@ void loop() {
       updatePowerDemo(&power_fwd, &power_rvr);
     }
     else {
-      updateComplex(&magnitudeDb, &phase);
+      updateReflection(&magnitudeDb, &phase);
       updatePower(&power_fwd, &power_rvr);
     }
 
@@ -139,6 +140,9 @@ void loop() {
       break;
     case BOTTOM_REFLECTION:
       renderReflectionText(magnitudeDb, phase);
+      break;
+    case BOTTOM_LOAD:
+      renderLoadZText(magnitudeDb, phase);
       break;
     }
     finishRender();
@@ -192,6 +196,8 @@ void updateDownButton() {
     if( currentBottomScreen == BOTTOM_POWER )
       currentBottomScreen = BOTTOM_REFLECTION;
     else if( currentBottomScreen == BOTTOM_REFLECTION )
+      currentBottomScreen = BOTTOM_LOAD;
+    else if( currentBottomScreen == BOTTOM_LOAD )
       currentBottomScreen = BOTTOM_POWER;
 
     downButtonLowLast = true;

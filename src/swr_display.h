@@ -23,5 +23,6 @@ void renderStopTransmitting();
 void renderCalibration(float power, boolean dummyLoad);
 void renderReflectionText(float magnitudeDb, float phase);
 void renderPowerText(float power_fwd, float power_rvr);
+void renderLoadZText(float magnitudeDb, float phase);
 
 #endif /* _SWR_DISPLAY_H_ */

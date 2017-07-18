@@ -2,6 +2,7 @@
 #define _SWR_POWER_H_
 
 #include <Arduino.h>
+#include <complex.h>
 
 struct PowerPointBounds {
   float lowVoltagePoint;
@@ -17,14 +18,14 @@ uint16_t voltageToAdc(float voltage, boolean forward);
 float voltageToPower(float voltage);
 float powerToVoltage(float power);
 void updatePower(float *power_fwd, float *power_rvr);
-void updateComplex(float *magnitude, float *phase);
+void updateReflection(float *magnitudeDb, float *phase);
 float lowestPowerPoint(boolean dummy);
 float highestPowerPoint(boolean dummy);
 float logBased(float value, float base);
 float powerToSwr(float power_fwd, float power_rvr);
 float dbToSwr(float magnitudeDb);
-float polarToComplexA(float magnitudeDb, float phase);
-float polarToComplexB(float magnitudeDb, float phase);
+Complex polarToComplex(float magnitude, float phase);
 float powerToDbm(float power);
+Complex complexLoadFromReflection(float magnitude, float phase);
 
 #endif /* _SWR_POWER_H_ */

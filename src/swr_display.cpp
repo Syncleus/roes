@@ -178,7 +178,7 @@ void renderReflectionText(float magnitudeDb, float phase) {
   display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y, angle8_glcd_bmp, 8, 8, 1);
   display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_4_Y, 1, WHITE);
 
-  String complexText = makeValueLabel(polarToComplexA(magnitudeDb, phase)) + String(" + ") + makeValueLabel(polarToComplexB(magnitudeDb, phase)) + String(" i");
+  String complexText = makeValueLabel(polarToComplexA(magnitudeLinear, phase)) + String(" + ") + makeValueLabel(polarToComplexB(magnitudeLinear, phase)) + String(" i");
   uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
   uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
   display.setCursor(complexLeftMargin, SCREEN_ROW_5_Y);

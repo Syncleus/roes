@@ -35,7 +35,7 @@ PowerPointBounds determineBounds(uint16_t adcValue, boolean dummy) {
   {
     float currentPowerPoint = *itr++;
     CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, dummy);
-    uint16_t currentAdcValue = (dummy ? currentCalibrationData.fwd : currentCalibrationData.rvr);
+    uint16_t currentAdcValue = (dummy ? currentCalibrationData.fwd : currentCalibrationData.refl);
     if( !bounds.outOfBounds ) {
       if( (currentAdcValue > bounds.lowAdcValue || bounds.lowVoltagePoint == -1.0) &&  currentAdcValue < adcValue ) {
         bounds.lowAdcValue = currentAdcValue;
@@ -64,7 +64,7 @@ PowerPointBounds determineBounds(uint16_t adcValue, boolean dummy) {
     else {
       float lowestPower = lowestPowerPoint(true);
       CalibrationData lowestCalibrationData = calibrationData(lowestPower, true);
-      bounds.lowAdcValue = lowestCalibrationData.rvr;
+      bounds.lowAdcValue = lowestCalibrationData.refl;
       bounds.lowVoltagePoint = 0.0;
     }
   }
@@ -93,28 +93,6 @@ float voltageToPower(float voltage) {
 
 float powerToVoltage(float power) {
   return sqrt(power * CHARACTERISTIC_IMPEDANCE);
-}
-
-void updateReflection(float *magnitudeDb, float *phase) {
-  float adcMax = analogRead(COMPLEX_VREF_PIN);
-
-  float adcMagnitude = analogRead(COMPLEX_MAGNITUDE_PIN);
-  float magnitudeNormalized = (adcMagnitude / adcMax) * 2.0 - 1.0;
-  *magnitudeDb = magnitudeNormalized * 30.0;
-
-  float adcPhase = analogRead(COMPLEX_PHASE_PIN);
-  float phaseNormalized = 1.0 - (adcPhase / adcMax);
-  *phase = phaseNormalized * 180.0;
-}
-
-void updatePower(float *power_fwd, float *power_rvr) {
-  uint16_t adcFwdValue = analogRead(POWER_FWD_PIN);
-  float voltageFwd = adcToVoltage(adcFwdValue, true);
-  *power_fwd = voltageToPower(voltageFwd);
-
-  uint16_t adcRvrValue = analogRead(POWER_RVR_PIN);
-  float voltageRvr = adcToVoltage(adcRvrValue, false);
-  *power_rvr = voltageToPower(voltageRvr);
 }
 
 float lowestPowerPoint(boolean dummy) {

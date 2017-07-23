@@ -11,5 +11,6 @@ void handleDemo(char* tokens);
 void handleCalibrationPoints(char* tokens);
 void handleHelp(char* tokens);
 void handleClearEeprom(char* tokens);
+void handleSwrSource(char* tokens);
 
 #endif /* _SWR_COMMANDLINE_H_ */

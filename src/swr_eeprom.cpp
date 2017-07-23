@@ -16,6 +16,7 @@ struct SwrPersistedData {
   float calibrationPowerPointsOpen[MAX_CALIBRATION_POWER_POINTS_OPEN];
   CalibrationData calibrationDataDummy[MAX_CALIBRATION_POWER_POINTS_DUMMY];
   CalibrationData calibrationDataOpen[MAX_CALIBRATION_POWER_POINTS_OPEN];
+  boolean differentialForSwr;
 };
 
 SwrPersistedData persistedData;
@@ -233,5 +234,21 @@ void setCalibrationData(float powerPoint, boolean dummy, CalibrationData data) {
   else
     persistedData.calibrationDataOpen[powerPointIndex] = data;
 
+  storeData();
+}
+
+boolean envelopeDetectorForSwr() {
+  return !persistedData.differentialForSwr;
+}
+
+boolean differentialForSwr() {
+  return persistedData.differentialForSwr;
+}
+void activateAd8302ForSwr() {
+  persistedData.differentialForSwr = true;
+  storeData();
+}
+void activeEnvelopeDetectorForSwr() {
+  persistedData.differentialForSwr = false;
   storeData();
 }

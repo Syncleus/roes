@@ -97,7 +97,7 @@ static const PROGMEM char CALIBRATIONDATA_HEADER_2_OPEN_STRING[] = "w into an op
 static const PROGMEM char CALIBRATIONDATA_FWD_STRING[] = "        fwd: ";
 
 #define CALIBRATIONDATA_RVR 30
-static const PROGMEM char CALIBRATIONDATA_RVR_STRING[] = "        rvr: ";
+static const PROGMEM char CALIBRATIONDATA_RVR_STRING[] = "        refl: ";
 
 #define CALIBRATIONDATA_MAGNITUDE 31
 static const PROGMEM char CALIBRATIONDATA_MAGNITUDE_STRING[] = "  magnitude: ";
@@ -196,6 +196,24 @@ static const PROGMEM char DBM_UNIT_LABEL_STRING[] = "dBm";
 #define POWER_RVR_LABEL 61
 static const PROGMEM char POWER_RVR_LABEL_STRING[] = "Rvr:";
 
+#define SWR_SOURCE_INFO 62
+static const PROGMEM char SWR_SOURCE_INFO_STRING[] = "SWR Source: ";
+
+#define SWR_SOURCE_DIFFERENTIAL 63
+static const PROGMEM char SWR_SOURCE_DIFFERENTIAL_STRING[] = "differential";
+
+#define SWR_SOURCE_ENVELOPE 64
+static const PROGMEM char SWR_SOURCE_ENVELOPE_STRING[] = "envelope";
+
+#define SWR_SOURCE_DIFFERENTIAL_SET 65
+static const PROGMEM char SWR_SOURCE_DIFFERENTIAL_SET_STRING[] = "SWR source is now the differential AD8302.";
+
+#define SWR_SOURCE_ENVELOPE_SET 66
+static const PROGMEM char SWR_SOURCE_ENVELOPE_SET_STRING[] = "SWR source is now the envelope detector.";
+
+#define SWR_SOURCE_INVALID 67
+static const PROGMEM char SWR_SOURCE_INVALID_STRING[] = "Invalid arguments, accepts either 'differential' or 'envelope' as arguments.";
+
 static const PROGMEM char* const string_table[] PROGMEM = {
   CORRUPT_EEPROM_STRING, //0
   CRC_CHECK_FAILED_STRING, //1
@@ -258,7 +276,13 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   POWER_LABEL_STRING, //58
   POWER_FWD_LABEL_STRING, //59
   DBM_UNIT_LABEL_STRING, //60
-  POWER_RVR_LABEL_STRING //61
+  POWER_RVR_LABEL_STRING, //61
+  SWR_SOURCE_INFO_STRING, //62
+  SWR_SOURCE_DIFFERENTIAL_STRING ,//63
+  SWR_SOURCE_ENVELOPE_STRING, //64
+  SWR_SOURCE_DIFFERENTIAL_SET_STRING, //65
+  SWR_SOURCE_ENVELOPE_SET_STRING, //66
+  SWR_SOURCE_INVALID_STRING //67
 };
 
 const char* strings(uint16_t id);

@@ -141,7 +141,6 @@ void renderPowerBars(float power_fwd, float power_rvr) {
 
 void renderReflectionBars(float magnitudeDb, float phase) {
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), dbToSwr(magnitudeDb), NULL, 1.0, 2.0, 2.0);
   renderCompleteBar(SCREEN_ROW_2_Y, strings(MAG_LABEL), magnitudeDb, strings(DECIBEL_UNIT_LABEL), -30.0, -15.0, 1.5);
   int8_t drawDegreeX = renderCompleteBar(SCREEN_ROW_3_Y, strings(PHS_LABEL), phase, NULL, 0.0, 90.0, 2.0);
   display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
@@ -191,7 +190,7 @@ void renderLoadZText(float magnitudeDb, float phase) {
   display.setTextSize(2);
   display.setCursor(0, SCREEN_ROW_4_Y);
   display.print("Z");
-  
+
   display.setTextSize(1);
   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
   Complex loadZ = complexLoadFromReflection(magnitudeLinear, phase);

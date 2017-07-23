@@ -17,8 +17,6 @@ float adcToVoltage(uint16_t adcValue, boolean forward);
 uint16_t voltageToAdc(float voltage, boolean forward);
 float voltageToPower(float voltage);
 float powerToVoltage(float power);
-void updatePower(float *power_fwd, float *power_rvr);
-void updateReflection(float *magnitudeDb, float *phase);
 float lowestPowerPoint(boolean dummy);
 float highestPowerPoint(boolean dummy);
 float logBased(float value, float base);

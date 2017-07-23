@@ -17,6 +17,7 @@ void commandlineSetup() {
   commandLine.add("calibrateonboot", handleCalibrateOnBoot);
   commandLine.add("calibrationdata", handleCalibrationData);
   commandLine.add("readinputs", handleReadInputs);
+  commandLine.add("swrsource", handleSwrSource);
 }
 
 void commandlineUpdate() {
@@ -140,7 +141,7 @@ void handleCalibrationData(char* tokens) {
     Serial.print(strings(CALIBRATIONDATA_FWD));
     Serial.println(String(currentCalibrationData.fwd));
     Serial.print(strings(CALIBRATIONDATA_RVR));
-    Serial.println(String(currentCalibrationData.rvr));
+    Serial.println(String(currentCalibrationData.refl));
     Serial.print(strings(CALIBRATIONDATA_MAGNITUDE));
     Serial.println(String(currentCalibrationData.magnitude));
     Serial.print(strings(CALIBRATIONDATA_PHASE));
@@ -164,7 +165,7 @@ void handleCalibrationData(char* tokens) {
     Serial.print(strings(CALIBRATIONDATA_FWD));
     Serial.println(String(currentCalibrationData.fwd));
     Serial.print(strings(CALIBRATIONDATA_RVR));
-    Serial.println(String(currentCalibrationData.rvr));
+    Serial.println(String(currentCalibrationData.refl));
     Serial.print(strings(CALIBRATIONDATA_MAGNITUDE));
     Serial.println(String(currentCalibrationData.magnitude));
     Serial.print(strings(CALIBRATIONDATA_PHASE));
@@ -179,13 +180,13 @@ void handleReadInputs(char* tokens) {
   Serial.print(strings(READINPUTS_FWD));
   Serial.println(String(analogRead(POWER_FWD_PIN)));
   Serial.print(strings(READINPUTS_RVR));
-  Serial.println(String(analogRead(POWER_RVR_PIN)));
+  Serial.println(String(analogRead(POWER_REFL_PIN)));
   Serial.print(strings(READINPUTS_VREF));
-  Serial.println(String(analogRead(COMPLEX_VREF_PIN)));
+  Serial.println(String(analogRead(DIFFERENTIAL_VREF_PIN)));
   Serial.print(strings(READINPUTS_PHASE));
-  Serial.println(String(analogRead(COMPLEX_PHASE_PIN)));
+  Serial.println(String(analogRead(DIFFERENTIAL_PHASE_PIN)));
   Serial.print(strings(READINPUTS_MAGNITUDE));
-  Serial.println(String(analogRead(COMPLEX_MAGNITUDE_PIN)));
+  Serial.println(String(analogRead(DIFFERENTIAL_MAGNITUDE_PIN)));
 }
 
 void handleCalibrateOnBoot(char* tokens) {
@@ -218,7 +219,7 @@ void handleDemo(char* tokens) {
   char* argument = strtok(NULL, strings(SINGLE_SPACE));
   if( argument == NULL ) {
     Serial.print(strings(DEMO_LABEL));
-    Serial.println((demoMode() == true ? strings(DEMO_ON) : strings(DEMO_OFF)));
+    Serial.println((demoMode() ? strings(DEMO_ON) : strings(DEMO_OFF)));
   }
   else {
     String argumentStr = String(argument);
@@ -232,6 +233,31 @@ void handleDemo(char* tokens) {
     }
     else {
       Serial.println(strings(DEMO_INVALID_ARGUMENT));
+    }
+  }
+}
+
+void handleSwrSource(char* tokens) {
+  char* argument = strtok(NULL, strings(SINGLE_SPACE));
+  if( argument == NULL ) {
+    Serial.print(strings(SWR_SOURCE_INFO));
+    if( differentialForSwr() )
+      Serial.println(strings(SWR_SOURCE_DIFFERENTIAL));
+    else if( envelopeDetectorForSwr() )
+      Serial.println(strings(SWR_SOURCE_ENVELOPE));
+  }
+  else {
+    String argumentStr = String(argument);
+    if( argumentStr.equals(strings(SWR_SOURCE_DIFFERENTIAL)) ) {
+      activateAd8302ForSwr();
+      Serial.println(strings(SWR_SOURCE_DIFFERENTIAL_SET));
+    }
+    else if( argumentStr.equals(strings(SWR_SOURCE_ENVELOPE)) ) {
+      activeEnvelopeDetectorForSwr();
+      Serial.println(strings(SWR_SOURCE_ENVELOPE_SET));
+    }
+    else {
+      Serial.println(strings(SWR_SOURCE_INVALID));
     }
   }
 }

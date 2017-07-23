@@ -18,10 +18,10 @@ uint32_t samples = 0;
 void calibrate() {
   calibrationComplete = false;
   uint16_t adcFwdValue = analogRead(POWER_FWD_PIN);
-  uint16_t adcRvrValue = analogRead(POWER_RVR_PIN);
-  uint16_t adcVrefValue = analogRead(COMPLEX_VREF_PIN);
-  uint16_t adcMagnitudeValue = analogRead(COMPLEX_MAGNITUDE_PIN);
-  uint16_t adcPhaseValue = analogRead(COMPLEX_PHASE_PIN);
+  uint16_t adcRvrValue = analogRead(POWER_REFL_PIN);
+  uint16_t adcVrefValue = analogRead(DIFFERENTIAL_VREF_PIN);
+  uint16_t adcMagnitudeValue = analogRead(DIFFERENTIAL_MAGNITUDE_PIN);
+  uint16_t adcPhaseValue = analogRead(DIFFERENTIAL_PHASE_PIN);
   if( (adcFwdValue < CALIBRATION_THRESHOLD) && ( adcRvrValue < CALIBRATION_THRESHOLD ) )
     return;
 

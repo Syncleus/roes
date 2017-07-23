@@ -8,7 +8,7 @@
 
 struct CalibrationData {
   uint16_t fwd;
-  uint16_t rvr;
+  uint16_t refl;
   uint16_t vref;
   uint16_t magnitude;
   uint16_t phase;
@@ -27,6 +27,10 @@ void deactivateCalibrateOnBoot();
 void activateDemoMode();
 void deactivateDemoMode();
 boolean demoMode();
+boolean envelopeDetectorForSwr();
+boolean differentialForSwr();
+void activateAd8302ForSwr();
+void activeEnvelopeDetectorForSwr();
 
 etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPowerPointsDummy();
 void setCalibrationPowerPointsDummy(etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> newCalibrationPowerPointsDummy);

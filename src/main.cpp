@@ -9,6 +9,7 @@
 #include "swr_status_led.h"
 #include "swr_commandline.h"
 #include "swr_eeprom.h"
+#include "swr_Sensors.h"
 
 enum TopScreen {
   TOP_POWER,
@@ -30,10 +31,7 @@ boolean calibratingDummy = true;
 TopScreen currentTopScreen = TOP_POWER;
 BottomScreen currentBottomScreen = BOTTOM_POWER;
 
-float magnitudeDb = 0.0;
-float phase = 0.0;
-float power_fwd = 0.0;
-float power_rvr = 0.0;
+SensorData sensorData;
 
 float calibratingPowerPoint = -1.0;
 
@@ -97,21 +95,20 @@ void loop() {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
 
     if(demoMode()) {
-      updateComplexDemo(&magnitudeDb, &phase);
-      updatePowerDemo(&power_fwd, &power_rvr);
+      updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
+      updatePowerDemo(&(sensorData.fwdVoltage), &(sensorData.reflVoltage));
     }
     else {
-      updateReflection(&magnitudeDb, &phase);
-      updatePower(&power_fwd, &power_rvr);
+      sensorData = readSensors();
     }
 
     float swr;
-    if( currentTopScreen == TOP_POWER )
-      swr = powerToSwr(power_fwd, power_rvr);
-    else if( currentTopScreen == TOP_REFLECTION )
-      swr = dbToSwr(magnitudeDb);
+    if( envelopeDetectorForSwr() )
+      swr = powerToSwr(sensorData.fwdVoltage, sensorData.reflVoltage);
+    else if( differentialForSwr() )
+      swr = dbToSwr(sensorData.differentialMagnitudeDb);
 
-    if( power_fwd >= 0.1 ) {
+    if( sensorData.fwdVoltage >= 0.1 ) {
       if( swr < 1.5 )
         setLedStatus(SLOW);
       else if( swr >= 1.5 && swr < 2.0 )
@@ -128,21 +125,21 @@ void loop() {
     renderSwr(swr);
     switch( currentTopScreen ) {
     case TOP_POWER:
-      renderPowerBars(power_fwd, power_rvr);
+      renderPowerBars(sensorData.fwdVoltage, sensorData.reflVoltage);
       break;
     case TOP_REFLECTION:
-      renderReflectionBars(magnitudeDb, phase);
+      renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
       break;
     }
     switch( currentBottomScreen ) {
     case BOTTOM_POWER:
-      renderPowerText(power_fwd, power_rvr);
+      renderPowerText(sensorData.fwdVoltage, sensorData.reflVoltage);
       break;
     case BOTTOM_REFLECTION:
-      renderReflectionText(magnitudeDb, phase);
+      renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
       break;
     case BOTTOM_LOAD:
-      renderLoadZText(magnitudeDb, phase);
+      renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
       break;
     }
     finishRender();
@@ -175,7 +172,7 @@ void loop() {
         CalibrationAverages result = getCalibration();
         CalibrationData currentCalibration = calibrationData(calibratingPowerPoint, calibratingDummy);
         currentCalibration.fwd = result.adcFwd;
-        currentCalibration.rvr = result.adcRvr;
+        currentCalibration.refl = result.adcRvr;
         currentCalibration.vref = result.adcVref;
         currentCalibration.phase = result.adcPhase;
         currentCalibration.magnitude = result.adcMagnitude;

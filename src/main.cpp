@@ -111,7 +111,7 @@ void loop() {
         swr = dbToSwr(sensorData.differentialMagnitudeDb);
     }
     else {
-      swr = 0.0;
+      swr = 1.0;
     }
 
     if( forwardPower >= TRANSMIT_THREASHOLD_POWER ) {

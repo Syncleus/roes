@@ -21,8 +21,8 @@ static const PROGMEM char FWD_LABEL_STRING[] = "Fwd";
 #define RVR_LABEL 4
 static const PROGMEM char RVR_LABEL_STRING[] = "Rvr";
 
-#define MAG_LABEL 5
-static const PROGMEM char MAG_LABEL_STRING[] = "Mag";
+#define RL_LABEL 5
+static const PROGMEM char RL_LABEL_STRING[] = "RL";
 
 #define PHS_LABEL 6
 static const PROGMEM char PHS_LABEL_STRING[] = "Phs";
@@ -220,7 +220,7 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   SWR_LABEL_STRING, //2
   FWD_LABEL_STRING, //3
   RVR_LABEL_STRING, //4
-  MAG_LABEL_STRING, //5
+  RL_LABEL_STRING, //5
   PHS_LABEL_STRING,  //6
   WATTS_UNIT_LABEL_STRING, //7
   DECIBEL_UNIT_LABEL_STRING, //8

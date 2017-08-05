@@ -99,9 +99,14 @@ String makeValueLabel(float value, const char* units) {
 }
 
 uint8_t renderCompleteBar(int8_t y_offset, const char *label, float value, const char *units, float value_min, float value_mid, float scale) {
+  return renderCompleteBar(y_offset, label, value, units, value_min, value_mid, scale, false);
+}
+
+uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale, boolean inverse) {
   display.setCursor(0, y_offset + 4);
   display.println(label);
-  float barPercent = scaleToPercent(value, value_min, value_mid, scale);
+  float barValue = (inverse ? -1.0 * value : value);
+  float barPercent = scaleToPercent(barValue, value_min, value_mid, scale);
   uint8_t barEnd = percentBar(y_offset, barPercent);
   String valueLabel = makeValueLabel(value, units);
   uint8_t valueLabelWidth = valueLabel.length() * CHARACTER_WIDTH + 4;
@@ -141,7 +146,7 @@ void renderPowerBars(float power_fwd, float power_rvr) {
 
 void renderReflectionBars(float magnitudeDb, float phase) {
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_2_Y, strings(MAG_LABEL), magnitudeDb, strings(DECIBEL_UNIT_LABEL), -30.0, -15.0, 1.5);
+  renderCompleteBar(SCREEN_ROW_2_Y, strings(RL_LABEL), -1.0 * magnitudeDb, strings(DECIBEL_UNIT_LABEL), -30.0, -15.0, 1.5, true);
   int8_t drawDegreeX = renderCompleteBar(SCREEN_ROW_3_Y, strings(PHS_LABEL), phase, NULL, 0.0, 90.0, 2.0);
   display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
 }

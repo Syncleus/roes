@@ -146,13 +146,12 @@ float highestPowerPoint(boolean dummy) {
 }
 
 float dbToSwr(float magnitudeDb) {
-  float linearFactor = pow(10.0, magnitudeDb / 20.0);
+  float linearFactor = pow(10.0, -1.0 * magnitudeDb / 20.0);
 
   if ( linearFactor <= 0 )
     return 1.0;
 
-  float pwrs = sqrt(pow(linearFactor, 2.0));
-  return (1.0 + pwrs) / (1.0 - pwrs);
+  return (linearFactor + 1.0) / (linearFactor - 1.0);
 }
 
 Complex polarToComplex(float magnitude, float phase) {

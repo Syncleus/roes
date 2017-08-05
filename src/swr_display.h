@@ -10,6 +10,7 @@ uint8_t percentBar(uint8_t y_offset, float percent);
 String makeValueLabel(float value);
 String makeValueLabel(float value, const char* units);
 uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale);
+uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale, boolean inverse);
 void updatePowerDemo(float *power_fwd, float *power_rvr);
 void updateComplexDemo(float *magnitudeDb, float *phase);
 void renderError(String message1, String message2, String message3, String message4);

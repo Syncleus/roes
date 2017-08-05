@@ -103,12 +103,18 @@ void loop() {
     }
 
     float swr;
-    if( envelopeDetectorForSwr() )
-      swr = powerToSwr(sensorData.fwdVoltage, sensorData.reflVoltage);
-    else if( differentialForSwr() )
-      swr = dbToSwr(sensorData.differentialMagnitudeDb);
+    float forwardPower = voltageToPower(sensorData.fwdVoltage);
+    if( forwardPower >= TRANSMIT_THREASHOLD_POWER ) {
+      if( envelopeDetectorForSwr() )
+        swr = powerToSwr(sensorData.fwdVoltage, sensorData.reflVoltage);
+      else if( differentialForSwr() )
+        swr = dbToSwr(sensorData.differentialMagnitudeDb);
+    }
+    else {
+      swr = 0.0;
+    }
 
-    if( sensorData.fwdVoltage >= 0.1 ) {
+    if( forwardPower >= TRANSMIT_THREASHOLD_POWER ) {
       if( swr < 1.5 )
         setLedStatus(SLOW);
       else if( swr >= 1.5 && swr < 2.0 )

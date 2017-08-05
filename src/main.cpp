@@ -99,7 +99,7 @@ void loop() {
       updatePowerDemo(&(sensorData.fwdVoltage), &(sensorData.reflVoltage));
     }
     else {
-      sensorData = readSensors();
+      sensorData = readSensors(sensorData);
     }
 
     float swr;

@@ -23,7 +23,7 @@ struct RawSensorData {
   uint16_t differentialPhaseShifted;
 };
 
-SensorData readSensors();
+SensorData readSensors(SensorData lastData);
 RawSensorData readSensorsRaw();
 
 #endif /* _SWR_SENSORS_H_ */

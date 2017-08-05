@@ -13,16 +13,16 @@ SensorData readSensors() {
   float voltageRvr = adcToVoltage(rawData.reflVoltage, false);
   data.reflVoltage = voltageToPower(voltageRvr);
 
-  float magnitudeNormalized = (rawData.differentialMagnitude / rawData.differentialVref) * 2.0 - 1.0;
+  float magnitudeNormalized = (((float)rawData.differentialMagnitude) / ((float)rawData.differentialVref)) * 2.0 - 1.0;
   data.differentialMagnitudeDb = magnitudeNormalized * 30.0;
 
-  float phaseNormalized = 1.0 - (rawData.differentialPhase / rawData.differentialVref);
+  float phaseNormalized = 1.0 - (((float)rawData.differentialPhase) / ((float)rawData.differentialVref));
   data.differentialPhaseDeg = phaseNormalized * 180.0;
 
-  float magnitudeNormalizedShifted = (rawData.differentialMagnitudeShifted / rawData.differentialVrefShifted) * 2.0 - 1.0;
+  float magnitudeNormalizedShifted = (((float)rawData.differentialMagnitudeShifted) / ((float)rawData.differentialVrefShifted)) * 2.0 - 1.0;
   data.differentialMagnitudeDbShifted = magnitudeNormalizedShifted * 30.0;
 
-  float phaseNormalizedShifted = 1.0 - (rawData.differentialPhaseShifted / rawData.differentialVrefShifted);
+  float phaseNormalizedShifted = 1.0 - (((float)rawData.differentialPhaseShifted) / ((float)rawData.differentialVrefShifted));
   data.differentialPhaseDegShifted = phaseNormalizedShifted * 180.0;
 
   return data;

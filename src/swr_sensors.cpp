@@ -15,6 +15,9 @@ SensorData readSensors(SensorData lastData) {
   data.reflPower = voltageToPower(voltageRvr);
   data.reflPower = data.reflPower * SENSOR_AVERAGING_ALPHA + lastData.reflPower * (1.0 - SENSOR_AVERAGING_ALPHA);
 
+  if( data.reflPower > data.fwdPower )
+    data.reflPower = data.fwdPower;
+
   float magnitudeNormalized = (((float)rawData.differentialMagnitude) / ((float)rawData.differentialVref)) * 2.0 - 1.0;
   data.differentialMagnitudeDb = magnitudeNormalized * 30.0;
   data.differentialMagnitudeDb = data.differentialMagnitudeDb * SENSOR_AVERAGING_ALPHA + lastData.differentialMagnitudeDb * (1.0 - SENSOR_AVERAGING_ALPHA);

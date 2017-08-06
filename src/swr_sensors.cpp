@@ -3,14 +3,16 @@
 #include "swr_power.h"
 #include "swr_eeprom.h"
 
+#define MIN_MAGNITUDE_ROLLING (-30.0 * SENSOR_AVERAGING_ALPHA)
+
 SensorData readSensors(SensorData lastData) {
   RawSensorData rawData = readSensorsRaw();
 
   SensorData data;
 
   float voltageFwd = adcToVoltage(rawData.fwdVoltage, true);
-  data.fwdPower = voltageToPower(voltageFwd);
-  data.fwdPower = data.fwdPower * SENSOR_AVERAGING_ALPHA + lastData.fwdPower * (1.0 - SENSOR_AVERAGING_ALPHA);
+  float instFwdPower = voltageToPower(voltageFwd);
+  data.fwdPower = instFwdPower * SENSOR_AVERAGING_ALPHA + lastData.fwdPower * (1.0 - SENSOR_AVERAGING_ALPHA);
 
   float voltageRvr = adcToVoltage(rawData.reflVoltage, false);
   data.reflPower = voltageToPower(voltageRvr);
@@ -19,22 +21,25 @@ SensorData readSensors(SensorData lastData) {
   if( data.reflPower > data.fwdPower )
     data.reflPower = data.fwdPower;
 
+  if( instFwdPower < TRANSMIT_THREASHOLD_POWER ) {
+    data.swr = 1.0;
+    data.differentialMagnitudeDb = MIN_MAGNITUDE_ROLLING + lastData.differentialMagnitudeDb * (1.0 - SENSOR_AVERAGING_ALPHA);
+    data.differentialPhaseDeg = lastData.differentialPhaseDeg * (1.0 - SENSOR_AVERAGING_ALPHA);
+    data.differentialMagnitudeDbShifted = MIN_MAGNITUDE_ROLLING + lastData.differentialMagnitudeDbShifted * (1.0 - SENSOR_AVERAGING_ALPHA);
+    data.differentialPhaseDegShifted = lastData.differentialPhaseDegShifted * (1.0 - SENSOR_AVERAGING_ALPHA);
+    data.active = false;
+    return data;
+  }
+  data.active = true;
+
   if( data.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
     if( envelopeDetectorForSwr() )
       data.swr = powerToSwr(data.fwdPower, data.reflPower);
     else if( differentialForSwr() )
       data.swr = dbToSwr(data.differentialMagnitudeDb);
-    data.active = true;
   }
-  else {
+  else
     data.swr = 1.0;
-    data.differentialMagnitudeDb = 0.0;
-    data.differentialPhaseDeg = 0.0;
-    data.differentialMagnitudeDbShifted = 0.0;
-    data.differentialPhaseDegShifted = 0.0;
-    data.active = false;
-    return data;
-  }
 
   float magnitudeNormalized = (((float)rawData.differentialMagnitude) / ((float)rawData.differentialVref)) * 2.0 - 1.0;
   data.differentialMagnitudeDb = magnitudeNormalized * 30.0;

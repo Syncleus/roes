@@ -102,23 +102,12 @@ void loop() {
       sensorData = readSensors(sensorData);
     }
 
-    float swr;
     if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
-      if( envelopeDetectorForSwr() )
-        swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
-      else if( differentialForSwr() )
-        swr = dbToSwr(sensorData.differentialMagnitudeDb);
-    }
-    else {
-      swr = 1.0;
-    }
-
-    if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
-      if( swr < 1.5 )
+      if( sensorData.swr < 1.5 )
         setLedStatus(SLOW);
-      else if( swr >= 1.5 && swr < 2.0 )
+      else if( sensorData.swr >= 1.5 && sensorData.swr < 2.0 )
         setLedStatus(FAST);
-      else if( swr >= 2.0 && swr < 3.0 )
+      else if( sensorData.swr >= 2.0 && sensorData.swr < 3.0 )
         setLedStatus(VERY_FAST);
       else
         setLedStatus(ON);
@@ -127,7 +116,7 @@ void loop() {
       setLedStatus(OFF);
 
     prepareRender();
-    renderSwr(swr);
+    renderSwr(sensorData.swr);
     switch( currentTopScreen ) {
     case TOP_POWER:
       renderPowerBars(sensorData.fwdPower, sensorData.reflPower);

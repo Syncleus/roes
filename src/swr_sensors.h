@@ -4,12 +4,14 @@
 #include <Arduino.h>
 
 struct SensorData {
+  float swr;
   float fwdPower;
   float reflPower;
   float differentialMagnitudeDb;
   float differentialPhaseDeg;
   float differentialMagnitudeDbShifted;
   float differentialPhaseDegShifted;
+  boolean active;
 };
 
 struct RawSensorData {

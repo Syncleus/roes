@@ -8,12 +8,12 @@ SensorData readSensors(SensorData lastData) {
   SensorData data;
 
   float voltageFwd = adcToVoltage(rawData.fwdVoltage, true);
-  data.fwdVoltage = voltageToPower(voltageFwd);
-  data.fwdVoltage = data.fwdVoltage * SENSOR_AVERAGING_ALPHA + lastData.fwdVoltage * (1.0 - SENSOR_AVERAGING_ALPHA);
+  data.fwdPower = voltageToPower(voltageFwd);
+  data.fwdPower = data.fwdPower * SENSOR_AVERAGING_ALPHA + lastData.fwdPower * (1.0 - SENSOR_AVERAGING_ALPHA);
 
   float voltageRvr = adcToVoltage(rawData.reflVoltage, false);
-  data.reflVoltage = voltageToPower(voltageRvr);
-  data.reflVoltage = data.reflVoltage * SENSOR_AVERAGING_ALPHA + lastData.reflVoltage * (1.0 - SENSOR_AVERAGING_ALPHA);
+  data.reflPower = voltageToPower(voltageRvr);
+  data.reflPower = data.reflPower * SENSOR_AVERAGING_ALPHA + lastData.reflPower * (1.0 - SENSOR_AVERAGING_ALPHA);
 
   float magnitudeNormalized = (((float)rawData.differentialMagnitude) / ((float)rawData.differentialVref)) * 2.0 - 1.0;
   data.differentialMagnitudeDb = magnitudeNormalized * 30.0;

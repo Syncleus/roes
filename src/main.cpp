@@ -96,17 +96,16 @@ void loop() {
 
     if(demoMode()) {
       updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
-      updatePowerDemo(&(sensorData.fwdVoltage), &(sensorData.reflVoltage));
+      updatePowerDemo(&(sensorData.fwdPower), &(sensorData.reflPower));
     }
     else {
       sensorData = readSensors(sensorData);
     }
 
     float swr;
-    float forwardPower = voltageToPower(sensorData.fwdVoltage);
-    if( forwardPower >= TRANSMIT_THREASHOLD_POWER ) {
+    if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
       if( envelopeDetectorForSwr() )
-        swr = powerToSwr(sensorData.fwdVoltage, sensorData.reflVoltage);
+        swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
       else if( differentialForSwr() )
         swr = dbToSwr(sensorData.differentialMagnitudeDb);
     }
@@ -114,7 +113,7 @@ void loop() {
       swr = 1.0;
     }
 
-    if( forwardPower >= TRANSMIT_THREASHOLD_POWER ) {
+    if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
       if( swr < 1.5 )
         setLedStatus(SLOW);
       else if( swr >= 1.5 && swr < 2.0 )
@@ -131,7 +130,7 @@ void loop() {
     renderSwr(swr);
     switch( currentTopScreen ) {
     case TOP_POWER:
-      renderPowerBars(sensorData.fwdVoltage, sensorData.reflVoltage);
+      renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
       break;
     case TOP_REFLECTION:
       renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
@@ -139,7 +138,7 @@ void loop() {
     }
     switch( currentBottomScreen ) {
     case BOTTOM_POWER:
-      renderPowerText(sensorData.fwdVoltage, sensorData.reflVoltage);
+      renderPowerText(sensorData.fwdPower, sensorData.reflPower);
       break;
     case BOTTOM_REFLECTION:
       renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);

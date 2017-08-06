@@ -4,8 +4,8 @@
 #include <Arduino.h>
 
 struct SensorData {
-  float fwdVoltage;
-  float reflVoltage;
+  float fwdPower;
+  float reflPower;
   float differentialMagnitudeDb;
   float differentialPhaseDeg;
   float differentialMagnitudeDbShifted;

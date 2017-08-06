@@ -118,6 +118,7 @@ void handleHelp(char* tokens) {
   Serial.println(strings(HELP_COMMANDS_6));
   Serial.println(strings(HELP_COMMANDS_7));
   Serial.println(strings(HELP_COMMANDS_8));
+  Serial.println(strings(HELP_COMMANDS_9));
 }
 
 void handleClearEeprom(char* tokens) {

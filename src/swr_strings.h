@@ -214,6 +214,9 @@ static const PROGMEM char SWR_SOURCE_ENVELOPE_SET_STRING[] = "SWR source is now 
 #define SWR_SOURCE_INVALID 67
 static const PROGMEM char SWR_SOURCE_INVALID_STRING[] = "Invalid arguments, accepts either 'differential' or 'envelope' as arguments.";
 
+#define HELP_COMMANDS_9 68
+static const PROGMEM char HELP_COMMANDS_9_STRING[] = "  swrsource";
+
 static const PROGMEM char* const string_table[] PROGMEM = {
   CORRUPT_EEPROM_STRING, //0
   CRC_CHECK_FAILED_STRING, //1
@@ -282,7 +285,8 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   SWR_SOURCE_ENVELOPE_STRING, //64
   SWR_SOURCE_DIFFERENTIAL_SET_STRING, //65
   SWR_SOURCE_ENVELOPE_SET_STRING, //66
-  SWR_SOURCE_INVALID_STRING //67
+  SWR_SOURCE_INVALID_STRING, //67
+  HELP_COMMANDS_9_STRING //68
 };
 
 const char* strings(uint16_t id);

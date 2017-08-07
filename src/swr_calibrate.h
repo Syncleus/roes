@@ -9,6 +9,8 @@ struct CalibrationAverages {
   uint16_t adcVref;
   uint16_t adcMagnitude;
   uint16_t adcPhase;
+  uint16_t adcPhaseShifted;
+  uint16_t adcVrefShifted;
 };
 
 boolean runCalibration();

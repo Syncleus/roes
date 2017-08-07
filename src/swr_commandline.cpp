@@ -149,6 +149,10 @@ void handleCalibrationData(char* tokens) {
     Serial.println(String(currentCalibrationData.phase));
     Serial.print(strings(CALIBRATIONDATA_VREF));
     Serial.println(String(currentCalibrationData.vref));
+    Serial.print(strings(CALIBRATIONDATA_VREF_SHIFTED));
+    Serial.println(String(currentCalibrationData.vrefShifted));
+    Serial.print(strings(CALIBRATIONDATA_PHASE_SHIFTED));
+    Serial.println(String(currentCalibrationData.phaseShifted));
   }
 
   //open load next
@@ -173,6 +177,10 @@ void handleCalibrationData(char* tokens) {
     Serial.println(String(currentCalibrationData.phase));
     Serial.print(strings(CALIBRATIONDATA_VREF));
     Serial.println(String(currentCalibrationData.vref));
+    Serial.print(strings(CALIBRATIONDATA_VREF_SHIFTED));
+    Serial.println(String(currentCalibrationData.vrefShifted));
+    Serial.print(strings(CALIBRATIONDATA_PHASE_SHIFTED));
+    Serial.println(String(currentCalibrationData.phaseShifted));
   }
 
 }

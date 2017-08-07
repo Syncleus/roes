@@ -61,6 +61,15 @@ SensorData readSensors(SensorData lastData) {
   if( lastData.active )
     data.differentialPhaseDegShifted = data.differentialPhaseDegShifted * SENSOR_AVERAGING_ALPHA + lastData.differentialPhaseDegShifted * (1.0 - SENSOR_AVERAGING_ALPHA);
 
+  float phaseDegCalibrated = calibratedPhase(data.differentialPhaseDeg, instFwdPower);
+  float phaseDegShiftedCalibrated = calibratedPhase(data.differentialPhaseDegShifted, instFwdPower);
+  float expectedShift = expectedPhaseShift(instFwdPower);
+  float positivePhase = phaseDegCalibrated + expectedShift;
+  float negativePhase = -1.0 * phaseDegCalibrated + expectedShift;
+  if( abs(phaseDegShiftedCalibrated - negativePhase) < abs(phaseDegShiftedCalibrated - positivePhase) )
+    phaseDegCalibrated = -1.0 * phaseDegCalibrated;
+  data.calculatedPhaseDeg = phaseDegCalibrated;
+
   return data;
 }
 

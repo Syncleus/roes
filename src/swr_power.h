@@ -25,5 +25,7 @@ float dbToSwr(float magnitudeDb);
 Complex polarToComplex(float magnitude, float phase);
 float powerToDbm(float power);
 Complex complexLoadFromReflection(float magnitude, float phase);
+float calibratedPhase(float phase, float power);
+float expectedPhaseShift(float power);
 
 #endif /* _SWR_POWER_H_ */

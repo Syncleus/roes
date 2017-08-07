@@ -12,6 +12,8 @@ struct CalibrationData {
   uint16_t vref;
   uint16_t magnitude;
   uint16_t phase;
+  uint16_t phaseShifted;
+  uint16_t vrefShifted;
 };
 
 void eepromSetup();

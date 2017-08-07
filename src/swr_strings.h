@@ -217,6 +217,12 @@ static const PROGMEM char SWR_SOURCE_INVALID_STRING[] = "Invalid arguments, acce
 #define HELP_COMMANDS_9 68
 static const PROGMEM char HELP_COMMANDS_9_STRING[] = "  swrsource";
 
+#define CALIBRATIONDATA_PHASE_SHIFTED 69
+static const PROGMEM char CALIBRATIONDATA_PHASE_SHIFTED_STRING[] = "      phase shifted: ";
+
+#define CALIBRATIONDATA_VREF_SHIFTED 70
+static const PROGMEM char CALIBRATIONDATA_VREF_SHIFTED_STRING[] = "       vref shifted: ";
+
 static const PROGMEM char* const string_table[] PROGMEM = {
   CORRUPT_EEPROM_STRING, //0
   CRC_CHECK_FAILED_STRING, //1
@@ -286,7 +292,9 @@ static const PROGMEM char* const string_table[] PROGMEM = {
   SWR_SOURCE_DIFFERENTIAL_SET_STRING, //65
   SWR_SOURCE_ENVELOPE_SET_STRING, //66
   SWR_SOURCE_INVALID_STRING, //67
-  HELP_COMMANDS_9_STRING //68
+  HELP_COMMANDS_9_STRING, //68
+  CALIBRATIONDATA_PHASE_SHIFTED_STRING, //69
+  CALIBRATIONDATA_VREF_SHIFTED_STRING //70
 };
 
 const char* strings(uint16_t id);

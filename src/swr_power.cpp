@@ -178,6 +178,56 @@ float powerToDbm(float power) {
 Complex complexLoadFromReflection(float magnitude, float phase) {
   Complex refl = polarToComplex(magnitude, phase);
   Complex characteristicZ(CHARACTERISTIC_IMPEDANCE, 0.0);
-  Complex loadZ = (characteristicZ * (refl + one)) / (refl - one);
+  Complex loadZ = (characteristicZ * (one + refl)) / (one - refl);
   return loadZ;
+}
+
+float calibratedPhase(float phase, float power) {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> powerPointsOpen = calibrationPowerPointsOpen();
+
+  etl::iset<float, std::less<float>>::const_iterator itr = powerPointsOpen.begin();
+  etl::iset<float, std::less<float>>::const_iterator itrEnd = powerPointsOpen.end();
+
+  float closestPowerPoint = -1.0;
+  while (itr != itrEnd)
+  {
+    float currentPowerPoint = *itr++;
+    if( closestPowerPoint < 0.0 )
+      closestPowerPoint = currentPowerPoint;
+    else {
+      if( abs(power - currentPowerPoint) < abs(power - closestPowerPoint) )
+        closestPowerPoint = currentPowerPoint;
+    }
+  }
+
+  CalibrationData calData = calibrationData(closestPowerPoint, false);
+
+  float calPhase = (1.0 - (((float)calData.phase) / ((float)calData.vref))) * 180.0;
+
+  return phase - calPhase;
+}
+
+float expectedPhaseShift(float power) {
+  etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> powerPointsOpen = calibrationPowerPointsOpen();
+
+  etl::iset<float, std::less<float>>::const_iterator itr = powerPointsOpen.begin();
+  etl::iset<float, std::less<float>>::const_iterator itrEnd = powerPointsOpen.end();
+
+  float closestPowerPoint = -1.0;
+  while (itr != itrEnd)
+  {
+    float currentPowerPoint = *itr++;
+    if( closestPowerPoint < 0.0 )
+      closestPowerPoint = currentPowerPoint;
+    else {
+      if( abs(power - currentPowerPoint) < abs(power - closestPowerPoint) )
+        closestPowerPoint = currentPowerPoint;
+    }
+  }
+
+  CalibrationData calData = calibrationData(closestPowerPoint, false);
+  float calPhase = (1.0 - (((float)calData.phase) / ((float)calData.vref))) * 180.0;
+  float calPhaseShifted = (1.0 - (((float)calData.phaseShifted) / ((float)calData.vrefShifted))) * 180.0;
+
+  return calPhaseShifted - calPhase;
 }

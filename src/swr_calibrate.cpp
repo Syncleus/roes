@@ -13,6 +13,8 @@ uint32_t adcRvrTotal = 0;
 uint32_t adcVrefTotal = 0;
 uint32_t adcMagnitudeTotal = 0;
 uint32_t adcPhaseTotal = 0;
+uint32_t adcPhaseShiftedTotal = 0;
+uint32_t adcVrefShiftedTotal = 0;
 uint32_t samples = 0;
 
 void calibrate() {
@@ -22,6 +24,8 @@ void calibrate() {
   uint16_t adcVrefValue = analogRead(DIFFERENTIAL_VREF_PIN);
   uint16_t adcMagnitudeValue = analogRead(DIFFERENTIAL_MAGNITUDE_PIN);
   uint16_t adcPhaseValue = analogRead(DIFFERENTIAL_PHASE_PIN);
+  uint16_t adcPhaseShiftedValue = analogRead(SHIFTED_DIFFERENTIAL_PHASE_PIN);
+  uint16_t adcVrefShiftedValue = analogRead(SHIFTED_DIFFERENTIAL_VREF_PIN);
   if( (adcFwdValue < CALIBRATION_THRESHOLD) && ( adcRvrValue < CALIBRATION_THRESHOLD ) )
     return;
 
@@ -30,6 +34,9 @@ void calibrate() {
   adcVrefTotal += adcVrefValue;
   adcPhaseTotal += adcPhaseValue;
   adcMagnitudeTotal += adcMagnitudeValue;
+  adcPhaseShiftedTotal += adcPhaseShiftedValue;
+  adcVrefShiftedTotal += adcVrefShiftedValue;
+
   samples++;
 
   if(samples >= CALIBRATION_SAMPLES) {
@@ -38,11 +45,15 @@ void calibrate() {
     averages.adcVref = adcVrefTotal / samples;
     averages.adcMagnitude = adcMagnitudeTotal / samples;
     averages.adcPhase = adcPhaseTotal / samples;
+    averages.adcPhaseShifted = adcPhaseShiftedTotal / samples;
+    averages.adcVrefShifted = adcVrefShiftedTotal / samples;
     adcFwdTotal = 0;
     adcRvrTotal = 0;
     adcVrefTotal = 0;
     adcMagnitudeTotal = 0;
     adcPhaseTotal = 0;
+    adcPhaseShiftedTotal = 0;
+    adcVrefShiftedTotal = 0;
     samples = 0;
     calibrationComplete = true;
   }

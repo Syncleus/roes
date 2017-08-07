@@ -11,6 +11,7 @@ struct SensorData {
   float differentialPhaseDeg;
   float differentialMagnitudeDbShifted;
   float differentialPhaseDegShifted;
+  float calculatedPhaseDeg;
   boolean active;
 };
 

@@ -122,7 +122,7 @@ void loop() {
       renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
       break;
     case TOP_REFLECTION:
-      renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
+      renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
       break;
     }
     switch( currentBottomScreen ) {
@@ -130,10 +130,10 @@ void loop() {
       renderPowerText(sensorData.fwdPower, sensorData.reflPower);
       break;
     case BOTTOM_REFLECTION:
-      renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
+      renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
       break;
     case BOTTOM_LOAD:
-      renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.differentialPhaseDeg);
+      renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
       break;
     }
     finishRender();
@@ -170,6 +170,8 @@ void loop() {
         currentCalibration.vref = result.adcVref;
         currentCalibration.phase = result.adcPhase;
         currentCalibration.magnitude = result.adcMagnitude;
+        currentCalibration.phaseShifted = result.adcPhaseShifted;
+        currentCalibration.vrefShifted = result.adcVrefShifted;
         setCalibrationData(calibratingPowerPoint, calibratingDummy, currentCalibration);
         prepareRender();
         renderStopTransmitting();

@@ -155,8 +155,8 @@ float dbToSwr(float magnitudeDb) {
 }
 
 Complex polarToComplex(float magnitude, float phase) {
-  double real = magnitude * cos(phase);
-  double imaginary = magnitude * sin(phase);
+  double real = magnitude * cos(phase * PI / 180.0);
+  double imaginary = magnitude * sin(phase * PI / 180.0);
   return Complex(real, imaginary);
 }
 

@@ -6,7 +6,7 @@
 
 ### PROJECT_DIR
 ### This is the path to where you have created/cloned your project
-PROJECT_DIR       = ..
+PROJECT_DIR       = /home/freemo/source/roes
 
 ### ARDMK_DIR
 ### Path to the Arduino-Makefile directory.
@@ -15,9 +15,9 @@ ARDMK_DIR         = $(PROJECT_DIR)/lib/Arduino-Makefile
 ### ARDUINO_DIR
 ### Path to the Arduino application and resources directory.
 ### On OS X:
-ARDUINO_DIR       = /Applications/Arduino.app/Contents/Java
+#ARDUINO_DIR       = /Applications/Arduino.app/Contents/Java
 ### or on Linux: (remove the one you don't want)
-#ARDUINO_DIR       = /usr/share/arduino
+ARDUINO_DIR       = /usr/share/arduino
 
 ### USER_LIB_PATH
 ### Path to where the your project's libraries are stored.
@@ -34,16 +34,16 @@ MONITOR_BAUDRATE  = 9600
 ### AVR_TOOLS_DIR
 ### Path to the AVR tools directory such as avr-gcc, avr-g++, etc.
 ### On OS X with `homebrew`:
-AVR_TOOLS_DIR     = /usr/local
+#AVR_TOOLS_DIR     = /usr/local
 ### or on Linux: (remove the one you don't want)
-#AVR_TOOLS_DIR     = /usr
+AVR_TOOLS_DIR     = /usr
 
 ### AVRDUDE
 ### Path to avrdude directory.
 ### On OS X with `homebrew`:
-AVRDUDE          = /usr/local/bin/avrdude
+#AVRDUDE          = /usr/local/bin/avrdude
 ### or on Linux: (remove the one you don't want)
-#AVRDUDE          = /usr/bin/avrdude
+AVRDUDE          = /usr/bin/avrdude
 
 ### CFLAGS_STD
 ### Set the C standard to be used during compilation. Documentation (https://github.com/WeAreLeka/Arduino-Makefile/blob/std-flags/arduino-mk-vars.md#cflags_std)
@@ -63,7 +63,7 @@ MONITOR_PORT      = /dev/tty.usbmodem*
 
 ### CURRENT_DIR
 ### Do not touch - used for binaries path
-CURRENT_DIR       = $(shell basename $(CURDIR))
+#CURRENT_DIR       = $(shell basename $(CURDIR))
 
 ### OBJDIR
 ### This is where you put the binaries you just compile using 'make'
@@ -71,8 +71,9 @@ OBJDIR            = $(PROJECT_DIR)/bin/$(BOARD_TAG)/$(CURRENT_DIR)
 
 MCU = atmega2560
 F_CPU = 20000000L
-ARDUINO_VAR_PATH  = /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/mega/
-ARDUINO_LIBS =  Adafruit_SSD1306 ArduinoSTL EEPROM Arduino-CommandLine Embedded_Template_Library Adafruit_GFX_Library SPI Wire
+ARDUINO_VAR_PATH = /usr/share/arduino/hardware/arduino/avr/variants/mega/
+#ARDUINO_VAR_PATH  = /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/mega/
+ARDUINO_LIBS =  Adafruit_SSD1306 ArduinoSTL EEPROM Arduino-CommandLine Embedded_Template_Library Adafruit_GFX_Library SPI Wire Complex
 
 ### Do not touch - the path to Arduino.mk, inside the ARDMK_DIR
 include $(ARDMK_DIR)/Arduino.mk

@@ -9,7 +9,7 @@
 #include "swr_status_led.h"
 #include "swr_commandline.h"
 #include "swr_eeprom.h"
-#include "swr_Sensors.h"
+#include "swr_sensors.h"
 
 enum TopScreen {
   TOP_POWER,

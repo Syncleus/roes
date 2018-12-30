@@ -208,7 +208,7 @@ void renderPowerText(float power_fwd, float power_rvr) {
   String forwardText = String(strings(SINGLE_SPACE)) + makeValueLabel(power_fwd, strings(WATTS_UNIT_LABEL)) + String(strings(SINGLE_SPACE)) + makeValueLabel(powerToDbm(power_fwd), strings(DBM_UNIT_LABEL)) + blank;
   display.println(forwardText.c_str());
 
-  display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y);
+  display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4H_Y);
   String reverseTitle = strings(POWER_RVR_LABEL);
   display.print(reverseTitle);
   String reverseText = String(strings(SINGLE_SPACE)) + makeValueLabel(power_rvr, strings(WATTS_UNIT_LABEL)) + String(strings(SINGLE_SPACE)) + makeValueLabel(powerToDbm(power_rvr), strings(DBM_UNIT_LABEL)) + blank;
@@ -216,30 +216,30 @@ void renderPowerText(float power_fwd, float power_rvr) {
 }
 
 void renderReflectionText(float magnitudeDb, float phase) {
-  display.drawBitmap(0, SCREEN_ROW_6_Y, gamma16_glcd_bmp, 16, 16, WHITE);
+  display.drawBitmap(0, SCREEN_ROW_5_Y, gamma16_glcd_bmp, 16, 16, WHITE);
 
   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
   String cartesianText = String("   ") + makeValueLabel(magnitudeLinear) + String("   ") + makeValueLabel(phase) + String("   ");
   uint8_t cartesianTextWidth = cartesianText.length() * CHARACTER_WIDTH;
   uint8_t cartesianLeftMargin = ((SCREEN_WIDTH - cartesianTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
   display.setTextColor(WHITE, BLACK);
-  display.setCursor(cartesianLeftMargin, SCREEN_ROW_6_Y);
+  display.setCursor(cartesianLeftMargin, SCREEN_ROW_5_Y);
   display.println(cartesianText);
-  display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_6_Y, angle8_glcd_bmp, 8, 8, WHITE);
-  display.drawCircle(cartesianTextWidth + cartesianLeftMargin - 17, SCREEN_ROW_6_Y, 1, WHITE);
+  display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y, angle8_glcd_bmp, 8, 8, WHITE);
+  display.drawCircle(cartesianTextWidth + cartesianLeftMargin - 17, SCREEN_ROW_5_Y, 1, WHITE);
 
   Complex reflComplex = polarToComplex(magnitudeLinear, phase);
   String complexText = String("   ") + makeValueLabel(reflComplex.real()) + String(" + ") + makeValueLabel(reflComplex.imag()) + String("i") + String("   ");
   uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
   uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
-  display.setCursor(complexLeftMargin, SCREEN_ROW_7_Y);
+  display.setCursor(complexLeftMargin, SCREEN_ROW_5H_Y);
   display.println(complexText);
 }
 
 void renderLoadZText(float magnitudeDb, float phase) {
   display.setTextColor(WHITE, BLACK);
   display.setTextSize(2);
-  display.setCursor(0, SCREEN_ROW_8_Y);
+  display.setCursor(0, SCREEN_ROW_6_Y);
   display.print("Z");
 
   display.setTextSize(1);
@@ -250,15 +250,15 @@ void renderLoadZText(float magnitudeDb, float phase) {
   uint8_t cartesianTextWidth = cartesianText.length() * CHARACTER_WIDTH;
   uint8_t cartesianLeftMargin = ((SCREEN_WIDTH - cartesianTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
   display.setTextColor(WHITE, BLACK);
-  display.setCursor(cartesianLeftMargin, SCREEN_ROW_8_Y);
+  display.setCursor(cartesianLeftMargin, SCREEN_ROW_6_Y);
   display.println(cartesianText);
-  display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_8_Y, angle8_glcd_bmp, 8, 8, WHITE);
-  display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_8_Y, 1, WHITE);
+  display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_6_Y, angle8_glcd_bmp, 8, 8, WHITE);
+  display.drawCircle(cartesianTextWidth + cartesianLeftMargin + 1, SCREEN_ROW_6_Y, 1, WHITE);
 
   String complexText = makeValueLabel(loadZ.real()) + String(" + ") + makeValueLabel(loadZ.imag()) + String(" i");
   uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
   uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
-  display.setCursor(complexLeftMargin, SCREEN_ROW_9_Y);
+  display.setCursor(complexLeftMargin, SCREEN_ROW_6H_Y);
   display.println(complexText);
 }
 

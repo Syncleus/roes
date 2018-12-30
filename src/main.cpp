@@ -107,7 +107,7 @@ void loop() {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
 
     if(demoMode()) {
-      //updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
+      updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
       updatePowerDemo(&(sensorData.fwdPower), &(sensorData.reflPower));
       sensorData.swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
     }

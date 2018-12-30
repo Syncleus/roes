@@ -40,10 +40,10 @@ void setup()   {
   while (!Serial);     // used for leonardo debugging
 
   Serial.println("Begining system initialization...");
-  heartbeatSetup();
-  Serial.println("  Heartbeat initialized");
-  statusLedSetup();
-  Serial.println("  Status LED initialized");
+  // heartbeatSetup();
+  // Serial.println("  Heartbeat initialized");
+  // statusLedSetup();
+  // Serial.println("  Status LED initialized");
   displaySetup();
   Serial.println("  Display initialized");
   eepromSetup();
@@ -93,15 +93,15 @@ void loop() {
   unsigned long time = millis();
   static unsigned long refreshDisplayTime = 0;
 
-  heartbeatUpdate();
-  statusLedUpdate();
+  // heartbeatUpdate();
+  // statusLedUpdate();
   commandlineUpdate();
 
   if( error )
     return;
 
-  updateDownButton();
-  updateUpButton();
+  //updateDownButton();
+  //updateUpButton();
 
   if( (long)(time - refreshDisplayTime) >= 0 && !calibrating) {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;

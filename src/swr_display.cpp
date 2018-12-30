@@ -112,9 +112,13 @@ float scaleToPercent(float value, float value_min, float value_mid, float scale)
   return scaleToPercent(value - value_min, value_mid - value_min, scale);
 }
 
-uint8_t percentBar(uint8_t y_offset, float percent) {
-  display.fillRect(PERCENT_BAR_TITLE_WIDTH, y_offset, PERCENT_BAR_WIDTH * percent, 15, WHITE);
+uint8_t percentBar(uint8_t y_offset, float percent, uint16_t color) {
+  display.fillRect(PERCENT_BAR_TITLE_WIDTH, y_offset, PERCENT_BAR_WIDTH * percent, 15, color);
   return PERCENT_BAR_TITLE_WIDTH + (PERCENT_BAR_WIDTH * percent);
+}
+
+uint8_t percentBar(uint8_t y_offset, float percent) {
+  return percentBar(y_offset, percent, WHITE);
 }
 
 String makeValueLabel(float value) {
@@ -137,12 +141,8 @@ String makeValueLabel(float value, const char* units) {
   return label;
 }
 
-uint8_t renderCompleteBar(int8_t y_offset, const char *label, float value, const char *units, float value_min, float value_mid, float scale) {
-  return renderCompleteBar(y_offset, label, value, units, value_min, value_mid, scale, false);
-}
-
-uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale, boolean inverse) {
-  display.setTextColor(WHITE, BLACK);
+uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale, boolean inverse, uint16_t fg, uint16_t bg) {
+  display.setTextColor(WHITE, bg);
   display.setCursor(0, y_offset + 4);
   if(isnan(value)) {
     display.print(String(label)+String(" ***"));
@@ -151,22 +151,31 @@ uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const
   display.print(label);
   float barValue = (inverse ? -1.0 * value : value);
   float barPercent = scaleToPercent(barValue, value_min, value_mid, scale);
-  uint8_t barEnd = percentBar(y_offset, barPercent);
-  display.fillRect(barEnd, y_offset, SCREEN_HEIGHT-barEnd, 15, BLACK);
+  uint8_t barEnd = percentBar(y_offset, barPercent, fg);
+  display.fillRect(barEnd, y_offset, SCREEN_HEIGHT-barEnd, 15, bg);
   String valueLabel = makeValueLabel(value, units);
   uint8_t valueLabelWidth = valueLabel.length() * CHARACTER_WIDTH + 4;
   if ( barEnd >= PERCENT_BAR_TITLE_WIDTH + valueLabelWidth + 2) {
-    display.setTextColor(BLACK, WHITE);
+    display.setTextColor(bg, fg);
     display.setCursor(barEnd - valueLabelWidth, y_offset + 4);
     display.println(valueLabel);
-    display.setTextColor(WHITE, BLACK);
+    display.setTextColor(fg, bg);
     return (barEnd - valueLabelWidth + valueLabelWidth) * -1;
   }
   else {
+    display.setTextColor(fg, bg);
     display.setCursor(barEnd + 2, y_offset + 4);
     display.println(valueLabel);
     return barEnd + 2 + valueLabelWidth;
   }
+}
+
+uint8_t renderCompleteBar(int8_t y_offset, const char *label, float value, const char *units, float value_min, float value_mid, float scale) {
+  return renderCompleteBar(y_offset, label, value, units, value_min, value_mid, scale, false, WHITE, BLACK);
+}
+
+uint8_t renderCompleteBar(int8_t y_offset, const char *label, float value, const char *units, float value_min, float value_mid, float scale, boolean inverse) {
+  return renderCompleteBar(y_offset, label, value, units, value_min, value_mid, scale, inverse, WHITE, BLACK);
 }
 
 void prepareRender() {
@@ -175,7 +184,17 @@ void prepareRender() {
 }
 
 void renderSwr(float swr) {
-  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), swr, NULL, 1.0, 2.0, 2.0);
+  uint16_t fg;
+  if( swr < 1.5 )
+    fg = BLUE;
+  else if( swr >= 1.5 && swr < 2.0 )
+    fg = DARKGREEN;
+  else if( swr >= 2.0 && swr < 3.0 )
+    fg = ORANGE;
+  else
+    fg = RED;
+
+  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), swr, NULL, 1.0, 2.0, 2.0, false, fg, BLACK);
 }
 
 void finishRender() {

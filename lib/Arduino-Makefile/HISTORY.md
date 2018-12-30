@@ -5,14 +5,39 @@ The following is the rough list of changes that went into different versions.
 I tried to give credit whenever possible. If I have missed anyone, kindly add it to the list.
 
 ### In Development
+- Fix: Moved CORE_LIB to the last position of the defined linked objects. (https://github.com/wingunder)
+- Fix: Moved ATtiny examples to ATtinyBlink, updated alternate core instructions (issue #537) (https://github.com/sej7278)
+- Fix: Add -fno-devirtualize flag to workaround g++ segfault bug (issue #486). (https://github.com/sej7278)
+- Fix: Quote the prefix tag in the space_pad_to function
+- Fix: recognize serial monitors with full path in MONITOR_CMD
+- Tweak: Move chip erase flag from set_fuses to ispload to prevent sketch being nuked when setting fuses
+- Tweak: Set ARDMK_VERSION to 1.6 (https://github.com/sej7278)
+- Tweak: Move non-standard-related items from CxxFLAGS_STD to CxxFLAGS (issue #523) (https://github.com/sej7278)
+- Tweak: Update Windows usage documentation and allow non-relative paths (issue #519) (https://github.com/tuna-f1sh)
+- Tweak: Support Cygwin Unix Python and Windows installation on Windows to pass correct port binding. (https://github.com/tuna-f1sh)
+- New: Added -fdiagnostics-color to \*STD flags (https://github.com/sej7278)
+- New: Made -fdiagnostics-color take a variiable DIAGNOSTICS_COLOR_WHEN: never, always, auto. (https://github.com/wingunder)
+- New: Add generation of tags file using ctags, which automatically includes project libs and Arduino core. (https://github.com/tuna-f1sh)
+- New: Add template Makefile and project boilerplate initialise script, `ardmk-init`. (https://github.com/tuna-f1sh)
+- New: Support atmelice_isp JTAG tool as ISP programmer. (https://github.com/tuna-f1sh)
+- New: Compatibility with deprecated pgmspace.h API can now be disabled since it sometimes causes bogus compiler warnings (issue #546)
+- New: Support Arduino ARM SAMD devices (Zero, M0 Pro, Feather M0). (https://github.com/tuna-f1sh)
+- New: Support Arduino ARM SAM devices (Due). (https://github.com/tuna-f1sh)
+- New: Moved the PARSE_BOARD macro to Common.mk and use only this to parse the boards.txt file. (https://github.com/wingunder)
+- New: Added the TOOL_PREFIX variable for setting up the executable tools centrally and generically. (https://github.com/wingunder)
+- New: Add support for BOARD_CLOCK for board.menu.speed and board.menu.clock entries in boards.txt files. (https://github.com/dewhisna)
+- New: Updated Arch instructions. (https://github.com/Akram-Chehaima)
+
+### 1.6.0 (2017-07-11)
 - Fix: Allowed for SparkFun's weird usb pid/vid submenu shenanigans (issue #499). (https://github.com/sej7278)
 - Fix: Do not include the Arduino header when calling generate_assembly on .cpp files. (https://github.com/Batchyx)
 - Fix: Auto-detect F_CPU on Teensy from boards.txt (https://github.com/DaWelter)
 - Fix: params typo in PuTTY section (issue #487) (https://github.com/ericdand)
 - Fix: Fixed sed expression to properly format show_submenu (issue #488) (https://github.com/cbosdo)
-- New: Add support for good old cu as monitor command (issue #492) (https://github.com/mwm)
 - Tweak: Removed tilde from documentation (issue #497). (https://github.com/sej7278)
+- New: Add support for good old cu as monitor command (issue #492) (https://github.com/mwm)
 - New: Add a documentation how to setup Makefile for 3rd party boards (issue #499). (https://github.com/MilanV)
+- New: Add support for Robotis OpenCM boards
 
 ### 1.5.2 (2017-01-11)
 

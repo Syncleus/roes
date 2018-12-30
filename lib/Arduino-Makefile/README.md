@@ -7,6 +7,8 @@ This is a very simple Makefile which knows how to build Arduino sketches. It def
 - Very robust
 - Highly customizable
 - Supports all official AVR-based Arduino boards
+- Supports official ARM-based Arduino boards using Atmel SAM chip family
+and includes on-device debugging targets.
 - Supports chipKIT
 - Supports Teensy 3.x (via Teensyduino)
 - Works on all three major OS (Mac, Linux, Windows)
@@ -51,10 +53,10 @@ $ brew install --HEAD arduino-mk
 #### Arch Linux
 
 Arch Linux users can use the unofficial AUR package [arduino-mk](https://aur.archlinux.org/packages/arduino-mk/).
-It can be installed using the following command.
+It can be installed with [AUR] helper using the following command.
 
 ```sh
-yaourt -S arduino-mk
+yay -S arduino-mk
 ```
 
 #### Fedora
@@ -114,6 +116,12 @@ On openSUSE:
 zypper install python-serial
 ```
 
+On Arch:
+
+```sh
+sudo pacman -S python-pyserial
+```
+
 On Mac using MacPorts:
 
 ```sh
@@ -127,8 +135,7 @@ You need to install Cygwin and its packages for Make, Perl and the following Ser
 Assuming you included Python in your Cygwin installation:
 
 1. download PySerial source package from [https://pypi.python.org/pypi/pyserial](https://pypi.python.org/pypi/pyserial)
-2. extract downloaded package running
-```tar xvzf dowloaded_package_name.tar.gz```
+2. extract downloaded package running `tar xvzf dowloaded_package_name.tar.gz`
 3. navigate to extracted package folder
 4. build and install Python module: 
  
@@ -137,6 +144,16 @@ python setup.py build
 python setup.py install
 ```
 
+Alternatively, if you have setup Cygwin to use a Windows Python installation,
+simply install using pip:
+
+```
+pip install pyserial
+```
+
+Arduino-Makefile should automatically detect the Python installation type and
+use the correct device port binding.
+
 ## Usage
 
 Download a copy of this repo somewhere to your system or install it through a package by following the above installation instruction.
@@ -144,7 +161,7 @@ Download a copy of this repo somewhere to your system or install it through a pa
 Sample makefiles are provided in the `examples/` directory.  E.g. [Makefile-example](examples/MakefileExample/Makefile-example.mk) demonstrates some of the more advanced options,
 whilst [Blink](examples/Blink/Makefile) demonstrates the minimal settings required for various boards like the Uno, Nano, Mega, Teensy, ATtiny etc.
 
-MAC:
+### Mac
 
 On the Mac with IDE 1.0 you might want to set:
 
@@ -158,24 +175,28 @@ On the Mac with IDE 1.0 you might want to set:
 
 On the Mac with IDE 1.5+ it's like above but with
 
-```
+```make
     ARDUINO_DIR   = /Applications/Arduino.app/Contents/Java
 ```
-LINUX:
+### Linux
 
 You can either declare following variables in your project's makefile or set them as environmental variables.
 
+```make
     ARDUINO_DIR – Directory where Arduino is installed
     ARDMK_DIR – Directory where you have copied the makefile
     AVR_TOOLS_DIR – Directory where avr tools are installed
+```
 
 Keep in mind, that Arduino 1.5.x+ comes with it's own copy of avr tools which you can leverage in your build process here.
 
 Example of  ~/.bashrc file:
 
-	export ARDUINO_DIR=/home/sudar/apps/arduino-1.0.5
-	export ARDMK_DIR=/home/sudar/Dropbox/code/Arduino-Makefile
-	export AVR_TOOLS_DIR=/usr/include
+```make
+    export ARDUINO_DIR=/home/sudar/apps/arduino-1.0.5
+    export ARDMK_DIR=/home/sudar/Dropbox/code/Arduino-Makefile
+    export AVR_TOOLS_DIR=/usr/include
+```
 
 Example of the project's make file:
 
@@ -184,16 +205,21 @@ Example of the project's make file:
     MONITOR_PORT  = /dev/ttyACM0
 ```
 
-WINDOWS:
+### Windows
 
-On Windows (using cygwin), you might want to set:
+On Windows (using Cygwin), you might want to set:
 
 ```make
-    ARDUINO_DIR   = ../../arduino
+    # Symbolic link to Arduino installation directory - see below
+    ARDUINO_DIR   = C:/Arduino
     ARDMK_DIR     = path/to/mkfile
     MONITOR_PORT  = com3
     BOARD_TAG     = mega2560
 ```
+
+**NOTE: Use forward slash not backslash and there should be no spaces or
+special characters in the Windows paths (due to Win/Unix crossover). The paths
+should not be *cygdrive* paths.**
 
 On Windows (using MSYS and PuTTY), you might want to set the following extra parameters:
 
@@ -205,45 +231,53 @@ On Windows (using MSYS and PuTTY), you might want to set the following extra par
 On Arduino 1.5+ installs, you should set the architecture to either `avr` or `sam` and if using a submenu CPU type, then also set that:
 
 ```make
-	ARCHITECTURE  = avr
+    ARCHITECTURE  = avr
     BOARD_TAG     = atmegang
     BOARD_SUB     = atmega168
 ```
 
-It is recommended in Windows that you create a symbolic link to avoid problems with file naming conventions on Windows. For example, if your your Arduino directory is in:
+#### Symbolic Link
 
-    c:\Program Files (x86)\Arduino
+It is recommended in Windows that you create a symbolic link to avoid problems with file naming conventions on Windows; unless one installs to a non-default location. For example, if your your Arduino directory is in:
+
+    C:\Program Files (x86)\Arduino
 
 You will get problems with the special characters on the directory name. More details about this can be found in [issue #94](https://github.com/sudar/Arduino-Makefile/issues/94)
 
 To create a symbolic link, you can use the command “mklink” on Windows, e.g.
 
 ```sh
-    mklink /d c:\Arduino c:\Program Files (x86)\Arduino
+mklink /d C:\Arduino C:\Program Files (x86)\Arduino
+```
+Alternatively if you've setup Cygwin hard symbolic links ([CYGWIN=winsymlinks:native](https://www.cygwin.com/cygwin-ug-net/using-cygwinenv.html)):
+
+```sh
+ln -s /cygdrive/c/Program Files\ \(x86\)/Arduino/ C:/Arduino
 ```
 
 After which, the variables should be:
 
 ```make
-    ARDUINO_DIR=../../../../../Arduino
+    ARDUINO_DIR=C:/Arduino
 ```
 
 Instead of:
 
 ```make
-    ARDUINO_DIR=../../../../../Program\ Files\ \(x86\)/Arduino
+    ARDUINO_DIR=C:/Program\ Files\ \(x86\)/Arduino
 ```
 
-Usefull Variables:
+### Useful Variables
 
 The list of all variables that can be overridden is available at [arduino-mk-vars.md](arduino-mk-vars.md) file.
 
 - `BOARD_TAG` - Type of board, for a list see boards.txt or `make show_boards`
 - `MONITOR_PORT` - The port where your Arduino is plugged in, usually `/dev/ttyACM0` or `/dev/ttyUSB0` in Linux or Mac OS X and `com3`, `com4`, etc. in Windows.
-- `ARDUINO_DIR` - Path to Arduino installation. In Cygwin in Windows this path must be
-  relative, not absolute (e.g. "../../arduino" and not "/c/cygwin/Arduino").
-- `ARDMK_DIR`   - Path where the `*.mk` are present. If you installed the package, then it is usually `/usr/share/arduino`
-- `AVR_TOOLS_DIR` - Path where the avr tools chain binaries are present. If you are going to use the binaries that came with Arduino installation, then you don't have to set it. Otherwise set it realtive and not absolute.
+- `ARDUINO_DIR` - Path to Arduino installation. Using Windows with Cygwin,
+  this path must use Unix / and not Windows \\ (eg "C:/Arduino" not
+  "C:\\Arduino).
+- `ARDMK_DIR`   - Path where the `*.mk` are present. If you installed the package, then it is usually `/usr/share/arduino`. On Windows, this should be a path without spaces and no special characters, it can be a *cygdrive* path if necessary and must use / not \\.
+- `AVR_TOOLS_DIR` - Path where the avr tools chain binaries are present. If you are going to use the binaries that came with Arduino installation, then you don't have to set it. Otherwise set it relative and not absolute.
 
 
 
@@ -279,9 +313,83 @@ For Teensy 3.x support you must first install [Teensyduino](http://www.pjrc.com/
 
 See examples/BlinkTeensy for example usage.
 
+## Robotis OpenCM
+
+For Robotis OpenCM support you must first install [the OpenCM IDE](http://support.robotis.com/en/software/robotis_opencm/robotis_opencm.htm)
+
+See examples/BlinkOpenCM for example usage.
+
+For large Robotis projects, [libmaple](https://github.com/Rhoban/Maple) may be more appropriate, as the OpenCM IDE uses a very old compiler release.
+
+## Arduino ARM Boards
+
+For Arduino boards using ARM architechure, specifically the Atmel SAM series
+((SAM3X8E) Due; (SAMD21) Arduino M0 [Pro], Zero, MKR1000, Feather M0, etc.), first
+install the board support package from the IDE or other distribution channels.
+
+Define`ARDUINO_PACKAGE_DIR` as the root path containing the ARM support
+package (the manufacturer folder) and the `BOARD_TAG` (see `make show_boards`
+for help) within your project Makefile. Include 'Sam.mk' rather than
+  'Arduino.mk' at the end of your file - see examples/ZeroBlink,
+  examples/MZeroBlink and examples/DueBlink for example usage.
+
+**Note**: The Arduino IDE does not install board support packages to
+the base Arduino installation directory (the directory that will work with AVR
+Makefiles). They are generally installed to a '.arduino15/packages' folder in
+the users home directory. This is the reason for the new `ARDUINO_PACKAGE_DIR`
+define. On Windows, the package directory is often in the user home directory
+so advice is to create a symblic link to avoid slash/space in path problems.
+You can also manually install support packages in your Sketchbook 'hardware'
+folder, then define ARDUINO_PACKAGE_DIR as this path.
+
+If using a SAM board from a manufacturer other than Arduino, one must still
+install the Arduino board support as above (unless using externally defined
+toolchain) and then define the location of the manufacturer board support core
+using the ALTERNATIVE_CORE_PATH define. For example: `ALTERNATE_CORE_PATH =
+$(ARDUINO_SKETCHBOOK)/hardware/sparkfun/samd`
+
+The programing method will auto-detect based on the `BOARD_TAG` settings read
+from boards.txt:
+
+Programming using OpenOCD CMSIS-DAP with the Programming/debug USB is
+currently supported (the same method used by the IDE), including burning
+bootloaders. External CMSIS tools such as Atmel Ice will also work with this
+method. Black Magic Probe (BMP) support is also included using GDB for both
+uploading and debugging.
+
+Native USB programing using Bossa (Due, Zero, MKR1000, Feather style bootloaders)
+and avrdude (M0 bootloaders) is supported. The bootloaders on these devices
+requires a double press of the reset button or open/closing the serial port at
+1200 BAUD. The automatic entry of the bootloader is attempted using
+`ard-reset-arduino` when using the general `make upload` target by polling
+attached devices until the bootloader port re-attaches (same method as the
+IDE). On Windows, the USB enumerates as differnt COM ports for the CDC Serial
+and bootloader and these must be defined. On encountering problems, one can
+manually enter the bootloader then upload using the `make raw_upload` target.
+Note that the `make reset` target will enter the bootloader on these devices;
+there is no way to reset over USB.
+
+If using system installed tools, be aware that `openocd` and `bossa` were
+orginally forked for Arduino support and system distributions may not be up
+to date with merged changes. `bossa` must be version 1.7->. `openocd` should
+work but there may be problems at run time
+[ref](https://github.com/pda/arduino-zero-without-ide). Ideally, use the
+support packaged version or compile and install the Arduino fork.
+
+With the ARM chipset and using a CMSIS-DAP tool, on-device debugging is made available:
+
+* `debug_init` and `debug` targets for on-device debugging using GDB. To use
+  this, one must start the GDB server with `make debug_init &`, followed by
+  connecting to the target with `make debug`. If using a Black Magic Probe,
+  one can just use `make debug`. At the moment, a system wide `arm-none-eabi-gdb` must be
+  installed as the one supplied with the Arduino toolchain
+  does not appear to work. 
+* Example usage: https://asciinema.org/a/Jarz7Pr3gD6mqaZvCACQBzqix
+* See the examples/MZeroBlink Makefile for a commented example.
+
 ## Versioning
 
-The current version of the makefile is `1.5.2`. You can find the full history in the [HISTORY.md](HISTORY.md) file
+The current version of the makefile is `1.6.0`. You can find the full history in the [HISTORY.md](HISTORY.md) file
 
 This project adheres to Semantic [Versioning 2.0](http://semver.org/).
 
@@ -298,9 +406,8 @@ Also checkout the [contribution guide](CONTRIBUTING.md) for more details.
 
 If you are looking for ideas to work on, then check out the following TODO items or the [issue tracker](https://github.com/sudar/Arduino-Makefile/issues/).
 
-## Limitations / Know Issues / TODO's
+## Limitations / Known Issues / TODO's
 
-- Doesn't support SAM boards yet.
 - Since it doesn't do any pre processing like Arduino IDE, you have to declare all methods before you use them ([issue #59](https://github.com/sudar/Arduino-Makefile/issues/59))
 - More than one .ino or .pde file is not supported yet ([issue #49](https://github.com/sudar/Arduino-Makefile/issues/49))
 - When you compile for the first time, it builds all libs inside Arduino directory even if it is not needed. But while linking only the relevant files are linked. ([issue #29](https://github.com/sudar/Arduino-Makefile/issues/29)). Even Arduino IDE does the same thing though.
@@ -393,6 +500,20 @@ programs to assist the maintainers of the Makefile. Run
 all of the examples. The bootstrap script is primarily intended for use by a
 continuous integration server, specifically Travis CI. It is not intended for
 normal users.
+
+## Makefile Generator and Project Initialisation
+
+`ardmk-init` within the bin/ folder is a utility Python script to create a
+Arduino-mk Makefile for a project and also has option to create a traditional *tree*
+organization (src, lib, bin). It can be used as with commanline arguments or
+prompted - see examples below (append `$ARDMK_DIR/bin/` to command if not on path):
+
+* Run prompted within current working directory: `ardmk-init`
+* Create Arduino Uno Makefile (useful within a library example): `ardmk-init -qb uno`
+* Create boilerplate Arduino Uno project in current working directory of same
+  name: `ardmk-init -b uno --quiet --project`
+* Create Arduino-mk nano Makefile in current working directory with template .ino: `ardmk-init -b nano -u atmega328 -qtn my-project`
+* See `ardmk-init --help` for more.
 
 ### Bare-Arduino–Project
 

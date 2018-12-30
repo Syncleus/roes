@@ -94,16 +94,18 @@ boolean recallData() {
 void eepromSetup() {
   if( isEepromBlank() )
   {
-    for(int index; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++)
+    for(int index=0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
       persistedData.calibrationPowerPointsDummy[index] = -1.0;
-    for(int indexPoint; indexPoint < MAX_CALIBRATION_POWER_POINTS_DUMMY; indexPoint++)
+    }
+    Serial.println("    done setting power points dummy");
+    for(int indexPoint=0; indexPoint < MAX_CALIBRATION_POWER_POINTS_DUMMY; indexPoint++) {
       persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
+    }
     storeData();
-
-
   }
-  else
+  else {
     recallData();
+  }
 }
 
 boolean calibrateOnBoot() {

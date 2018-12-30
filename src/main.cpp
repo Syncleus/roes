@@ -36,18 +36,29 @@ SensorData sensorData;
 float calibratingPowerPoint = -1.0;
 
 void setup()   {
-  Serial.begin(SERIAL_BAUDE_RATE);
+  Serial.begin(SERIAL_BAUDE_RATE);//SERIAL_BAUDE_RATE);
+  while (!Serial);     // used for leonardo debugging
+
+  Serial.println("Begining system initialization...");
   heartbeatSetup();
+  Serial.println("  Heartbeat initialized");
   statusLedSetup();
+  Serial.println("  Status LED initialized");
   displaySetup();
+  Serial.println("  Display initialized");
   eepromSetup();
+  Serial.println("  EEPROM initialized");
   commandlineSetup();
+  Serial.println("  Serial Commandline initialized");
+  Serial.println("System initialized!");
 
   pinMode(DOWN_BUTTON_PIN, INPUT);
   pinMode(UP_BUTTON_PIN, INPUT);
 
+  Serial.println("Checking EEPROM integrity...");
   //make sure eeprom isn't corrupt
   if( checkEepromCrc() == false ) {
+    Serial.println("EEPROM failed CRC check!");
     error = true;
     uint32_t actualCrc = eepromCrc32Actual();
     uint32_t storedCrc = eepromCrc32Stored();
@@ -61,8 +72,11 @@ void setup()   {
     finishRender();
   }
   else {
+    Serial.println("EEPROM passed all checks!");
+
     if( calibrateOnBoot() == true )
     {
+      Serial.println("Configured to calibrate on boot...");
       calibrating = true;
       calibratingPause = false;
       calibratingDummy = true;
@@ -73,8 +87,6 @@ void setup()   {
       finishRender();
     }
   }
-
-
 }
 
 void loop() {
@@ -95,90 +107,91 @@ void loop() {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
 
     if(demoMode()) {
-      updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
+      //updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
       updatePowerDemo(&(sensorData.fwdPower), &(sensorData.reflPower));
+      sensorData.swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
     }
     else {
       sensorData = readSensors(sensorData);
     }
 
-    if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
-      if( sensorData.swr < 1.5 )
-        setLedStatus(SLOW);
-      else if( sensorData.swr >= 1.5 && sensorData.swr < 2.0 )
-        setLedStatus(FAST);
-      else if( sensorData.swr >= 2.0 && sensorData.swr < 3.0 )
-        setLedStatus(VERY_FAST);
-      else
-        setLedStatus(ON);
-    }
-    else
-      setLedStatus(OFF);
+    // if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
+    //   if( sensorData.swr < 1.5 )
+    //     setLedStatus(SLOW);
+    //   else if( sensorData.swr >= 1.5 && sensorData.swr < 2.0 )
+    //     setLedStatus(FAST);
+    //   else if( sensorData.swr >= 2.0 && sensorData.swr < 3.0 )
+    //     setLedStatus(VERY_FAST);
+    //   else
+    //     setLedStatus(ON);
+    // }
+    // else
+    //   setLedStatus(OFF);
 
     prepareRender();
     renderSwr(sensorData.swr);
-    switch( currentTopScreen ) {
-    case TOP_POWER:
-      renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
-      break;
-    case TOP_REFLECTION:
-      renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-      break;
-    }
-    switch( currentBottomScreen ) {
-    case BOTTOM_POWER:
-      renderPowerText(sensorData.fwdPower, sensorData.reflPower);
-      break;
-    case BOTTOM_REFLECTION:
-      renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-      break;
-    case BOTTOM_LOAD:
-      renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-      break;
-    }
+    // switch( currentTopScreen ) {
+    // case TOP_POWER:
+       renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
+    // break;
+    // case TOP_REFLECTION:
+    //   renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    //   break;
+    // }
+    // switch( currentBottomScreen ) {
+    // case BOTTOM_POWER:
+       renderPowerText(sensorData.fwdPower, sensorData.reflPower);
+    //   break;
+    // case BOTTOM_REFLECTION:
+       renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    //   break;
+    // case BOTTOM_LOAD:
+       renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    //   break;
+    // }
     finishRender();
   }
 
-  if(calibrating) {
-    if( calibratingPause ) {
-        if(waitForStop()) {
-          if( bumpCalibratingPowerPoint() ) {
-            if( calibratingDummy ) {
-              calibratingDummy = false;
-            }
-            else {
-              calibrating = false;
-              calibratingDummy = true;
-              calibratingPause = false;
-              deactivateCalibrateOnBoot();
-              return;
-            }
-          }
-          calibratingPause = false;
-          prepareRender();
-          renderCalibration(calibratingPowerPoint, calibratingDummy);
-          finishRender();
-        }
-    }
-    else {
-      if( runCalibration() ) {
-        calibratingPause = true;
-        CalibrationAverages result = getCalibration();
-        CalibrationData currentCalibration = calibrationData(calibratingPowerPoint, calibratingDummy);
-        currentCalibration.fwd = result.adcFwd;
-        currentCalibration.refl = result.adcRvr;
-        currentCalibration.vref = result.adcVref;
-        currentCalibration.phase = result.adcPhase;
-        currentCalibration.magnitude = result.adcMagnitude;
-        currentCalibration.phaseShifted = result.adcPhaseShifted;
-        currentCalibration.vrefShifted = result.adcVrefShifted;
-        setCalibrationData(calibratingPowerPoint, calibratingDummy, currentCalibration);
-        prepareRender();
-        renderStopTransmitting();
-        finishRender();
-      }
-    }
-  }
+  // if(calibrating) {
+  //   if( calibratingPause ) {
+  //       if(waitForStop()) {
+  //         if( bumpCalibratingPowerPoint() ) {
+  //           if( calibratingDummy ) {
+  //             calibratingDummy = false;
+  //           }
+  //           else {
+  //             calibrating = false;
+  //             calibratingDummy = true;
+  //             calibratingPause = false;
+  //             deactivateCalibrateOnBoot();
+  //             return;
+  //           }
+  //         }
+  //         calibratingPause = false;
+  //         prepareRender();
+  //         renderCalibration(calibratingPowerPoint, calibratingDummy);
+  //         finishRender();
+  //       }
+  //   }
+  //   else {
+  //     if( runCalibration() ) {
+  //       calibratingPause = true;
+  //       CalibrationAverages result = getCalibration();
+  //       CalibrationData currentCalibration = calibrationData(calibratingPowerPoint, calibratingDummy);
+  //       currentCalibration.fwd = result.adcFwd;
+  //       currentCalibration.refl = result.adcRvr;
+  //       currentCalibration.vref = result.adcVref;
+  //       currentCalibration.phase = result.adcPhase;
+  //       currentCalibration.magnitude = result.adcMagnitude;
+  //       currentCalibration.phaseShifted = result.adcPhaseShifted;
+  //       currentCalibration.vrefShifted = result.adcVrefShifted;
+  //       setCalibrationData(calibratingPowerPoint, calibratingDummy, currentCalibration);
+  //       prepareRender();
+  //       renderStopTransmitting();
+  //       finishRender();
+  //     }
+  //   }
+  // }
 }
 
 void updateDownButton() {

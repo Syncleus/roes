@@ -44,6 +44,7 @@ AVR_TOOLS_DIR     = /usr
 #AVRDUDE          = /usr/local/bin/avrdude
 ### or on Linux: (remove the one you don't want)
 AVRDUDE          = /usr/bin/avrdude
+AVRDUDE_CONF = /etc/avrdude.conf
 
 ### CFLAGS_STD
 ### Set the C standard to be used during compilation. Documentation (https://github.com/WeAreLeka/Arduino-Makefile/blob/std-flags/arduino-mk-vars.md#cflags_std)
@@ -59,7 +60,7 @@ CXXFLAGS         += -pedantic -Wall -Wextra
 
 ### MONITOR_PORT
 ### The port your board is connected to. Using an '*' tries all the ports and finds the right one.
-MONITOR_PORT      = /dev/tty.usbmodem*
+MONITOR_PORT      = /dev/ttyACM*
 
 ### CURRENT_DIR
 ### Do not touch - used for binaries path
@@ -70,10 +71,15 @@ MONITOR_PORT      = /dev/tty.usbmodem*
 OBJDIR            = $(PROJECT_DIR)/bin/$(BOARD_TAG)/$(CURRENT_DIR)
 
 MCU = atmega2560
-F_CPU = 20000000L
-ARDUINO_VAR_PATH = /usr/share/arduino/hardware/arduino/avr/variants/mega/
+F_CPU = 16000000L
+#ARDUINO_VAR_PATH = /usr/share/arduino/hardware/arduino/avr/variants/mega/
 #ARDUINO_VAR_PATH  = /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/mega/
-ARDUINO_LIBS =  Adafruit_SSD1306 ArduinoSTL EEPROM Arduino-CommandLine Embedded_Template_Library Adafruit_GFX_Library SPI Wire Complex
+ARDUINO_LIBS =  ArduinoSTL EEPROM Arduino-CommandLine Embedded_Template_Library SPI Wire Complex Adafruit_FT6206_Library Adafruit_GFX_Library Adafruit_ILI9341
+
+ARDUINO_CORE_PATH = /usr/share/arduino/hardware/archlinux-arduino/avr/cores/arduino
+BOARDS_TXT = /usr/share/arduino/hardware/archlinux-arduino/avr/boards.txt
+ARDUINO_VAR_PATH = /usr/share/arduino/hardware/archlinux-arduino/avr/variants/mega
+BOOTLOADER_PARENT = /usr/share/arduino/hardware/archlinux-arduino/avr/bootloaders
 
 ### Do not touch - the path to Arduino.mk, inside the ARDMK_DIR
 include $(ARDMK_DIR)/Arduino.mk

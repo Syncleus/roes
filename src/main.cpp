@@ -149,6 +149,7 @@ void loop() {
        renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     //   break;
     // }
+    renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg, sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     finishRender();
   }
 

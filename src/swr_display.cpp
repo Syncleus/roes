@@ -2,7 +2,8 @@
 #include "swr_constants.h"
 #include "swr_strings.h"
 #include "swr_power.h"
-
+#include "swr_smithchart.h"
+#include "swr_colors.h"
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <SPI.h>
@@ -26,26 +27,6 @@ Adafruit_FT6206 ctp = Adafruit_FT6206();
 #define TFT_CS 10
 #define TFT_DC 9
 Adafruit_ILI9341 display = Adafruit_ILI9341(TFT_CS, TFT_DC);
-// Color definitions
-#define BLACK ILI9341_BLACK
-#define NAVY ILI9341_NAVY
-#define DARKGREEN ILI9341_DARKGREEN
-#define DARKCYAN ILI9341_DARKCYAN
-#define MAROON ILI9341_MAROON
-#define PURPLE ILI9341_PURPLE
-#define OLIVE ILI9341_OLIVE
-#define LIGHTGREY ILI9341_LIGHTGREY
-#define DARKGREY ILI9341_DARKGREY
-#define BLUE ILI9341_BLUE
-#define GREEN ILI9341_GREEN
-#define CYAN ILI9341_CYAN
-#define RED ILI9341_RED
-#define MAGENTA ILI9341_MAGENTA
-#define YELLOW ILI9341_YELLOW
-#define WHITE ILI9341_WHITE
-#define ORANGE ILI9341_ORANGE
-#define GREENYELLOW ILI9341_GREENYELLOW
-#define PINK ILI9341_PINK
 
 boolean demo_magnitude_db_increasing = true;
 boolean demo_phase_increasing = true;
@@ -232,6 +213,10 @@ void renderPowerText(float power_fwd, float power_rvr) {
   display.print(reverseTitle);
   String reverseText = String(strings(SINGLE_SPACE)) + makeValueLabel(power_rvr, strings(WATTS_UNIT_LABEL)) + String(strings(SINGLE_SPACE)) + makeValueLabel(powerToDbm(power_rvr), strings(DBM_UNIT_LABEL)) + blank;
   display.println(reverseText);
+}
+
+void renderSmithChart(float reflMagDb, float reflPhase, float loatMagDb, float loadPhase) {
+  drawSmithChart(display, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, reflMagDb, reflPhase, loatMagDb, loadPhase);
 }
 
 void renderReflectionText(float magnitudeDb, float phase) {

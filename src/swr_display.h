@@ -25,5 +25,6 @@ void renderCalibration(float power, boolean dummyLoad);
 void renderReflectionText(float magnitudeDb, float phase);
 void renderPowerText(float power_fwd, float power_rvr);
 void renderLoadZText(float magnitudeDb, float phase);
+void renderSmithChart(float reflMagDb, float reflPhase, float loatMagDb, float loadPhase);
 
 #endif /* _SWR_DISPLAY_H_ */

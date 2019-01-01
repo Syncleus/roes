@@ -36,21 +36,21 @@ SensorData sensorData;
 float calibratingPowerPoint = -1.0;
 
 void setup()   {
-  // Serial.begin(SERIAL_BAUDE_RATE);//SERIAL_BAUDE_RATE);
-  // while (!Serial);     // used for leonardo debugging
+  Serial.begin(SERIAL_BAUDE_RATE);//SERIAL_BAUDE_RATE);
+  while (!Serial);     // used for leonardo debugging
 
-  // Serial.println("Begining system initialization...");
+  Serial.println("Begining system initialization...");
   // heartbeatSetup();
   // Serial.println("  Heartbeat initialized");
   // statusLedSetup();
   // Serial.println("  Status LED initialized");
   displaySetup();
-  // Serial.println("  Display initialized");
+  Serial.println("  Display initialized");
   //eepromSetup();
   // Serial.println("  EEPROM initialized");
-  // commandlineSetup();
-  // Serial.println("  Serial Commandline initialized");
-  // Serial.println("System initialized!");
+  commandlineSetup();
+  Serial.println("  Serial Commandline initialized");
+  Serial.println("System initialized!");
 
   // pinMode(DOWN_BUTTON_PIN, INPUT);
   // pinMode(UP_BUTTON_PIN, INPUT);
@@ -95,10 +95,10 @@ void loop() {
 
   // heartbeatUpdate();
   // statusLedUpdate();
-  // commandlineUpdate();
+  commandlineUpdate();
 
-  // if( error )
-  //   return;
+  if( error )
+     return;
 
   //updateDownButton();
   //updateUpButton();
@@ -115,6 +115,8 @@ void loop() {
       sensorData = readSensors(sensorData);
     }
 
+    commandlineUpdate();
+
     // if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
     //   if( sensorData.swr < 1.5 )
     //     setLedStatus(SLOW);
@@ -130,9 +132,11 @@ void loop() {
 
     prepareRender();
     renderSwr(sensorData.swr);
+    commandlineUpdate();
     // switch( currentTopScreen ) {
     // case TOP_POWER:
        renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
+       commandlineUpdate();
     // break;
     // case TOP_REFLECTION:
     //   renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
@@ -141,16 +145,20 @@ void loop() {
     // switch( currentBottomScreen ) {
     // case BOTTOM_POWER:
        renderPowerText(sensorData.fwdPower, sensorData.reflPower);
+       commandlineUpdate();
     //   break;
     // case BOTTOM_REFLECTION:
         renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+        commandlineUpdate();
     //   break;
     // case BOTTOM_LOAD:
        renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+       commandlineUpdate();
     //   break;
     // }
     renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg, sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     finishRender();
+    commandlineUpdate();
   }
 
   // if(calibrating) {

@@ -271,29 +271,6 @@ void renderSmithChart(float reflMagDb, float reflPhase, float loatMagDb, float l
   drawSmithChart(display, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, reflMagDb, reflPhase, loatMagDb, loadPhase);
 }
 
-// void renderReflectionText(float magnitudeDb, float phase) {
-//   display.drawBitmap(0, SCREEN_ROW_5_Y, gamma16_glcd_bmp, 16, 16, WHITE);
-//   display.drawBitmap(0, SCREEN_ROW_5_Y, gamma16_inv_glcd_bmp, 16, 16, BLACK);
-//
-//   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
-//   String cartesianText = String("   ") + makeValueLabel(magnitudeLinear) + String("   ") + makeValueLabel(phase) + String("   ");
-//   uint8_t cartesianTextWidth = cartesianText.length() * CHARACTER_WIDTH;
-//   uint8_t cartesianLeftMargin = ((SCREEN_WIDTH - cartesianTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
-//   display.setTextColor(WHITE, BLACK);
-//   display.setCursor(cartesianLeftMargin, SCREEN_ROW_5_Y);
-//   display.println(cartesianText);
-//   display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y, angle8_glcd_bmp, 8, 8, WHITE);
-//   display.drawBitmap(((SCREEN_WIDTH - 8 - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y, angle8_inv_glcd_bmp, 8, 8, BLACK);
-//   display.drawCircle(cartesianTextWidth + cartesianLeftMargin - 17, SCREEN_ROW_5_Y, 1, WHITE);
-//
-//   Complex reflComplex = polarToComplex(magnitudeLinear, phase);
-//   String complexText = String("   ") + makeValueLabel(reflComplex.real()) + String(" + ") + makeValueLabel(reflComplex.imag()) + String("i") + String("   ");
-//   uint8_t complexTextWidth = complexText.length() * CHARACTER_WIDTH;
-//   uint8_t complexLeftMargin = ((SCREEN_WIDTH - complexTextWidth - PERCENT_BAR_TITLE_WIDTH) / 2) + PERCENT_BAR_TITLE_WIDTH;
-//   display.setCursor(complexLeftMargin, SCREEN_ROW_5H_Y);
-//   display.println(complexText);
-// }
-
 void renderLoadText(float magnitudeDb, float phase) {
   //calculate magnitude as a linear value (no longer in decibels)
   float magnitudeLinear = pow(10.0, magnitudeDb / 20.0);
@@ -301,13 +278,13 @@ void renderLoadText(float magnitudeDb, float phase) {
   ///////////////////////////////////
   // Header for Reflection Coefficient (Gamma)
   ///////////////////////////////////
-  display.drawBitmap(0, SCREEN_ROW_5_Y, gamma16_glcd_bmp, 16, 16, WHITE);
+  display.drawBitmap(0, SCREEN_ROW_5_Y, gamma16_glcd_bmp, 16, 16, CYAN);
   display.drawBitmap(0, SCREEN_ROW_5_Y, gamma16_inv_glcd_bmp, 16, 16, BLACK);
 
   ////////////////////////////////
   // Print polar coordinates
   ////////////////////////////////
-  display.setTextColor(WHITE, BLACK);
+  display.setTextColor(CYAN, BLACK);
   display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_5_Y);
   display.setTextSize(1);
 
@@ -315,7 +292,7 @@ void renderLoadText(float magnitudeDb, float phase) {
   display.print(magnitudeReflText);
 
   uint16_t angleReflPos = PERCENT_BAR_TITLE_WIDTH + CHARACTER_WIDTH * magnitudeReflText.length();
-  display.drawBitmap(angleReflPos, SCREEN_ROW_5_Y, angle8_glcd_bmp, 8, 8, WHITE);
+  display.drawBitmap(angleReflPos, SCREEN_ROW_5_Y, angle8_glcd_bmp, 8, 8, CYAN);
   display.drawBitmap(angleReflPos, SCREEN_ROW_5_Y, angle8_inv_glcd_bmp, 8, 8, BLACK);
 
   uint16_t phaseReflPos = angleReflPos + 8;
@@ -324,7 +301,7 @@ void renderLoadText(float magnitudeDb, float phase) {
   display.print(phaseReflText);
 
   uint16_t degreeReflPos = phaseReflPos + phaseReflText.length() * CHARACTER_WIDTH;
-  display.drawBitmap(degreeReflPos, SCREEN_ROW_5_Y, degree_glcd_bmp, 8, 8, WHITE);
+  display.drawBitmap(degreeReflPos, SCREEN_ROW_5_Y, degree_glcd_bmp, 8, 8, CYAN);
   display.drawBitmap(degreeReflPos, SCREEN_ROW_5_Y, degree_inv_glcd_bmp, 8, 8, BLACK);
 
   uint16_t polarReflMarginPos = degreeReflPos + 8;
@@ -343,7 +320,7 @@ void renderLoadText(float magnitudeDb, float phase) {
   ///////////////////////////////////
   // Header for Complex Load (Z)
   ///////////////////////////////////
-  display.setTextColor(WHITE, BLACK);
+  display.setTextColor(MAGENTA, BLACK);
   display.setTextSize(2);
   display.setCursor(SCREEN_WIDTH/2, SCREEN_ROW_5_Y);
   display.print("Z");
@@ -360,7 +337,7 @@ void renderLoadText(float magnitudeDb, float phase) {
   display.print(magnitudeText);
 
   uint16_t anglePos = zTitlePos + CHARACTER_WIDTH * magnitudeText.length();
-  display.drawBitmap(anglePos, SCREEN_ROW_5_Y, angle8_glcd_bmp, 8, 8, WHITE);
+  display.drawBitmap(anglePos, SCREEN_ROW_5_Y, angle8_glcd_bmp, 8, 8, MAGENTA);
   display.drawBitmap(anglePos, SCREEN_ROW_5_Y, angle8_inv_glcd_bmp, 8, 8, BLACK);
 
   uint16_t phasePos = anglePos + 8;
@@ -369,7 +346,7 @@ void renderLoadText(float magnitudeDb, float phase) {
   display.print(phaseText);
 
   uint16_t degreePos = phasePos + phaseText.length() * CHARACTER_WIDTH;
-  display.drawBitmap(degreePos, SCREEN_ROW_5_Y, degree_glcd_bmp, 8, 8, WHITE);
+  display.drawBitmap(degreePos, SCREEN_ROW_5_Y, degree_glcd_bmp, 8, 8, MAGENTA);
   display.drawBitmap(degreePos, SCREEN_ROW_5_Y, degree_inv_glcd_bmp, 8, 8, BLACK);
 
   uint16_t polarMarginPos = degreePos + 8;

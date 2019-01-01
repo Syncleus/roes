@@ -40,8 +40,8 @@ void setup()   {
   while (!Serial);     // used for leonardo debugging
 
   Serial.println("Begining system initialization...");
-  // heartbeatSetup();
-  // Serial.println("  Heartbeat initialized");
+  heartbeatSetup();
+  Serial.println("  Heartbeat initialized");
   // statusLedSetup();
   // Serial.println("  Status LED initialized");
   displaySetup();
@@ -93,7 +93,7 @@ void loop() {
   unsigned long time = millis();
   static unsigned long refreshDisplayTime = 0;
 
-  // heartbeatUpdate();
+  heartbeatUpdate();
   // statusLedUpdate();
   commandlineUpdate();
 

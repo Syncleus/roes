@@ -127,6 +127,8 @@ void drawSmithChart(Adafruit_ILI9341 display, uint16_t x0, uint16_t y0, uint16_t
   info.originX = info.centerX + info.baseRadius;
   info.antioriginX = info.centerX - info.baseRadius;
 
+  display.setTextColor(WHITE);
+
   display.drawCircle(info.centerX, info.centerY, info.baseRadius, WHITE);
   //drawArc(x + rad, y - rad, rad, 270, 0, WHITE);
   display.setCursor(info.centerX - info.baseRadius + 4, info.centerY + 4);

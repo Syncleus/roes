@@ -47,7 +47,7 @@ void handleCalibrationPoints(char* tokens) {
     while (itr != calibrationPointsDataOpen.end())
     {
       Serial.print(String(*itr++));
-      Serial.print(SINGLE_SPACE);
+      Serial.print(ONE_SPACE);
     }
     Serial.println();
   }
@@ -199,7 +199,7 @@ void handleReadInputs(char* tokens) {
 }
 
 void handleCalibrateOnBoot(char* tokens) {
-  char* argument = strtok(NULL, SINGLE_SPACE);
+  char* argument = strtok(NULL, ONE_SPACE);
   if( argument == NULL ) {
     Serial.print(CALIBRATEONBOOT_LABEL);
     Serial.println((calibrateOnBoot() == true ? CALIBRATEONBOOT_ON : CALIBRATEONBOOT_OFF));
@@ -225,7 +225,7 @@ void handlePing(char* tokens) {
 }
 
 void handleDemo(char* tokens) {
-  char* argument = strtok(NULL, SINGLE_SPACE);
+  char* argument = strtok(NULL, ONE_SPACE);
   if( argument == NULL ) {
     Serial.print(DEMO_LABEL);
     Serial.println((demoMode() ? DEMO_ON : DEMO_OFF));
@@ -247,7 +247,7 @@ void handleDemo(char* tokens) {
 }
 
 void handleSwrSource(char* tokens) {
-  char* argument = strtok(NULL, SINGLE_SPACE);
+  char* argument = strtok(NULL, ONE_SPACE);
   if( argument == NULL ) {
     Serial.print(SWR_SOURCE_INFO);
     if( differentialForSwr() )

@@ -27,7 +27,10 @@
 #define DEMO_INVALID_ARGUMENT FS("Invalid argument, argument to demo command must be either 'on' or 'off'")
 #define CALIBRATIONPOINTS_DUMMY_LABEL FS("calibration points [dummy]: ")
 #define CALIBRATIONPOINTS_OPEN_LABEL FS("calibration points [open]: ")
-#define SINGLE_SPACE FS(" ")
+#define ONE_SPACE   FS(" ")
+#define TWO_SPACE   FS("  ")
+#define THREE_SPACE FS("   ")
+#define FOUR_SPACE  FS("    ")
 #define OPEN_LABEL FS("open")
 #define CALIBRATIONPOINTS_SET FS("calibration points set")
 #define EEPROM_CLEARED FS("Eeprom cleared.")
@@ -78,6 +81,8 @@
 #define HELP_COMMANDS_9 FS("  swrsource")
 #define CALIBRATIONDATA_PHASE_SHIFTED FS("      phase shifted: ")
 #define CALIBRATIONDATA_VREF_SHIFTED FS("       vref shifted: ")
+#define COMPLEX_PLUS_STRING FS(" + ")
+#define COMPLEX_I_STRING FS("i")
 
 void uint32toa(uint32_t value, char *buffer, uint8_t radix);
 char* splitString(char* data, char separator);

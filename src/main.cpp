@@ -142,10 +142,7 @@ void loop() {
     renderPowerText(sensorData.fwdPower, sensorData.reflPower);
     commandlineUpdate();
 
-    renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-    commandlineUpdate();
-
-    renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    renderLoadText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     commandlineUpdate();
 
     renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg, sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);

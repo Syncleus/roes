@@ -4,4 +4,8 @@ stty -F /dev/ttyACM0 cs8 9600 ignbrk -brkint -imaxbel -opost -onlcr -isig -icano
 
 To upload to arduino
 
-avrdude -V -p atmega2560 -C /etc/avrdude.conf -D -c avrispmkII -b 115200 -P /dev/ttyACM0 -U flash:w:/home/freemo/source/roes/bin/mega2560//src.hex:i
+/home/freemo/.arduino15/packages/arduino/tools/bossac/1.6.1-arduino/bossac --info --erase --write --verify --reset -U false -b --port=ttyACM0 /home/freemo/source/roes/bin/arduino_due_x/src/src.bin
+
+or just
+
+make upload

@@ -175,7 +175,7 @@ void renderSwr(float swr) {
   else
     fg = RED;
 
-  renderCompleteBar(SCREEN_ROW_1_Y, strings(SWR_LABEL), swr, NULL, 1.0, 2.0, 2.0, false, fg, BLACK);
+  renderCompleteBar(SCREEN_ROW_1_Y, SWR_LABEL, swr, NULL, 1.0, 2.0, 2.0, false, fg, BLACK);
 }
 
 void finishRender() {
@@ -184,34 +184,34 @@ void finishRender() {
 
 void renderPowerBars(float power_fwd, float power_rvr) {
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_2_Y, strings(FWD_LABEL), power_fwd, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
-  renderCompleteBar(SCREEN_ROW_3_Y, strings(RVR_LABEL), power_rvr, strings(WATTS_UNIT_LABEL), 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_2_Y, FWD_LABEL, power_fwd, WATTS_UNIT_LABEL, 0.0, 100.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_3_Y, RVR_LABEL, power_rvr, WATTS_UNIT_LABEL, 0.0, 100.0, 2.0);
 }
 
 void renderReflectionBars(float magnitudeDb, float phase) {
   //make sure power_rvr isnt higher than power_fwd
-  renderCompleteBar(SCREEN_ROW_2_Y, strings(RL_LABEL), -1.0 * magnitudeDb, strings(DECIBEL_UNIT_LABEL), -30.0, -15.0, 1.5, true);
-  int8_t drawDegreeX = renderCompleteBar(SCREEN_ROW_3_Y, strings(PHS_LABEL), phase, NULL, -180.0, 0.0, 2.0);
+  renderCompleteBar(SCREEN_ROW_2_Y, RL_LABEL, -1.0 * magnitudeDb, DECIBEL_UNIT_LABEL, -30.0, -15.0, 1.5, true);
+  int8_t drawDegreeX = renderCompleteBar(SCREEN_ROW_3_Y, PHS_LABEL, phase, NULL, -180.0, 0.0, 2.0);
   display.drawCircle(abs(drawDegreeX) - 3, SCREEN_ROW_3_Y + 4, 1, (drawDegreeX < 0 ? BLACK : WHITE));
 }
 
 void renderPowerText(float power_fwd, float power_rvr) {
   display.setTextColor(WHITE, BLACK);
   display.setCursor(0, SCREEN_ROW_4_Y + 4);
-  display.println(strings(POWER_LABEL));
+  display.println(POWER_LABEL);
 
   String blank = String("     ");
 
   display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4_Y);
-  String forwardTitle = strings(POWER_FWD_LABEL);
+  String forwardTitle = POWER_FWD_LABEL;
   display.print(forwardTitle);
-  String forwardText = String(strings(SINGLE_SPACE)) + makeValueLabel(power_fwd, strings(WATTS_UNIT_LABEL)) + String(strings(SINGLE_SPACE)) + makeValueLabel(powerToDbm(power_fwd), strings(DBM_UNIT_LABEL)) + blank;
+  String forwardText = String(SINGLE_SPACE) + makeValueLabel(power_fwd, WATTS_UNIT_LABEL) + String(SINGLE_SPACE) + makeValueLabel(powerToDbm(power_fwd), DBM_UNIT_LABEL) + blank;
   display.println(forwardText.c_str());
 
   display.setCursor(PERCENT_BAR_TITLE_WIDTH, SCREEN_ROW_4H_Y);
-  String reverseTitle = strings(POWER_RVR_LABEL);
+  String reverseTitle = POWER_RVR_LABEL;
   display.print(reverseTitle);
-  String reverseText = String(strings(SINGLE_SPACE)) + makeValueLabel(power_rvr, strings(WATTS_UNIT_LABEL)) + String(strings(SINGLE_SPACE)) + makeValueLabel(powerToDbm(power_rvr), strings(DBM_UNIT_LABEL)) + blank;
+  String reverseText = String(SINGLE_SPACE) + makeValueLabel(power_rvr, WATTS_UNIT_LABEL) + String(SINGLE_SPACE) + makeValueLabel(powerToDbm(power_rvr), DBM_UNIT_LABEL) + blank;
   display.println(reverseText);
 }
 
@@ -270,34 +270,34 @@ void renderStopTransmitting() {
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(36, SCREEN_ROW_1_Y);
-  display.println(strings(STOP_WARNING_LABEL));
+  display.println(STOP_WARNING_LABEL);
 
   display.setTextSize(1);
   display.setCursor(20, SCREEN_ROW_2_Y);
-  display.println(strings(TRANSMITTING_LABEL));
+  display.println(TRANSMITTING_LABEL);
 }
 
 void renderCalibration(float power, boolean dummyLoad) {
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(4, SCREEN_ROW_1_Y);
-  display.println(strings(CALIBRATE_LABEL));
+  display.println(CALIBRATE_LABEL);
 
   display.setTextSize(1);
-  display.print(strings(CALIBRATE_LINE_1A));
-  display.print(makeValueLabel(power, strings(WATTS_UNIT_LABEL)));
-  display.println(strings(CALIBRATE_LINE_1B));
+  display.print(CALIBRATE_LINE_1A);
+  display.print(makeValueLabel(power, WATTS_UNIT_LABEL));
+  display.println(CALIBRATE_LINE_1B);
   if (dummyLoad)
-    display.println(strings(CALIBRATE_LINE_2_DUMMY));
+    display.println(CALIBRATE_LINE_2_DUMMY);
   else
-    display.println(strings(CALIBRATE_LINE_2_OPEN));
+    display.println(CALIBRATE_LINE_2_OPEN);
 }
 
 void renderError(String message1, String message2, String message3, String message4) {
   display.setTextColor(WHITE);
   display.setTextSize(2);
   display.setCursor(32, SCREEN_ROW_1_Y);
-  display.println(strings(ERROR_WARNING_LABEL));
+  display.println(ERROR_WARNING_LABEL);
 
   display.setTextSize(1);
   display.setCursor(0, SCREEN_ROW_2_Y);

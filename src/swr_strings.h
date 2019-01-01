@@ -3,302 +3,82 @@
 
 #include <avr/pgmspace.h>
 
-#define MAX_STRING_LENGTH 83
-#define BUFFER_COUNT 2
+#define FS(s) reinterpret_cast<const char *>F(s)
+
+#define CORRUPT_EEPROM FS("EEPROM is corrupt")
+#define CRC_CHECK_FAILED FS("CRC check failed")
+#define SWR_LABEL FS("SWR")
+#define FWD_LABEL FS("Fwd")
+#define RVR_LABEL FS("Rvr")
+#define RL_LABEL FS("RL")
+#define PHS_LABEL FS("Phs")
+#define WATTS_UNIT_LABEL FS("w")
+#define DECIBEL_UNIT_LABEL FS("dB")
+#define STOP_WARNING_LABEL FS("STOP")
+#define TRANSMITTING_LABEL FS("transmitting")
+#define CALIBRATE_LABEL FS("Calibrate")
+#define CALIBRATE_LINE_1A FS("Apply ")
+#define CALIBRATE_LINE_1B FS(" into")
+#define CALIBRATE_LINE_2_OPEN FS("an open load")
+#define CALIBRATE_LINE_2_DUMMY FS("a dummy load")
+#define ERROR_WARNING_LABEL FS("ERROR!")
+#define COMMANDS_OVERVIEW_HELP FS("Availible commands:")
+#define CALIBRATEONBOOT_INVALID_ARGUMENT FS("Invalid argument, argument to calibrateonboot command must be either 'on' or 'off'")
+#define DEMO_INVALID_ARGUMENT FS("Invalid argument, argument to demo command must be either 'on' or 'off'")
+#define CALIBRATIONPOINTS_DUMMY_LABEL FS("calibration points [dummy]: ")
+#define CALIBRATIONPOINTS_OPEN_LABEL FS("calibration points [open]: ")
+#define SINGLE_SPACE FS(" ")
+#define OPEN_LABEL FS("open")
+#define CALIBRATIONPOINTS_SET FS("calibration points set")
+#define EEPROM_CLEARED FS("Eeprom cleared.")
+#define CALIBRATIONDATA_HEADER_1 FS("Calibration data for ")
+#define CALIBRATIONDATA_HEADER_2_DUMMY FS("w into a dummy load")
+#define CALIBRATIONDATA_HEADER_2_OPEN FS("w into an open load")
+#define CALIBRATIONDATA_FWD FS("        fwd: ")
+#define CALIBRATIONDATA_RVR FS("        refl: ")
+#define CALIBRATIONDATA_MAGNITUDE FS("  magnitude: ")
+#define CALIBRATIONDATA_PHASE FS("      phase: ")
+#define CALIBRATIONDATA_VREF FS("       vref: ")
+#define READINPUTS_FWD FS("POWER_FWD_PIN: ")
+#define READINPUTS_RVR FS("POWER_RVR_PIN: ")
+#define READINPUTS_VREF FS("POWER_VREF_PIN: ")
+#define READINPUTS_PHASE FS("POWER_PHASE_PIN: ")
+#define READINPUTS_MAGNITUDE FS("POWER_MAGNITUDE_PIN: ")
+#define CALIBRATEONBOOT_LABEL FS("calibrateonboot: ")
+#define CALIBRATEONBOOT_ON FS("on")
+#define CALIBRATEONBOOT_OFF FS("off")
+#define CALIBRATEONBOOT_ACTIVATING FS("Activating calibrateonboot.")
+#define CALIBRATEONBOOT_DEACTIVATING FS("Deactivating calibrateonboot.")
+#define PONG_LABEL FS("Pong!")
+#define DEMO_ON CALIBRATEONBOOT_ON
+#define DEMO_OFF CALIBRATEONBOOT_OFF
+#define DEMO_LABEL FS("demo: ")
+#define DEMO_ACTIVATING FS("Activating demo.")
+#define DEMO_DEACTIVATING FS("Deactivating demo.")
+#define CALIBRATIONPOINTS_TOO_MANY FS("Too many calibration points! max: ")
+#define CALIBRATIONPOINTS_TOO_FEW FS("Must provide at least one calibration point!")
+#define HELP_COMMANDS_1 FS("  help")
+#define HELP_COMMANDS_2 FS("  calibrationpoints")
+#define HELP_COMMANDS_3 FS("  cleareeprom")
+#define HELP_COMMANDS_4 FS("  readinputs")
+#define HELP_COMMANDS_5 FS("  calibrationdata")
+#define HELP_COMMANDS_6 FS("  calibrateonboot")
+#define HELP_COMMANDS_7 FS("  demo")
+#define HELP_COMMANDS_8 FS("  ping")
+#define POWER_LABEL FS("Pwr")
+#define POWER_FWD_LABEL FS("Fwd:")
+#define DBM_UNIT_LABEL FS("dBm")
+#define POWER_RVR_LABEL FS("Rvr:")
+#define SWR_SOURCE_INFO FS("SWR Source: ")
+#define SWR_SOURCE_DIFFERENTIAL FS("differential")
+#define SWR_SOURCE_ENVELOPE FS("envelope")
+#define SWR_SOURCE_DIFFERENTIAL_SET FS("SWR source is now the differential AD8302.")
+#define SWR_SOURCE_ENVELOPE_SET FS("SWR source is now the envelope detector.")
+#define SWR_SOURCE_INVALID FS("Invalid arguments, accepts either 'differential' or 'envelope' as arguments.")
+#define HELP_COMMANDS_9 FS("  swrsource")
+#define CALIBRATIONDATA_PHASE_SHIFTED FS("      phase shifted: ")
+#define CALIBRATIONDATA_VREF_SHIFTED FS("       vref shifted: ")
 
-#define CORRUPT_EEPROM 0
-static const PROGMEM char CORRUPT_EEPROM_STRING[] = "EEPROM is corrupt";
-
-#define CRC_CHECK_FAILED 1
-static const PROGMEM char CRC_CHECK_FAILED_STRING[] = "CRC check failed";
-
-#define SWR_LABEL 2
-static const PROGMEM char SWR_LABEL_STRING[] = "SWR";
-
-#define FWD_LABEL 3
-static const PROGMEM char FWD_LABEL_STRING[] = "Fwd";
-
-#define RVR_LABEL 4
-static const PROGMEM char RVR_LABEL_STRING[] = "Rvr";
-
-#define RL_LABEL 5
-static const PROGMEM char RL_LABEL_STRING[] = "RL";
-
-#define PHS_LABEL 6
-static const PROGMEM char PHS_LABEL_STRING[] = "Phs";
-
-#define WATTS_UNIT_LABEL 7
-static const PROGMEM char WATTS_UNIT_LABEL_STRING[] = "w";
-
-#define DECIBEL_UNIT_LABEL 8
-static const PROGMEM char DECIBEL_UNIT_LABEL_STRING[] = "dB";
-
-#define STOP_WARNING_LABEL 9
-static const PROGMEM char STOP_WARNING_LABEL_STRING[] = "STOP";
-
-#define TRANSMITTING_LABEL 10
-static const PROGMEM char TRANSMITTING_LABEL_STRING[] = "transmitting";
-
-#define CALIBRATE_LABEL 11
-static const PROGMEM char CALIBRATE_LABEL_STRING[] = "Calibrate";
-
-#define CALIBRATE_LINE_1A 12
-static const PROGMEM char CALIBRATE_LINE_1A_STRING[] = "Apply ";
-
-#define CALIBRATE_LINE_1B 13
-static const PROGMEM char CALIBRATE_LINE_1B_STRING[] = " into";
-
-#define CALIBRATE_LINE_2_OPEN 14
-static const PROGMEM char CALIBRATE_LINE_2_OPEN_STRING[] = "an open load";
-
-#define CALIBRATE_LINE_2_DUMMY 15
-static const PROGMEM char CALIBRATE_LINE_2_DUMMY_STRING[] = "a dummy load";
-
-#define ERROR_WARNING_LABEL 16
-static const PROGMEM char ERROR_WARNING_LABEL_STRING[] = "ERROR!";
-
-#define COMMANDS_OVERVIEW_HELP 17
-static const PROGMEM char COMMANDS_OVERVIEW_HELP_STRING[] = "Availible commands:";
-
-#define CALIBRATEONBOOT_INVALID_ARGUMENT 18
-static const PROGMEM char CALIBRATEONBOOT_INVALID_ARGUMENT_STRING[] = "Invalid argument, argument to calibrateonboot command must be either 'on' or 'off'";
-
-#define DEMO_INVALID_ARGUMENT 19
-static const PROGMEM char DEMO_INVALID_ARGUMENT_STRING[] = "Invalid argument, argument to demo command must be either 'on' or 'off'";
-
-#define CALIBRATIONPOINTS_DUMMY_LABEL 20
-static const PROGMEM char CALIBRATIONPOINTS_DUMMY_LABEL_STRING[] = "calibration points [dummy]: ";
-
-#define CALIBRATIONPOINTS_OPEN_LABEL 21
-static const PROGMEM char CALIBRATIONPOINTS_OPEN_LABEL_STRING[] = "calibration points [open]: ";
-
-#define SINGLE_SPACE 22
-static const PROGMEM char SINGLE_SPACE_STRING[] = " ";
-
-#define OPEN_LABEL 23
-static const PROGMEM char OPEN_LABEL_STRING[] = "open";
-
-#define CALIBRATIONPOINTS_SET 24
-static const PROGMEM char CALIBRATIONPOINTS_SET_STRING[] = "calibration points set";
-
-#define EEPROM_CLEARED 25
-static const PROGMEM char EEPROM_CLEARED_STRING[] = "Eeprom cleared.";
-
-#define CALIBRATIONDATA_HEADER_1 26
-static const PROGMEM char CALIBRATIONDATA_HEADER_1_STRING[] = "Calibration data for ";
-
-#define CALIBRATIONDATA_HEADER_2_DUMMY 27
-static const PROGMEM char CALIBRATIONDATA_HEADER_2_DUMMY_STRING[] = "w into a dummy load";
-
-#define CALIBRATIONDATA_HEADER_2_OPEN 28
-static const PROGMEM char CALIBRATIONDATA_HEADER_2_OPEN_STRING[] = "w into an open load";
-
-#define CALIBRATIONDATA_FWD 29
-static const PROGMEM char CALIBRATIONDATA_FWD_STRING[] = "        fwd: ";
-
-#define CALIBRATIONDATA_RVR 30
-static const PROGMEM char CALIBRATIONDATA_RVR_STRING[] = "        refl: ";
-
-#define CALIBRATIONDATA_MAGNITUDE 31
-static const PROGMEM char CALIBRATIONDATA_MAGNITUDE_STRING[] = "  magnitude: ";
-
-#define CALIBRATIONDATA_PHASE 32
-static const PROGMEM char CALIBRATIONDATA_PHASE_STRING[] = "      phase: ";
-
-#define CALIBRATIONDATA_VREF 33
-static const PROGMEM char CALIBRATIONDATA_VREF_STRING[] = "       vref: ";
-
-#define READINPUTS_FWD 34
-static const PROGMEM char READINPUTS_FWD_STRING[] = "POWER_FWD_PIN: ";
-
-#define READINPUTS_RVR 35
-static const PROGMEM char READINPUTS_RVR_STRING[] = "POWER_RVR_PIN: ";
-
-#define READINPUTS_VREF 36
-static const PROGMEM char READINPUTS_VREF_STRING[] = "POWER_VREF_PIN: ";
-
-#define READINPUTS_PHASE 37
-static const PROGMEM char READINPUTS_PHASE_STRING[] = "POWER_PHASE_PIN: ";
-
-#define READINPUTS_MAGNITUDE 38
-static const PROGMEM char READINPUTS_MAGNITUDE_STRING[] = "POWER_MAGNITUDE_PIN: ";
-
-#define CALIBRATEONBOOT_LABEL 39
-static const PROGMEM char CALIBRATEONBOOT_LABEL_STRING[] = "calibrateonboot: ";
-
-#define CALIBRATEONBOOT_ON 40
-static const PROGMEM char CALIBRATEONBOOT_ON_STRING[] = "on";
-
-#define CALIBRATEONBOOT_OFF 41
-static const PROGMEM char CALIBRATEONBOOT_OFF_STRING[] = "off";
-
-#define CALIBRATEONBOOT_ACTIVATING 42
-static const PROGMEM char CALIBRATEONBOOT_ACTIVATING_STRING[] = "Activating calibrateonboot.";
-
-#define CALIBRATEONBOOT_DEACTIVATING 43
-static const PROGMEM char CALIBRATEONBOOT_DEACTIVATING_STRING[] = "Deactivating calibrateonboot.";
-
-#define PONG_LABEL 44
-static const PROGMEM char PONG_LABEL_STRING[] = "Pong!";
-
-//these intentionally resuse previous strings.
-#define DEMO_ON 40
-#define DEMO_OFF 41
-
-#define DEMO_LABEL 45
-static const PROGMEM char DEMO_LABEL_STRING[] = "demo: ";
-
-#define DEMO_ACTIVATING 46
-static const PROGMEM char DEMO_ACTIVATING_STRING[] = "Activating demo.";
-
-#define DEMO_DEACTIVATING 47
-static const PROGMEM char DEMO_DEACTIVATING_STRING[] = "Deactivating demo.";
-
-#define CALIBRATIONPOINTS_TOO_MANY 48
-static const PROGMEM char CALIBRATIONPOINTS_TOO_MANY_STRING[] = "Too many calibration points! max: ";
-
-#define CALIBRATIONPOINTS_TOO_FEW 49
-static const PROGMEM char CALIBRATIONPOINTS_TOO_FEW_STRING[] = "Must provide at least one calibration point!";
-
-#define HELP_COMMANDS_1 50
-static const PROGMEM char HELP_COMMANDS_1_STRING[] = "  help";
-
-#define HELP_COMMANDS_2 51
-static const PROGMEM char HELP_COMMANDS_2_STRING[] = "  calibrationpoints";
-
-#define HELP_COMMANDS_3 52
-static const PROGMEM char HELP_COMMANDS_3_STRING[] = "  cleareeprom";
-
-#define HELP_COMMANDS_4 53
-static const PROGMEM char HELP_COMMANDS_4_STRING[] = "  readinputs";
-
-#define HELP_COMMANDS_5 54
-static const PROGMEM char HELP_COMMANDS_5_STRING[] = "  calibrationdata";
-
-#define HELP_COMMANDS_6 55
-static const PROGMEM char HELP_COMMANDS_6_STRING[] = "  calibrateonboot";
-
-#define HELP_COMMANDS_7 56
-static const PROGMEM char HELP_COMMANDS_7_STRING[] = "  demo";
-
-#define HELP_COMMANDS_8 57
-static const PROGMEM char HELP_COMMANDS_8_STRING[] = "  ping";
-
-#define POWER_LABEL 58
-static const PROGMEM char POWER_LABEL_STRING[] = "Pwr";
-
-#define POWER_FWD_LABEL 59
-static const PROGMEM char POWER_FWD_LABEL_STRING[] = "Fwd:";
-
-#define DBM_UNIT_LABEL 60
-static const PROGMEM char DBM_UNIT_LABEL_STRING[] = "dBm";
-
-#define POWER_RVR_LABEL 61
-static const PROGMEM char POWER_RVR_LABEL_STRING[] = "Rvr:";
-
-#define SWR_SOURCE_INFO 62
-static const PROGMEM char SWR_SOURCE_INFO_STRING[] = "SWR Source: ";
-
-#define SWR_SOURCE_DIFFERENTIAL 63
-static const PROGMEM char SWR_SOURCE_DIFFERENTIAL_STRING[] = "differential";
-
-#define SWR_SOURCE_ENVELOPE 64
-static const PROGMEM char SWR_SOURCE_ENVELOPE_STRING[] = "envelope";
-
-#define SWR_SOURCE_DIFFERENTIAL_SET 65
-static const PROGMEM char SWR_SOURCE_DIFFERENTIAL_SET_STRING[] = "SWR source is now the differential AD8302.";
-
-#define SWR_SOURCE_ENVELOPE_SET 66
-static const PROGMEM char SWR_SOURCE_ENVELOPE_SET_STRING[] = "SWR source is now the envelope detector.";
-
-#define SWR_SOURCE_INVALID 67
-static const PROGMEM char SWR_SOURCE_INVALID_STRING[] = "Invalid arguments, accepts either 'differential' or 'envelope' as arguments.";
-
-#define HELP_COMMANDS_9 68
-static const PROGMEM char HELP_COMMANDS_9_STRING[] = "  swrsource";
-
-#define CALIBRATIONDATA_PHASE_SHIFTED 69
-static const PROGMEM char CALIBRATIONDATA_PHASE_SHIFTED_STRING[] = "      phase shifted: ";
-
-#define CALIBRATIONDATA_VREF_SHIFTED 70
-static const PROGMEM char CALIBRATIONDATA_VREF_SHIFTED_STRING[] = "       vref shifted: ";
-
-static const PROGMEM char* const string_table[] PROGMEM = {
-  CORRUPT_EEPROM_STRING, //0
-  CRC_CHECK_FAILED_STRING, //1
-  SWR_LABEL_STRING, //2
-  FWD_LABEL_STRING, //3
-  RVR_LABEL_STRING, //4
-  RL_LABEL_STRING, //5
-  PHS_LABEL_STRING,  //6
-  WATTS_UNIT_LABEL_STRING, //7
-  DECIBEL_UNIT_LABEL_STRING, //8
-  STOP_WARNING_LABEL_STRING, //9
-  TRANSMITTING_LABEL_STRING, //10
-  CALIBRATE_LABEL_STRING, //11
-  CALIBRATE_LINE_1A_STRING, //12
-  CALIBRATE_LINE_1B_STRING, //13
-  CALIBRATE_LINE_2_OPEN_STRING, //14
-  CALIBRATE_LINE_2_DUMMY_STRING, //15
-  ERROR_WARNING_LABEL_STRING, //16
-  COMMANDS_OVERVIEW_HELP_STRING, //17
-  CALIBRATEONBOOT_INVALID_ARGUMENT_STRING, //18
-  DEMO_INVALID_ARGUMENT_STRING, //19
-  CALIBRATIONPOINTS_DUMMY_LABEL_STRING, //20
-  CALIBRATIONPOINTS_OPEN_LABEL_STRING, //21
-  SINGLE_SPACE_STRING, //22
-  OPEN_LABEL_STRING, //23
-  CALIBRATIONPOINTS_SET_STRING, //24
-  EEPROM_CLEARED_STRING,  //25
-  CALIBRATIONDATA_HEADER_1_STRING, //26
-  CALIBRATIONDATA_HEADER_2_DUMMY_STRING, //27
-  CALIBRATIONDATA_HEADER_2_OPEN_STRING, //28
-  CALIBRATIONDATA_FWD_STRING, //29
-  CALIBRATIONDATA_RVR_STRING, //30
-  CALIBRATIONDATA_MAGNITUDE_STRING, //31
-  CALIBRATIONDATA_PHASE_STRING, //32
-  CALIBRATIONDATA_VREF_STRING, //33
-  READINPUTS_FWD_STRING, //34
-  READINPUTS_RVR_STRING, //35
-  READINPUTS_VREF_STRING, //36
-  READINPUTS_PHASE_STRING, //37
-  READINPUTS_MAGNITUDE_STRING, //38
-  CALIBRATEONBOOT_LABEL_STRING, //39
-  CALIBRATEONBOOT_ON_STRING, //40
-  CALIBRATEONBOOT_OFF_STRING, //41
-  CALIBRATEONBOOT_ACTIVATING_STRING, //42
-  CALIBRATEONBOOT_DEACTIVATING_STRING, //43
-  PONG_LABEL_STRING, //44
-  DEMO_LABEL_STRING, //45
-  DEMO_ACTIVATING_STRING, //46
-  DEMO_DEACTIVATING_STRING, //47
-  CALIBRATIONPOINTS_TOO_MANY_STRING, //48
-  CALIBRATIONPOINTS_TOO_FEW_STRING, //49
-  HELP_COMMANDS_1_STRING, //50
-  HELP_COMMANDS_2_STRING, //51
-  HELP_COMMANDS_3_STRING, //52
-  HELP_COMMANDS_4_STRING, //53
-  HELP_COMMANDS_5_STRING, //54
-  HELP_COMMANDS_6_STRING, //55
-  HELP_COMMANDS_7_STRING, //56
-  HELP_COMMANDS_8_STRING, //57
-  POWER_LABEL_STRING, //58
-  POWER_FWD_LABEL_STRING, //59
-  DBM_UNIT_LABEL_STRING, //60
-  POWER_RVR_LABEL_STRING, //61
-  SWR_SOURCE_INFO_STRING, //62
-  SWR_SOURCE_DIFFERENTIAL_STRING ,//63
-  SWR_SOURCE_ENVELOPE_STRING, //64
-  SWR_SOURCE_DIFFERENTIAL_SET_STRING, //65
-  SWR_SOURCE_ENVELOPE_SET_STRING, //66
-  SWR_SOURCE_INVALID_STRING, //67
-  HELP_COMMANDS_9_STRING, //68
-  CALIBRATIONDATA_PHASE_SHIFTED_STRING, //69
-  CALIBRATIONDATA_VREF_SHIFTED_STRING //70
-};
-
-const char* strings(uint16_t id);
-char* strings(uint16_t id, char *buffer);
 void uint32toa(uint32_t value, char *buffer, uint8_t radix);
 char* splitString(char* data, char separator);
 

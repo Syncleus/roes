@@ -32,7 +32,7 @@ void handleCalibrationPoints(char* tokens) {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS_DUMMY> calibrationPointsDataDummy = calibrationPowerPointsDummy();
     // Iterate through the list.
     itr = calibrationPointsDataDummy.begin();
-    Serial.print(strings(CALIBRATIONPOINTS_DUMMY_LABEL));
+    Serial.print(CALIBRATIONPOINTS_DUMMY_LABEL);
     while (itr != calibrationPointsDataDummy.end())
     {
       Serial.print(String(*itr++));
@@ -43,11 +43,11 @@ void handleCalibrationPoints(char* tokens) {
     etl::set<float, MAX_CALIBRATION_POWER_POINTS_OPEN> calibrationPointsDataOpen = calibrationPowerPointsOpen();
     // Iterate through the list.
     itr = calibrationPointsDataOpen.begin();
-    Serial.print(strings(CALIBRATIONPOINTS_OPEN_LABEL));
+    Serial.print(CALIBRATIONPOINTS_OPEN_LABEL);
     while (itr != calibrationPointsDataOpen.end())
     {
       Serial.print(String(*itr++));
-      Serial.print(strings(SINGLE_SPACE));
+      Serial.print(SINGLE_SPACE);
     }
     Serial.println();
   }
@@ -55,7 +55,7 @@ void handleCalibrationPoints(char* tokens) {
     char* parsedArgument = argument;
     argument = splitString(parsedArgument, ' ');
     boolean isDummyPoints = true;
-    if( String(parsedArgument).equals(strings(OPEN_LABEL)) )
+    if( String(parsedArgument).equals(OPEN_LABEL) )
       isDummyPoints = false;
 
     uint8_t entryCount = 0;
@@ -67,7 +67,7 @@ void handleCalibrationPoints(char* tokens) {
         if( parsedArgument != NULL ) {
           entryCount++;
           if( entryCount > MAX_CALIBRATION_POWER_POINTS_DUMMY ) {
-            Serial.print(strings(CALIBRATIONPOINTS_TOO_MANY));
+            Serial.print(CALIBRATIONPOINTS_TOO_MANY);
             Serial.println(String(MAX_CALIBRATION_POWER_POINTS_DUMMY));
             return;
           }
@@ -76,7 +76,7 @@ void handleCalibrationPoints(char* tokens) {
       } while(argument != NULL);
 
       if( entryCount <= 0 ) {
-        Serial.println(strings(CALIBRATIONPOINTS_TOO_FEW));
+        Serial.println(CALIBRATIONPOINTS_TOO_FEW);
         return;
       }
       setCalibrationPowerPointsDummy(calibrationPointsData);
@@ -89,7 +89,7 @@ void handleCalibrationPoints(char* tokens) {
         if( parsedArgument != NULL ) {
           entryCount++;
           if( entryCount > MAX_CALIBRATION_POWER_POINTS_OPEN ) {
-            Serial.print(strings(CALIBRATIONPOINTS_TOO_MANY));
+            Serial.print(CALIBRATIONPOINTS_TOO_MANY);
             Serial.println(String(MAX_CALIBRATION_POWER_POINTS_OPEN));
             return;
           }
@@ -98,32 +98,32 @@ void handleCalibrationPoints(char* tokens) {
       } while(argument != NULL);
 
       if( entryCount <= 0 ) {
-        Serial.println(strings(CALIBRATIONPOINTS_TOO_FEW));
+        Serial.println(CALIBRATIONPOINTS_TOO_FEW);
         return;
       }
       setCalibrationPowerPointsOpen(calibrationPointsData);
     }
 
-    Serial.println(strings(CALIBRATIONPOINTS_SET));
+    Serial.println(CALIBRATIONPOINTS_SET);
   }
 }
 
 void handleHelp(char* tokens) {
-  Serial.println(strings(COMMANDS_OVERVIEW_HELP));
-  Serial.println(strings(HELP_COMMANDS_1));
-  Serial.println(strings(HELP_COMMANDS_2));
-  Serial.println(strings(HELP_COMMANDS_3));
-  Serial.println(strings(HELP_COMMANDS_4));
-  Serial.println(strings(HELP_COMMANDS_5));
-  Serial.println(strings(HELP_COMMANDS_6));
-  Serial.println(strings(HELP_COMMANDS_7));
-  Serial.println(strings(HELP_COMMANDS_8));
-  Serial.println(strings(HELP_COMMANDS_9));
+  Serial.println(COMMANDS_OVERVIEW_HELP);
+  Serial.println(HELP_COMMANDS_1);
+  Serial.println(HELP_COMMANDS_2);
+  Serial.println(HELP_COMMANDS_3);
+  Serial.println(HELP_COMMANDS_4);
+  Serial.println(HELP_COMMANDS_5);
+  Serial.println(HELP_COMMANDS_6);
+  Serial.println(HELP_COMMANDS_7);
+  Serial.println(HELP_COMMANDS_8);
+  Serial.println(HELP_COMMANDS_9);
 }
 
 void handleClearEeprom(char* tokens) {
   eepromClear();
-  Serial.println(strings(EEPROM_CLEARED));
+  Serial.println(EEPROM_CLEARED);
 }
 
 void handleCalibrationData(char* tokens) {
@@ -134,24 +134,24 @@ void handleCalibrationData(char* tokens) {
   while (dummyPowerPointsItr != dummyPowerPoints.end())
   {
     float currentPowerPoint = *dummyPowerPointsItr++;
-    Serial.print(strings(CALIBRATIONDATA_HEADER_1));
+    Serial.print(CALIBRATIONDATA_HEADER_1);
     Serial.print(String(currentPowerPoint));
-    Serial.println(strings(CALIBRATIONDATA_HEADER_2_DUMMY));
+    Serial.println(CALIBRATIONDATA_HEADER_2_DUMMY);
 
     CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, true);
-    Serial.print(strings(CALIBRATIONDATA_FWD));
+    Serial.print(CALIBRATIONDATA_FWD);
     Serial.println(String(currentCalibrationData.fwd));
-    Serial.print(strings(CALIBRATIONDATA_RVR));
+    Serial.print(CALIBRATIONDATA_RVR);
     Serial.println(String(currentCalibrationData.refl));
-    Serial.print(strings(CALIBRATIONDATA_MAGNITUDE));
+    Serial.print(CALIBRATIONDATA_MAGNITUDE);
     Serial.println(String(currentCalibrationData.magnitude));
-    Serial.print(strings(CALIBRATIONDATA_PHASE));
+    Serial.print(CALIBRATIONDATA_PHASE);
     Serial.println(String(currentCalibrationData.phase));
-    Serial.print(strings(CALIBRATIONDATA_VREF));
+    Serial.print(CALIBRATIONDATA_VREF);
     Serial.println(String(currentCalibrationData.vref));
-    Serial.print(strings(CALIBRATIONDATA_VREF_SHIFTED));
+    Serial.print(CALIBRATIONDATA_VREF_SHIFTED);
     Serial.println(String(currentCalibrationData.vrefShifted));
-    Serial.print(strings(CALIBRATIONDATA_PHASE_SHIFTED));
+    Serial.print(CALIBRATIONDATA_PHASE_SHIFTED);
     Serial.println(String(currentCalibrationData.phaseShifted));
   }
 
@@ -162,111 +162,111 @@ void handleCalibrationData(char* tokens) {
   while (openPowerPointsItr != openPowerPoints.end())
   {
     float currentPowerPoint = *openPowerPointsItr++;
-    Serial.print(strings(CALIBRATIONDATA_HEADER_1));
+    Serial.print(CALIBRATIONDATA_HEADER_1);
     Serial.print(String(currentPowerPoint));
-    Serial.println(strings(CALIBRATIONDATA_HEADER_2_OPEN));
+    Serial.println(CALIBRATIONDATA_HEADER_2_OPEN);
 
     CalibrationData currentCalibrationData = calibrationData(currentPowerPoint, false);
-    Serial.print(strings(CALIBRATIONDATA_FWD));
+    Serial.print(CALIBRATIONDATA_FWD);
     Serial.println(String(currentCalibrationData.fwd));
-    Serial.print(strings(CALIBRATIONDATA_RVR));
+    Serial.print(CALIBRATIONDATA_RVR);
     Serial.println(String(currentCalibrationData.refl));
-    Serial.print(strings(CALIBRATIONDATA_MAGNITUDE));
+    Serial.print(CALIBRATIONDATA_MAGNITUDE);
     Serial.println(String(currentCalibrationData.magnitude));
-    Serial.print(strings(CALIBRATIONDATA_PHASE));
+    Serial.print(CALIBRATIONDATA_PHASE);
     Serial.println(String(currentCalibrationData.phase));
-    Serial.print(strings(CALIBRATIONDATA_VREF));
+    Serial.print(CALIBRATIONDATA_VREF);
     Serial.println(String(currentCalibrationData.vref));
-    Serial.print(strings(CALIBRATIONDATA_VREF_SHIFTED));
+    Serial.print(CALIBRATIONDATA_VREF_SHIFTED);
     Serial.println(String(currentCalibrationData.vrefShifted));
-    Serial.print(strings(CALIBRATIONDATA_PHASE_SHIFTED));
+    Serial.print(CALIBRATIONDATA_PHASE_SHIFTED);
     Serial.println(String(currentCalibrationData.phaseShifted));
   }
 
 }
 
 void handleReadInputs(char* tokens) {
-  Serial.print(strings(READINPUTS_FWD));
+  Serial.print(READINPUTS_FWD);
   Serial.println(String(analogRead(POWER_FWD_PIN)));
-  Serial.print(strings(READINPUTS_RVR));
+  Serial.print(READINPUTS_RVR);
   Serial.println(String(analogRead(POWER_REFL_PIN)));
-  Serial.print(strings(READINPUTS_VREF));
+  Serial.print(READINPUTS_VREF);
   Serial.println(String(analogRead(DIFFERENTIAL_VREF_PIN)));
-  Serial.print(strings(READINPUTS_PHASE));
+  Serial.print(READINPUTS_PHASE);
   Serial.println(String(analogRead(DIFFERENTIAL_PHASE_PIN)));
-  Serial.print(strings(READINPUTS_MAGNITUDE));
+  Serial.print(READINPUTS_MAGNITUDE);
   Serial.println(String(analogRead(DIFFERENTIAL_MAGNITUDE_PIN)));
 }
 
 void handleCalibrateOnBoot(char* tokens) {
-  char* argument = strtok(NULL, strings(SINGLE_SPACE));
+  char* argument = strtok(NULL, SINGLE_SPACE);
   if( argument == NULL ) {
-    Serial.print(strings(CALIBRATEONBOOT_LABEL));
-    Serial.println((calibrateOnBoot() == true ? strings(CALIBRATEONBOOT_ON) : strings(CALIBRATEONBOOT_OFF)));
+    Serial.print(CALIBRATEONBOOT_LABEL);
+    Serial.println((calibrateOnBoot() == true ? CALIBRATEONBOOT_ON : CALIBRATEONBOOT_OFF));
   }
   else {
     String argumentStr = String(argument);
-    if( argumentStr.equals(strings(CALIBRATEONBOOT_ON)) ) {
+    if( argumentStr.equals(CALIBRATEONBOOT_ON) ) {
       activateCalibrateOnBoot();
-      Serial.println(strings(CALIBRATEONBOOT_ACTIVATING));
+      Serial.println(CALIBRATEONBOOT_ACTIVATING);
     }
-    else if( argumentStr.equals(strings(CALIBRATEONBOOT_OFF)) ) {
+    else if( argumentStr.equals(CALIBRATEONBOOT_OFF) ) {
       deactivateCalibrateOnBoot();
-      Serial.println(strings(CALIBRATEONBOOT_DEACTIVATING));
+      Serial.println(CALIBRATEONBOOT_DEACTIVATING);
     }
     else {
-      Serial.println(strings(CALIBRATEONBOOT_INVALID_ARGUMENT));
+      Serial.println(CALIBRATEONBOOT_INVALID_ARGUMENT);
     }
   }
 }
 
 void handlePing(char* tokens) {
-  Serial.println(strings(PONG_LABEL));
+  Serial.println(PONG_LABEL);
 }
 
 void handleDemo(char* tokens) {
-  char* argument = strtok(NULL, strings(SINGLE_SPACE));
+  char* argument = strtok(NULL, SINGLE_SPACE);
   if( argument == NULL ) {
-    Serial.print(strings(DEMO_LABEL));
-    Serial.println((demoMode() ? strings(DEMO_ON) : strings(DEMO_OFF)));
+    Serial.print(DEMO_LABEL);
+    Serial.println((demoMode() ? DEMO_ON : DEMO_OFF));
   }
   else {
     String argumentStr = String(argument);
-    if( argumentStr.equals(strings(DEMO_ON)) ) {
+    if( argumentStr.equals(DEMO_ON) ) {
       activateDemoMode();
-      Serial.println(strings(DEMO_ACTIVATING));
+      Serial.println(DEMO_ACTIVATING);
     }
-    else if( argumentStr.equals(strings(DEMO_OFF)) ) {
+    else if( argumentStr.equals(DEMO_OFF) ) {
       deactivateDemoMode();
-      Serial.println(strings(DEMO_DEACTIVATING));
+      Serial.println(DEMO_DEACTIVATING);
     }
     else {
-      Serial.println(strings(DEMO_INVALID_ARGUMENT));
+      Serial.println(DEMO_INVALID_ARGUMENT);
     }
   }
 }
 
 void handleSwrSource(char* tokens) {
-  char* argument = strtok(NULL, strings(SINGLE_SPACE));
+  char* argument = strtok(NULL, SINGLE_SPACE);
   if( argument == NULL ) {
-    Serial.print(strings(SWR_SOURCE_INFO));
+    Serial.print(SWR_SOURCE_INFO);
     if( differentialForSwr() )
-      Serial.println(strings(SWR_SOURCE_DIFFERENTIAL));
+      Serial.println(SWR_SOURCE_DIFFERENTIAL);
     else if( envelopeDetectorForSwr() )
-      Serial.println(strings(SWR_SOURCE_ENVELOPE));
+      Serial.println(SWR_SOURCE_ENVELOPE);
   }
   else {
     String argumentStr = String(argument);
-    if( argumentStr.equals(strings(SWR_SOURCE_DIFFERENTIAL)) ) {
+    if( argumentStr.equals(SWR_SOURCE_DIFFERENTIAL) ) {
       activateAd8302ForSwr();
-      Serial.println(strings(SWR_SOURCE_DIFFERENTIAL_SET));
+      Serial.println(SWR_SOURCE_DIFFERENTIAL_SET);
     }
-    else if( argumentStr.equals(strings(SWR_SOURCE_ENVELOPE)) ) {
+    else if( argumentStr.equals(SWR_SOURCE_ENVELOPE) ) {
       activeEnvelopeDetectorForSwr();
-      Serial.println(strings(SWR_SOURCE_ENVELOPE_SET));
+      Serial.println(SWR_SOURCE_ENVELOPE_SET);
     }
     else {
-      Serial.println(strings(SWR_SOURCE_INVALID));
+      Serial.println(SWR_SOURCE_INVALID);
     }
   }
 }

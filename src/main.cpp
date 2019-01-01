@@ -68,7 +68,7 @@ void setup()   {
   //   uint32toa(storedCrc, errorMsgLine4 + 2, 16);
   //
   //   prepareRender();
-  //   renderError(strings(CORRUPT_EEPROM), strings(CRC_CHECK_FAILED), errorMsgLine3, errorMsgLine4);
+  //   renderError(CORRUPT_EEPROM, CRC_CHECK_FAILED, errorMsgLine3, errorMsgLine4);
   //   finishRender();
   // }
   // else {

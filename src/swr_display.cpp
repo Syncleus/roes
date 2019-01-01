@@ -267,8 +267,8 @@ void renderPowerText(float power_fwd, float power_rvr) {
   display.println(reverseText);
 }
 
-void renderSmithChart(float reflMagDb, float reflPhase, float loatMagDb, float loadPhase) {
-  drawSmithChart(display, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, reflMagDb, reflPhase, loatMagDb, loadPhase);
+void renderSmithChart(float magDb, float phase) {
+  drawSmithChart(display, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, magDb, phase);
 }
 
 void renderLoadText(float magnitudeDb, float phase) {

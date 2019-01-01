@@ -145,7 +145,7 @@ void loop() {
     renderLoadText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     commandlineUpdate();
 
-    renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg, sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     finishRender();
     commandlineUpdate();
   }

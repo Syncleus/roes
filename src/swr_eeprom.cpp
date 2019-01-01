@@ -132,7 +132,8 @@ void deactivateCalibrateOnBoot() {
 }
 
 boolean demoMode() {
-  return persistedData.demoMode;
+  return true;
+  //return persistedData.demoMode;
 }
 
 void activateDemoMode() {

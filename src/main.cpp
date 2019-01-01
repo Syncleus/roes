@@ -45,7 +45,7 @@ void setup()   {
   // statusLedSetup();
   // Serial.println("  Status LED initialized");
   displaySetup();
-  //Serial.println("  Display initialized");
+  // Serial.println("  Display initialized");
   //eepromSetup();
   // Serial.println("  EEPROM initialized");
   // commandlineSetup();
@@ -95,7 +95,7 @@ void loop() {
 
   // heartbeatUpdate();
   // statusLedUpdate();
-  commandlineUpdate();
+  // commandlineUpdate();
 
   // if( error )
   //   return;
@@ -106,14 +106,14 @@ void loop() {
   if( (long)(time - refreshDisplayTime) >= 0 && !calibrating) {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
 
-    // if(demoMode()) {
-    //   updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
-    //   updatePowerDemo(&(sensorData.fwdPower), &(sensorData.reflPower));
-    //   sensorData.swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
-    // }
-    // else {
-    //   sensorData = readSensors(sensorData);
-    // }
+    if(demoMode()) {
+      updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
+      updatePowerDemo(&(sensorData.fwdPower), &(sensorData.reflPower));
+      sensorData.swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
+    }
+    else {
+      sensorData = readSensors(sensorData);
+    }
 
     // if( sensorData.fwdPower >= TRANSMIT_THREASHOLD_POWER ) {
     //   if( sensorData.swr < 1.5 )
@@ -143,7 +143,7 @@ void loop() {
        renderPowerText(sensorData.fwdPower, sensorData.reflPower);
     //   break;
     // case BOTTOM_REFLECTION:
-       renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+        renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     //   break;
     // case BOTTOM_LOAD:
        renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);

@@ -75,7 +75,7 @@ OBJDIR            = $(PROJECT_DIR)/bin/$(BOARD_TAG)/$(CURRENT_DIR)
 ARDUINO_LIBS =  ArduinoSTL Arduino-CommandLine Embedded_Template_Library SPI Wire Complex Adafruit_FT6206_Library Adafruit_GFX_Library Adafruit_ILI9341
 #
 # #MCU = due
-# F_CPU = 84000000L
+#F_CPU = 84000000L
 #
 # ARDUINO_CORE_PATH = /usr/share/arduino/hardware/archlinux-arduino/avr/cores/arduino
 # #BOARDS_TXT = /usr/share/arduino/hardware/archlinux-arduino/avr/boards.txt

@@ -2,7 +2,7 @@
 #include <cstring.h>
 #include <map.h>
 #include <container.h>
-#include <EEPROM.h>
+//#include <EEPROM.h>
 #include <avr/pgmspace.h>
 
 #define EEPROM_CRC_ADDR 0
@@ -22,15 +22,16 @@ struct SwrPersistedData {
 SwrPersistedData persistedData;
 
 void eepromClear() {
-  for (uint16_t i = 0 ; i < EEPROM.length() ; i++) {
-    EEPROM.update(i, 0);
-  }
+  // for (uint16_t i = 0 ; i < EEPROM.length() ; i++) {
+  //   EEPROM.update(i, 0);
+  // }
 }
 
 boolean isEepromBlank() {
-  uint32_t storedCrc;
-  EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
-  return storedCrc == 0;
+  return true;
+  // uint32_t storedCrc;
+  // EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
+  // return storedCrc == 0;
 }
 
 static PROGMEM uint32_t crc32(byte *data, int len) {
@@ -57,13 +58,13 @@ static PROGMEM uint32_t crc32(byte *data, int len) {
 
 uint32_t eepromCrc32Actual() {
   SwrPersistedData eepromData;
-  EEPROM.get(EEPROM_DATA_ADDR, eepromData);
+  // EEPROM.get(EEPROM_DATA_ADDR, eepromData);
   return crc32((byte*) &eepromData, sizeof(eepromData));
 }
 
 uint32_t eepromCrc32Stored() {
   uint32_t storedCrc;
-  EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
+  // EEPROM.get(EEPROM_CRC_ADDR, storedCrc);
   return storedCrc;
 }
 
@@ -78,34 +79,36 @@ boolean checkEepromCrc() {
 }
 
 boolean storeData() {
-  uint32_t crc = persistedDataCrc32();
-  EEPROM.put(EEPROM_CRC_ADDR, crc);
-  if( sizeof(persistedData) + EEPROM_CRC_LENGTH < EEPROM.length() )
-    EEPROM.put(EEPROM_DATA_ADDR, persistedData);
-
-  return crc == eepromCrc32Actual();
+  return true;
+  // uint32_t crc = persistedDataCrc32();
+  // EEPROM.put(EEPROM_CRC_ADDR, crc);
+  // if( sizeof(persistedData) + EEPROM_CRC_LENGTH < EEPROM.length() )
+  //   EEPROM.put(EEPROM_DATA_ADDR, persistedData);
+  //
+  // return crc == eepromCrc32Actual();
 }
 
 boolean recallData() {
-  EEPROM.get(EEPROM_DATA_ADDR, persistedData);
-  return checkEepromCrc();
+  return true;
+  // EEPROM.get(EEPROM_DATA_ADDR, persistedData);
+  // return checkEepromCrc();
 }
 
 void eepromSetup() {
-  if( isEepromBlank() )
-  {
-    for(int index=0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
-      persistedData.calibrationPowerPointsDummy[index] = -1.0;
-    }
-    Serial.println("    done setting power points dummy");
-    for(int indexPoint=0; indexPoint < MAX_CALIBRATION_POWER_POINTS_DUMMY; indexPoint++) {
-      persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
-    }
-    storeData();
-  }
-  else {
-    recallData();
-  }
+  // if( isEepromBlank() )
+  // {
+  //   for(int index=0; index < MAX_CALIBRATION_POWER_POINTS_DUMMY; index++) {
+  //     persistedData.calibrationPowerPointsDummy[index] = -1.0;
+  //   }
+  //   Serial.println("    done setting power points dummy");
+  //   for(int indexPoint=0; indexPoint < MAX_CALIBRATION_POWER_POINTS_DUMMY; indexPoint++) {
+  //     persistedData.calibrationDataDummy[indexPoint] = {0, 0, 0};
+  //   }
+  //   storeData();
+  // }
+  // else {
+  //   recallData();
+  // }
 }
 
 boolean calibrateOnBoot() {

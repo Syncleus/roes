@@ -133,29 +133,21 @@ void loop() {
     prepareRender();
     renderSwr(sensorData.swr);
     commandlineUpdate();
-    // switch( currentTopScreen ) {
-    // case TOP_POWER:
-       renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
-       commandlineUpdate();
-    // break;
-    // case TOP_REFLECTION:
-    //   renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-    //   break;
-    // }
-    // switch( currentBottomScreen ) {
-    // case BOTTOM_POWER:
-       renderPowerText(sensorData.fwdPower, sensorData.reflPower);
-       commandlineUpdate();
-    //   break;
-    // case BOTTOM_REFLECTION:
-        renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-        commandlineUpdate();
-    //   break;
-    // case BOTTOM_LOAD:
-       renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
-       commandlineUpdate();
-    //   break;
-    // }
+
+    renderPowerBars(sensorData.fwdPower, sensorData.reflPower);
+    commandlineUpdate();
+
+    //renderReflectionBars(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+
+    renderPowerText(sensorData.fwdPower, sensorData.reflPower);
+    commandlineUpdate();
+
+    renderReflectionText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    commandlineUpdate();
+
+    renderLoadZText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    commandlineUpdate();
+
     renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg, sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     finishRender();
     commandlineUpdate();

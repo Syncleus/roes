@@ -122,9 +122,9 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules, boolean sm
   info.height = (y1 - y0);
   info.centerY = y0 + info.height/2;
   if(info.width < info.height)
-    info.baseRadius = info.width/2;
+    info.baseRadius = info.width/2 - 20;
   else
-    info.baseRadius = info.height/2;
+    info.baseRadius = info.height/2 - 20;
   info.baseDiameter = info.baseRadius * 2;
   info.originX = info.centerX + info.baseRadius;
   info.antioriginX = info.centerX - info.baseRadius;

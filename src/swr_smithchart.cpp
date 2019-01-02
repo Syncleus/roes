@@ -1,6 +1,7 @@
 #include "swr_colors.h"
 #include "swr_smithchart.h"
 #include "swr_power.h"
+#include "swr_constants.h"
 #include "complex.h"
 #include <math.h>
 
@@ -110,7 +111,7 @@ float pointLength(float x0, float y0, float x1, float y1) {
   return sqrt(xDist+xDist + yDist*yDist);
 }
 
-void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, float magDb, float phase) {
+void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules, boolean smithCoords, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, float magDb, float phase) {
   SmithChartInfo info;
   info.x0 = x0;
   info.y0 = y0;
@@ -137,63 +138,108 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t 
     //clear region first
     display.fillRect(info.x0, info.y0, info.x1, info.y1, BLACK);
 
-    //draw imaginary axix (outer circle)
-    display.drawCircle(info.centerX, info.centerY, info.baseRadius, MAGENTA);
-    display.setCursor(info.centerX - info.baseRadius + 4, info.centerY + 4);
-    display.setTextColor(MAGENTA);
-    display.setTextSize(1);
-    display.print("0");
-    display.drawLine(info.antioriginX, info.centerY, info.originX, info.centerY, MAGENTA);
-    //highlight Prime center
-    display.fillCircle(info.centerX, info.centerY, 2, MAGENTA);
-
-    // Draw lines of constant Real values
-    boolean textUp = false;
-    for(int i = 0; i < sizeof(xAxis) / sizeof(Axis); i++) {
-      float real = xAxis[i].value;
-      String label = xAxis[i].label;
-      uint16_t px = info.antioriginX + (-1.0/(real + 1.0) + 1.0) * info.baseDiameter;
-      uint16_t cx = px + (info.originX - px) / 2;
-      drawArc(display, cx, info.centerY, px, info.centerY, 0.0, 250, MAGENTA, false, 0.0);
-
-      if( !textUp )
-        display.setCursor(px + 4, info.centerY + 4);
-      else
-        display.setCursor(px + 4, info.centerY - 8);
+    if( smithCoords) {
+      //draw imaginary axix (outer circle)
+      display.drawCircle(info.centerX, info.centerY, info.baseRadius, MAGENTA);
+      display.setCursor(info.centerX - info.baseRadius + 4, info.centerY + 4);
+      display.setTextColor(MAGENTA);
       display.setTextSize(1);
-      display.print(label);
+      display.print("0");
+      display.drawLine(info.antioriginX, info.centerY, info.originX, info.centerY, MAGENTA);
+      //highlight Prime center
+      display.fillCircle(info.centerX, info.centerY, 2, MAGENTA);
 
-      textUp = !textUp;
-    }
+      // Draw lines of constant Real values
+      boolean textUp = false;
+      for(int i = 0; i < sizeof(xAxis) / sizeof(Axis); i++) {
+        float real = xAxis[i].value;
+        String label = xAxis[i].label;
+        uint16_t px = info.antioriginX + (-1.0/(real + 1.0) + 1.0) * info.baseDiameter;
+        uint16_t cx = px + (info.originX - px) / 2;
+        drawArc(display, cx, info.centerY, px, info.centerY, 0.0, 250, MAGENTA, false, 0.0);
 
-    // Draw lines of constant imaginary values.
-    for(int i = 0; i < sizeof(yAxis) / sizeof(Axis); i++) {
-      float imag = yAxis[i].value;
-      String label = yAxis[i].label;
-      float cy = float(info.centerY) - (float(info.baseRadius)/imag);
+        if( !textUp )
+          display.setCursor(px + 4, info.centerY + 4);
+        else
+          display.setCursor(px + 4, info.centerY - 8);
+        display.setTextSize(1);
+        display.print(label);
 
-      //calculate angle
-      Complex c1(-1.0, imag);
-      Complex c2(1.0, imag);
-      Complex intercept = c1/c2;
-      float ix = float(info.centerX) + intercept.real() * (float(info.baseRadius));
-      float iy = float(info.centerY) - intercept.imag() * (float(info.baseRadius));
+        textUp = !textUp;
+      }
 
-      drawArc(display, float(info.originX), cy, float(info.originX), float(info.centerY), iy, 250, MAGENTA, true, info.centerY);
-      display.setCursor(ix, iy);
-      display.setTextSize(1);
-      display.print(label);
-      //mirror onto other side
-      display.setCursor(ix, info.centerY + (info.centerY - iy));
-      display.print(String("-") + label);
+      // Draw lines of constant imaginary values.
+      for(int i = 0; i < sizeof(yAxis) / sizeof(Axis); i++) {
+        float imag = yAxis[i].value;
+        String label = yAxis[i].label;
+        float cy = float(info.centerY) - (float(info.baseRadius)/imag);
 
-      //
-      // float a = pointLength(float(info.originX), cy, float(info.originX), float(info.centerY));
-      // float b = pointLength(float(info.originX), cy, ix, iy);
-      // float c = pointLength(ix, iy, float(info.originX), float(info.centerY));
-      // float theta = acos((a*a + b*b - c*c) / (2.0*a*b));
-      //
-      // drawArc(display, float(info.originX), cy, float(info.originX), float(info.centerY), theta, 200, WHITE, true, float(info.centerY));
+        //calculate angle
+        Complex c1(-1.0, imag);
+        Complex c2(1.0, imag);
+        Complex intercept = c1/c2;
+        float ix = float(info.centerX) + intercept.real() * (float(info.baseRadius));
+        float iy = float(info.centerY) - intercept.imag() * (float(info.baseRadius));
+
+        drawArc(display, float(info.originX), cy, float(info.originX), float(info.centerY), iy, 250, MAGENTA, true, info.centerY);
+        display.setCursor(ix, iy);
+        display.setTextSize(1);
+        display.print(label);
+        //mirror onto other side
+        display.setCursor(ix, info.centerY + (info.centerY - iy));
+        display.print(String("-") + label);
+
+        //
+        // float a = pointLength(float(info.originX), cy, float(info.originX), float(info.centerY));
+        // float b = pointLength(float(info.originX), cy, ix, iy);
+        // float c = pointLength(ix, iy, float(info.originX), float(info.centerY));
+        // float theta = acos((a*a + b*b - c*c) / (2.0*a*b));
+        //
+        // drawArc(display, float(info.originX), cy, float(info.originX), float(info.centerY), theta, 200, WHITE, true, float(info.centerY));
+      }
+    } else {
+      display.setTextColor(CYAN);
+      display.drawLine(info.centerX, info.centerY - info.baseRadius, info.centerX, info.centerY + info.baseRadius, CYAN);
+      display.drawLine(info.centerX - info.baseRadius, info.centerY, info.centerX + info.baseRadius, info.centerY, CYAN);
+
+      display.setCursor(info.centerX + CHARACTER_WIDTH, info.centerY - info.baseRadius - 10);
+      display.print("1i");
+      display.setCursor(info.centerX - (CHARACTER_WIDTH * 3), info.centerY - info.baseRadius - 10);
+      display.print("-90");
+      display.drawCircle(info.centerX, (info.centerY - info.baseRadius - 10), 1, CYAN);
+
+      display.setCursor(info.centerX + CHARACTER_WIDTH, info.centerY + info.baseRadius + 10);
+      display.print("-1i");
+      display.setCursor(info.centerX - (CHARACTER_WIDTH * 2), info.centerY + info.baseRadius + 10);
+      display.print("90");
+      display.drawCircle(info.centerX, (info.centerY + info.baseRadius + 10), 1, CYAN);
+
+      display.setCursor(info.centerX + info.baseRadius + CHARACTER_WIDTH, info.centerY + 10);
+      display.print("1");
+      display.setCursor(info.centerX + info.baseRadius + CHARACTER_WIDTH, info.centerY - 10);
+      display.print("0");
+      display.drawCircle(info.centerX + info.baseRadius + CHARACTER_WIDTH * 2, info.centerY - 10, 1, CYAN);
+
+      display.setCursor(info.centerX - info.baseRadius - CHARACTER_WIDTH*2, info.centerY + 10);
+      display.print("-1");
+      display.setCursor(info.centerX - info.baseRadius - CHARACTER_WIDTH * 3 - CHARACTER_WIDTH/2, info.centerY - 10);
+      display.print("180");
+      display.drawCircle(info.centerX - info.baseRadius - CHARACTER_WIDTH/2 , info.centerY - 10, 1, CYAN);
+
+      for(int16_t i = 1; i <= 8; i++) {
+        display.drawCircle(info.centerX, info.centerY, (info.baseRadius * i) / 8, CYAN);
+      }
+
+      // y = sqrt(info.baseRadius * info.baseRadius, - x^2)
+      for(uint8_t i = 1; i <= 7; i ++) {
+        uint16_t deltaX = (info.baseRadius * i) / 8;
+        uint16_t deltaY = sqrt(info.baseRadius * info.baseRadius - deltaX * deltaX);
+        display.drawLine(info.centerX - deltaX, info.centerY - deltaY, info.centerX - deltaX, info.centerY + deltaY, CYAN );
+        display.drawLine(info.centerX + deltaX, info.centerY - deltaY, info.centerX + deltaX, info.centerY + deltaY, CYAN );
+
+        display.drawLine(info.centerX - deltaY, info.centerY - deltaX, info.centerX + deltaY, info.centerY - deltaX, CYAN );
+        display.drawLine(info.centerX - deltaY, info.centerY + deltaX, info.centerX + deltaY, info.centerY + deltaX, CYAN );
+      }
     }
   }
 

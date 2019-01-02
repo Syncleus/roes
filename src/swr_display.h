@@ -1,6 +1,7 @@
 #ifndef _SWR_DISPLAY_H_
 #define _SWR_DISPLAY_H_
 
+#include "swr_smithchart.h"
 #include <Arduino.h>
 
 void displaySetup();
@@ -26,5 +27,6 @@ void renderPowerText(float power_fwd, float power_rvr);
 void renderLoadText(float magnitudeDb, float phase);
 void renderSmithChart(float magDb, float phase);
 void clearSmithChart();
+void switchSystem();
 
 #endif /* _SWR_DISPLAY_H_ */

@@ -20,9 +20,6 @@
 #error("Height incorrect, please fix Adafruit_ILI9341.h!");
 #endif
 
-//configure display
-// The display uses hardware I2C (SCL/SDA)
-Adafruit_FT6206 ctp = Adafruit_FT6206();
 // The display also uses hardware SPI, plus #9 & #10
 #define TFT_CS 10
 #define TFT_DC 9
@@ -33,6 +30,7 @@ boolean demo_phase_increasing = true;
 boolean demo_power_fwd_increasing = true;
 boolean demo_power_rvr_increasing = true;
 boolean clear_smith_chart = true;
+boolean chart_is_smith = true;
 
 static const PROGMEM unsigned char gamma16_glcd_bmp[] =
 { B01111111, B11111110,
@@ -118,11 +116,6 @@ static const PROGMEM unsigned char degree_inv_glcd_bmp[] =
 
 void displaySetup() {
   display.begin();
-
-  if (! ctp.begin(40)) {
-    Serial.println("Couldn't start FT6206 touchscreen controller");
-    while (1);
-  }
 
   display.fillScreen(BLACK);
 }
@@ -275,8 +268,13 @@ void clearSmithChart() {
   clear_smith_chart = true;
 }
 
+void switchSystem() {
+  chart_is_smith = !chart_is_smith;
+  clearSmithChart();
+}
+
 void renderSmithChart(float magDb, float phase) {
-  drawSmithChart(display, clear_smith_chart, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, magDb, phase);
+  drawSmithChart(display, clear_smith_chart, chart_is_smith, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, magDb, phase);
   if(clear_smith_chart)
     clear_smith_chart = false;
 }

@@ -10,6 +10,7 @@
 #include "swr_commandline.h"
 #include "swr_eeprom.h"
 #include "swr_sensors.h"
+#include <Adafruit_FT6206.h>
 
 enum TopScreen {
   TOP_POWER,
@@ -35,6 +36,8 @@ SensorData sensorData;
 
 float calibratingPowerPoint = -1.0;
 
+Adafruit_FT6206 touch = Adafruit_FT6206();
+
 void setup()   {
   Serial.begin(SERIAL_BAUDE_RATE);//SERIAL_BAUDE_RATE);
   while (!Serial);     // used for leonardo debugging
@@ -51,6 +54,11 @@ void setup()   {
   commandlineSetup();
   Serial.println("  Serial Commandline initialized");
   Serial.println("System initialized!");
+
+  if (!touch.begin())
+    Serial.println("  Unable to start touchscreen.");
+  else
+    Serial.println("Touchscreen started.");
 
   // pinMode(DOWN_BUTTON_PIN, INPUT);
   // pinMode(UP_BUTTON_PIN, INPUT);
@@ -94,6 +102,23 @@ void setup()   {
 void loop() {
   unsigned long time = millis();
   static unsigned long refreshDisplayTime = 0;
+
+  if(touch.touched())
+  {
+    // Retrieve a point
+    //TS_Point p = touch.getPoint();
+    touch.getPoint();
+    // // Scale using the calibration #'s
+    // // and rotate coordinate system
+    // p.x = map(p.x, TOUCH_MIN_Y, TOUCH_MAX_Y, 0, SCREEN_HEIGHT);
+    // p.y = map(p.y, TOUCH_MIN_X, TOUCH_MAX_X, 0, SCREEN_WIDTH);
+    // int y = SCREEN_HEIGHT - p.x;
+    // int x = p.y;
+    //
+    // if( y > SCREEN_ROW_GRFX_Y && y < SCREEN_ROW_GRFX_Y_END ) {
+    switchSystem();
+    //}
+  }
 
   heartbeatUpdate();
   // statusLedUpdate();

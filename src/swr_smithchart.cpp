@@ -144,6 +144,8 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t 
     display.setTextSize(1);
     display.print("0");
     display.drawLine(info.antioriginX, info.centerY, info.originX, info.centerY, MAGENTA);
+    //highlight Prime center
+    display.fillCircle(info.centerX, info.centerY, 2, MAGENTA);
 
     // Draw lines of constant Real values
     boolean textUp = false;

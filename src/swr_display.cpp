@@ -163,16 +163,19 @@ String makeValueLabel(float value, const char* units) {
   String label = String(value);
   if ( isinf(value) || isnan(value) )
     return String("***");
-  uint8_t decimalIndex = label.indexOf(".");
-  uint8_t labelLength = label.length();
-  if ( decimalIndex > 1 )
-    label = label.substring(0, decimalIndex);
-  else if(decimalIndex >= 0) {
-    label = label.substring(0, (labelLength >= 3 ? 3 : labelLength));
-  }
+  int16_t decimalIndex = label.indexOf(".");
+
+  String out;
+  if(decimalIndex >= 4)
+    out = label.substring(0, decimalIndex);
+  else if(decimalIndex >= 0)
+    out = label.substring(0, decimalIndex + 1 + (4 - decimalIndex)) + label.substring(decimalIndex, decimalIndex);
+  else
+    out = label;
+
   if( units != NULL )
-    label.concat(units);
-  return label;
+    out.concat(units);
+  return out;
 }
 
 uint8_t renderCompleteBar(int8_t y_offset, const char* label, float value, const char* units, float value_min, float value_mid, float scale, boolean inverse, uint16_t fg, uint16_t bg) {

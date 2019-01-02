@@ -138,12 +138,12 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t 
     display.fillRect(info.x0, info.y0, info.x1, info.y1, BLACK);
 
     //draw imaginary axix (outer circle)
-    display.drawCircle(info.centerX, info.centerY, info.baseRadius, WHITE);
+    display.drawCircle(info.centerX, info.centerY, info.baseRadius, MAGENTA);
     display.setCursor(info.centerX - info.baseRadius + 4, info.centerY + 4);
-    display.setTextColor(WHITE);
+    display.setTextColor(MAGENTA);
     display.setTextSize(1);
     display.print("0");
-    display.drawLine(info.antioriginX, info.centerY, info.originX, info.centerY, WHITE);
+    display.drawLine(info.antioriginX, info.centerY, info.originX, info.centerY, MAGENTA);
 
     // Draw lines of constant Real values
     boolean textUp = false;
@@ -152,7 +152,7 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t 
       String label = xAxis[i].label;
       uint16_t px = info.antioriginX + (-1.0/(real + 1.0) + 1.0) * info.baseDiameter;
       uint16_t cx = px + (info.originX - px) / 2;
-      drawArc(display, cx, info.centerY, px, info.centerY, 0.0, 200, WHITE, false, 0.0);
+      drawArc(display, cx, info.centerY, px, info.centerY, 0.0, 250, MAGENTA, false, 0.0);
 
       if( !textUp )
         display.setCursor(px + 4, info.centerY + 4);
@@ -177,7 +177,7 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t 
       float ix = float(info.centerX) + intercept.real() * (float(info.baseRadius));
       float iy = float(info.centerY) - intercept.imag() * (float(info.baseRadius));
 
-      drawArc(display, float(info.originX), cy, float(info.originX), float(info.centerY), iy, 200, WHITE, true, info.centerY);
+      drawArc(display, float(info.originX), cy, float(info.originX), float(info.centerY), iy, 250, MAGENTA, true, info.centerY);
       display.setCursor(ix, iy);
       display.setTextSize(1);
       display.print(label);
@@ -203,5 +203,11 @@ void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules,  uint16_t 
   Complex reflComplex = polarToComplex(magnitudeLinear, phase);
   uint16_t rx = info.centerX + reflComplex.real() * (float(info.baseRadius));
   uint16_t ry = info.centerY + reflComplex.imag() * (float(info.baseRadius));
-  display.fillCircle(rx, ry, 1, MAGENTA);
+  static uint16_t last_rx = rx;
+  static uint16_t last_ry = ry;
+  if(rx != last_rx || last_ry != ry)
+    display.fillCircle(last_rx, last_ry, 2, LIGHTGREY);
+  display.fillCircle(rx, ry, 2, WHITE);
+  last_rx = rx;
+  last_ry = ry;
 }

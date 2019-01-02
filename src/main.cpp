@@ -87,6 +87,8 @@ void setup()   {
   //     finishRender();
   //   }
   // }
+  // sensorData.differentialMagnitudeDb = 0.8;
+  // sensorData.differentialPhaseDeg = 0.7;
 }
 
 void loop() {
@@ -107,7 +109,7 @@ void loop() {
     refreshDisplayTime = time + DISPLAY_REFRESH_RATE_MS;
 
     if(demoMode()) {
-      updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.differentialPhaseDeg));
+      updateComplexDemo(&(sensorData.differentialMagnitudeDb), &(sensorData.calculatedPhaseDeg));
       updatePowerDemo(&(sensorData.fwdPower), &(sensorData.reflPower));
       sensorData.swr = powerToSwr(sensorData.fwdPower, sensorData.reflPower);
     }
@@ -145,7 +147,17 @@ void loop() {
     renderLoadText(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     commandlineUpdate();
 
-    renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
+    //arbitrary measure of when not considered transmitting
+    static boolean transmitting = false;
+    if(sensorData.fwdPower < TRANSMIT_THREASHOLD_POWER && transmitting) {
+      transmitting = false;
+    } else if(sensorData.fwdPower > (TRANSMIT_THREASHOLD_POWER*2) && !transmitting) {
+      transmitting = true;
+      clearSmithChart();
+    }
+
+    if(sensorData.fwdPower > TRANSMIT_THREASHOLD_POWER)
+      renderSmithChart(sensorData.differentialMagnitudeDb, sensorData.calculatedPhaseDeg);
     finishRender();
     commandlineUpdate();
   }

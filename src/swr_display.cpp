@@ -32,6 +32,7 @@ boolean demo_magnitude_db_increasing = true;
 boolean demo_phase_increasing = true;
 boolean demo_power_fwd_increasing = true;
 boolean demo_power_rvr_increasing = true;
+boolean clear_smith_chart = true;
 
 static const PROGMEM unsigned char gamma16_glcd_bmp[] =
 { B01111111, B11111110,
@@ -267,8 +268,14 @@ void renderPowerText(float power_fwd, float power_rvr) {
   display.println(reverseText);
 }
 
+void clearSmithChart() {
+  clear_smith_chart = true;
+}
+
 void renderSmithChart(float magDb, float phase) {
-  drawSmithChart(display, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, magDb, phase);
+  drawSmithChart(display, clear_smith_chart, 0, SCREEN_ROW_GRFX_Y, SCREEN_WIDTH, SCREEN_ROW_GRFX_Y_END, magDb, phase);
+  if(clear_smith_chart)
+    clear_smith_chart = false;
 }
 
 void renderLoadText(float magnitudeDb, float phase) {
@@ -425,12 +432,12 @@ void updateComplexDemo(float *magnitudeDb, float *phase) {
   else
     *phase -= 1.0;
 
-  if ( *phase > 180 ) {
+  if ( *phase > 180.0 ) {
     *phase = 180.0;
     demo_phase_increasing = false;
   }
-  else if ( *phase < 0 ) {
-    *phase = 0.0;
+  else if ( *phase < -180.0 ) {
+    *phase = -180.0;
     demo_phase_increasing = true;
   }
 }

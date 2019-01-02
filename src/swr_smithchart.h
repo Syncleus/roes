@@ -6,6 +6,6 @@
 #include <SPI.h>
 #include <Adafruit_ILI9341.h>
 
-void drawSmithChart(Adafruit_ILI9341 display, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, float magDb, float phase);
+void drawSmithChart(Adafruit_ILI9341 display, boolean drawGraticules, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, float magDb, float phase);
 
 #endif /* _SWR_SMITHCHART_H_ */
